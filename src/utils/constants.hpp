@@ -23,18 +23,18 @@ namespace ng
 			1595u, 1912u, 2062u, 1815u,
 			1812u, 1611u, 2062u, 3609u
 		};
-		
+
 		constexpr std::array COLLISION_OBJECT_IDS_WITH_LABEL{
 			1816u, 3643u
 		};
-		
+
 		constexpr std::array COUNTER_OBJECT_IDS_WITH_LABEL{
 			1811u, 1817u, 1615u
 		};
 
 		const std::unordered_map<std::uint16_t, const std::unordered_map<std::uint16_t, NID>> OBJECT_ID_TO_PROPERTIES_INFO{
 			// Move Trigger
-			{ 901, { 
+			{ 901, {
 				// Group ID
 				{ 51, NID::GROUP }
 			} },
@@ -243,7 +243,7 @@ namespace ng
 				{ 51, NID::GROUP }
 			} },
 			// Edit Song Trigger
-			{ 3605, { 
+			{ 3605, {
 				// Group ID 1
 				{ 51, NID::GROUP },
 				// Group ID 2
@@ -332,7 +332,7 @@ namespace ng
 
 
 			// --- Collision Triggers ---
-		
+
 			// Collision Trigger
 			{ 1815, {
 				// BlockA ID
@@ -364,10 +364,10 @@ namespace ng
 			{ 1816, {
 				// Block ID doesn't have a tag
 			} },
-		
-		
+
+
 			// --- Counter Triggers ---
-		
+
 			// Count Trigger
 			{ 1611, {
 				// Item ID

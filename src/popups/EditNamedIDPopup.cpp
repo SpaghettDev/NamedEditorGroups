@@ -86,13 +86,13 @@ bool EditNamedIDPopup<nid>::setup(short id, std::function<void(short)>&& changed
 	auto saveNamedIDSprite = ButtonSprite::create(
 		CCSprite::createWithSpriteFrameName("GJ_completesIcon_001.png"),
 		30, 0, 30.5f, 1.f, false, "baseBtn.png"_spr, true
-	);	
+	);
 	saveNamedIDSprite->m_subSprite->setScale(.75f);
 	auto saveNamedIDButton = CCMenuItemSpriteExtra::create(
 		saveNamedIDSprite,
 		this,
 		menu_selector(EditNamedIDPopup::onSaveButton)
-	);	
+	);
 	saveNamedIDSprite->m_subSprite->setPositionY(saveNamedIDSprite->getPositionY() + 1.f);
 	saveNamedIDButton->setPosition({ 200.f, 40.f });
 	this->m_buttonMenu->addChild(saveNamedIDButton);

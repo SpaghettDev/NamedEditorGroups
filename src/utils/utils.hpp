@@ -73,5 +73,5 @@ namespace ng
 		{
 			void refreshObjectLabels();
 		}
-    }
+	}
 }

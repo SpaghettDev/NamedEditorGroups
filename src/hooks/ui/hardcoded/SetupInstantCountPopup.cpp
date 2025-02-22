@@ -8,7 +8,7 @@ using namespace geode::prelude;
 
 struct NIDSetupInstantCountPopup : geode::Modify<NIDSetupInstantCountPopup, SetupInstantCountPopup>
 {
-    static constexpr std::uint16_t ITEM_ID_PROPERTY = 0;
+	static constexpr std::uint16_t ITEM_ID_PROPERTY = 0;
 	static constexpr std::uint16_t TARGET_GROUP_ID_PROPERTY = 2;
 
 	bool init(CountTriggerGameObject* p0, CCArray* p1)

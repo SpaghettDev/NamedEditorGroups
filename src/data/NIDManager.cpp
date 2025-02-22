@@ -17,7 +17,7 @@ NamedIDs& containerForID(NID id)
 	{
 		case NID::GROUP:
 			return g_namedGroups;
-		
+
 		case NID::COLLISION:
 			return g_namedCollisions;
 
@@ -35,7 +35,7 @@ geode::Result<std::string> NIDManager::getNameForID(NID nid, short id)
 	const auto& ids = containerForID(nid);
 
 	auto it = std::find_if(
-		ids.namedIDs.begin(), 
+		ids.namedIDs.begin(),
 		ids.namedIDs.end(),
 		[&](auto&& p) { return p.second == id; }
 	);

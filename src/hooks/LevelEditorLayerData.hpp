@@ -9,11 +9,11 @@ struct LevelEditorLayerData : geode::Modify<LevelEditorLayerData, LevelEditorLay
 {
 	bool init(GJGameLevel* p0, bool p1);
 
-    TextGameObject* getSaveObject();
+	TextGameObject* getSaveObject();
 };
 
 struct EditorPauseLayerSave : geode::Modify<EditorPauseLayerSave, EditorPauseLayer>
 {
-    void saveLevel();
-    void onExitEditor(CCObject*);
+	void saveLevel();
+	void onExitEditor(CCObject*);
 };

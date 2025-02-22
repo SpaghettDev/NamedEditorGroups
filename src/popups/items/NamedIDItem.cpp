@@ -87,7 +87,7 @@ bool NamedIDItem::init(NID idType, short id, std::string&& name, float width)
 	saveButtonSpr->m_subSprite->setPositionY(saveButtonSpr->getPositionY() + 1.f);
 	saveButtonSpr->m_subSprite->setScale(.75f);
 	m_button_menu->addChild(m_edit_button);
-	
+
 	m_name_input = geode::TextInput::create(width / 2.f, "");
 	m_name_input->setString(m_name.data());
 	m_name_input->setEnabled(false);
@@ -102,7 +102,7 @@ bool NamedIDItem::init(NID idType, short id, std::string&& name, float width)
 	m_button_menu->addChild(m_cancel_button);
 
 	m_name_menu->setContentWidth(this->getContentWidth() - m_button_menu->getContentWidth() - 25.f);
-    m_name_menu->updateLayout();
+	m_name_menu->updateLayout();
 	m_button_menu->updateLayout();
 
 	return true;

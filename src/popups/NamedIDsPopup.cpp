@@ -17,7 +17,7 @@
 using namespace geode::prelude;
 
 namespace
-{	
+{
 	bool weightedFuzzyMatch(const std::string& str, const std::string& kw, double weight, double& out)
 	{
 		int score;

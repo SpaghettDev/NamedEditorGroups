@@ -176,7 +176,7 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 					const float idLabelWidth = idLabel->getScaledContentWidth();
 					const float nameLabelWidth = nameLabel->getScaledContentWidth();
 					const auto parentSize = labelsContainer->getContentSize();
-	
+
 					// add 2.f to Y pos because the exact middle makes the label overlap with the shadow of the background
 					idLabel->setPosition({
 						PADDING + idLabelWidth / 2.f,

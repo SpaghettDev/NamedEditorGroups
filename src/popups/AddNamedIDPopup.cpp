@@ -73,7 +73,7 @@ void AddNamedIDPopup::onSaveButton(CCObject*)
 			res.unwrapErr(),
 			1.f, 85.f
 		);
-	
+
 	ng::utils::editor::refreshObjectLabels();
 
 	if (m_saved_callback)

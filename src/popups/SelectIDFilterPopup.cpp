@@ -85,7 +85,7 @@ void SelectIDFilterPopup::onToggleButton(CCObject* sender)
 	for (auto& toggleMenu : CCArrayExt<CCMenu*>(m_toggles_menu->getChildren()))
 	{
 		auto toggleButton = static_cast<CCMenuItemToggler*>(toggleMenu->getChildByID("toggle-button"));
-		
+
 		if (toggleButton->getTag() == tag) continue;
 
 		toggleButton->toggle(false);

@@ -148,7 +148,7 @@ struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup
 				groupID = geode::utils::numFromString<std::uint16_t>(text.substr(0, text.find('-'))).unwrap();
 				count = geode::utils::numFromString<int>(text.substr(text.find('-') + 1)).unwrap();
 			}
-			
+
 			auto newButtonSprite = ButtonSprite::create(
 				fmt::format("{}-{}", groupID, count).c_str(),
 				40, 0, .5f, true, "bigFont.fnt",
