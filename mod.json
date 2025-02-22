@@ -16,7 +16,7 @@
 	},
 	"api": {
 		"include": [
-			"api/include/*.hpp"
+			"api/*.hpp"
 		]
 	}
 }

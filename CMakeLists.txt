@@ -18,7 +18,7 @@ target_include_directories(${PROJECT_NAME}
     PRIVATE ${SRC_DIR}/utils # allow easy inclusion of utils
 )
 
-target_include_directories(${PROJECT_NAME} PUBLIC api/include)
+target_include_directories(${PROJECT_NAME} PUBLIC api/)
 
 if (PROJECT_IS_TOP_LEVEL)
     target_compile_definitions(${PROJECT_NAME} PRIVATE SPAGHETTDEV_NAMED_EDITOR_GROUPS_EXPORTING)
