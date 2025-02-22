@@ -7,7 +7,7 @@
 #include <Geode/loader/Loader.hpp>
 #include <Geode/Result.hpp>
 
-#include <NIDEnum.hpp>
+#include "NIDEnum.hpp"
 
 #ifdef GEODE_IS_WINDOWS
 	#ifdef SPAGHETTDEV_NAMED_EDITOR_GROUPS_EXPORTING

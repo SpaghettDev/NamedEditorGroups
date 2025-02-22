@@ -10,8 +10,13 @@
 	"name": "Named Editor Groups",
 	"version": "v1.0.0",
 	"developer": "SpaghettDev",
-	"description": "",
+	"description": "Abstract away IDs by giving them a name!",
 	"resources": {
 		"sprites": ["resources/*.png"]
+	},
+	"api": {
+		"include": [
+			"api/include/*.hpp"
+		]
 	}
 }
