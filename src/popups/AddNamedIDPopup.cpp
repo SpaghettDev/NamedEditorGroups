@@ -54,8 +54,8 @@ void AddNamedIDPopup::onSaveButton(CCObject*)
 	auto&& namedIDStr = this->m_named_id_input->getString();
 	auto namedID = geode::utils::numFromString<short>(this->m_id_input->getString());
 
-	if (namedID.isErr())
-		return;
+	if (namedID.isErr() || namedID.unwrap() <= 0)
+		return ng::utils::cocos::createNotificationToast(this, "Invalid ID!", 1.f, 85.f);
 
 	if (
 		auto otherNamedID = NIDManager::getIDForName(m_nid, namedIDStr);

@@ -192,14 +192,14 @@ template <NID nid>
 void EditNamedIDPopup<nid>::onSaveButton(CCObject*)
 {
 	auto&& namedIDStr = m_named_id_input->getString();
-	auto idStr = geode::utils::numFromString<short>(m_id_input->getString());
+	auto id = geode::utils::numFromString<short>(m_id_input->getString());
 
-	if (idStr.isErr())
+	if (id.isErr() || id.unwrap() <= 0)
 		return ng::utils::cocos::createNotificationToast(this, "Invalid ID!", 1.f, 85.f);
 
 	if (
 		auto otherNamedID = NIDManager::getIDForName<nid>(namedIDStr);
-		otherNamedID.isOkAnd([&](short id) { return id != idStr.unwrap(); })
+		otherNamedID.isOkAnd([&](short otherID) { return otherID != id.unwrap(); })
 	)
 		return ng::utils::cocos::createNotificationToast(
 			this,
@@ -208,8 +208,8 @@ void EditNamedIDPopup<nid>::onSaveButton(CCObject*)
 		);
 
 	if (namedIDStr.empty())
-		static_cast<void>(NIDManager::removeNamedID<nid>(idStr.unwrap()));
-	else if (auto res = NIDManager::saveNamedID<nid>(std::move(namedIDStr), idStr.unwrap()); res.isErr())
+		static_cast<void>(NIDManager::removeNamedID<nid>(id.unwrap()));
+	else if (auto res = NIDManager::saveNamedID<nid>(std::move(namedIDStr), id.unwrap()); res.isErr())
 		return ng::utils::cocos::createNotificationToast(this, res.unwrapErr(), 1.f, 85.f);
 
 	ng::utils::editor::refreshObjectLabels();

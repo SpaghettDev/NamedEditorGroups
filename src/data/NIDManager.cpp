@@ -58,6 +58,9 @@ geode::Result<short> NIDManager::getIDForName(NID nid, const std::string& name)
 
 geode::Result<> NIDManager::saveNamedID(NID nid, std::string&& name, short id)
 {
+	if (id <= 0)
+		return geode::Err("Invalid ID!");
+
 	if (auto sanitizeRes = ng::utils::sanitizeName(name); sanitizeRes.isErr())
 		return sanitizeRes;
 
