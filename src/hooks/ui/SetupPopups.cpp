@@ -51,26 +51,18 @@ cocos2d::CCArray* NIDSetupTriggerPopup::createValueControlAdvanced(int property,
 	return nodes;
 }
 
-void NIDSetupTriggerPopup::triggerArrowChanged(int senderTag, bool isRight)
+void NIDSetupTriggerPopup::triggerArrowLeft(CCObject* sender)
 {
-	SetupTriggerPopup::triggerArrowChanged(senderTag, isRight);
+	SetupTriggerPopup::triggerArrowLeft(sender);
 
-	auto inputNode = static_cast<CCTextInputNode*>(this->m_mainLayer->getChildByTag(senderTag));
+	triggerArrowWasChanged(sender->getTag(), false);
+}
 
-	if (!m_fields->m_id_inputs.contains(senderTag)) return;
+void NIDSetupTriggerPopup::triggerArrowRight(CCObject* sender)
+{
+	SetupTriggerPopup::triggerArrowRight(sender);
 
-	auto parsedIdInputValue = geode::utils::numFromString<short>(inputNode->getString());
-	if (parsedIdInputValue.isErr()) return;
-	short idInputValue = parsedIdInputValue.unwrap();
-
-	auto& idInputInfo = m_fields->m_id_inputs.at(senderTag);
-
-	idInputInfo.inputButton->setEnabled(idInputValue != 0);
-	idInputInfo.namedIDInput->getInputNode()->onClickTrackNode(false);
-
-	idInputInfo.namedIDInput->setString(
-		NIDManager::getNameForID(idInputInfo.idType, idInputValue).unwrapOr("")
-	);
+	triggerArrowWasChanged(sender->getTag(), true);
 }
 
 void NIDSetupTriggerPopup::textChanged(CCTextInputNode* input)
@@ -93,6 +85,26 @@ void NIDSetupTriggerPopup::textChanged(CCTextInputNode* input)
 	}
 }
 
+
+void NIDSetupTriggerPopup::triggerArrowWasChanged(int senderTag, bool isRight)
+{
+	auto inputNode = static_cast<CCTextInputNode*>(this->m_mainLayer->getChildByTag(senderTag));
+
+	if (!m_fields->m_id_inputs.contains(senderTag)) return;
+
+	auto parsedIdInputValue = geode::utils::numFromString<short>(inputNode->getString());
+	if (parsedIdInputValue.isErr()) return;
+	short idInputValue = parsedIdInputValue.unwrap();
+
+	auto& idInputInfo = m_fields->m_id_inputs.at(senderTag);
+
+	idInputInfo.inputButton->setEnabled(idInputValue != 0);
+	idInputInfo.namedIDInput->getInputNode()->onClickTrackNode(false);
+
+	idInputInfo.namedIDInput->setString(
+		NIDManager::getNameForID(idInputInfo.idType, idInputValue).unwrapOr("")
+	);
+}
 
 void NIDSetupTriggerPopup::onEditIDNameButton(CCObject* sender)
 {

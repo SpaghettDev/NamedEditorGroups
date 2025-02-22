@@ -29,14 +29,14 @@ bool LevelEditorLayerData::init(GJGameLevel* p0, bool p1)
 	}
 	else
 	{
-		eui->m_clickAtPosition = cocos2d::CCPoint{ .0f, .0f };
-		eui->onCreateObject(914);
-		static_cast<TextGameObject*>(eui->m_selectedObject)->updateTextObject("", false);
-		this->removeObjectFromSection(eui->m_selectedObject);
-		eui->m_selectedObject->setPosition(ng::constants::SAVE_DATA_OBJECT_POS);
-		eui->m_selectedObject->setScale(.0f);
-		this->addToSection(eui->m_selectedObject);
-		eui->deselectObject(eui->m_selectedObject);
+		saveObject = static_cast<TextGameObject*>(
+			this->createObject(914, { .0f, .0f }, true)
+		);
+		saveObject->updateTextObject("", false);
+		this->removeObjectFromSection(saveObject);
+		saveObject->setPosition(ng::constants::SAVE_DATA_OBJECT_POS);
+		saveObject->setScale(.0f);
+		this->addToSection(saveObject);
 	}
 
 	return true;
@@ -52,7 +52,8 @@ void EditorPauseLayerSave::saveLevel()
 {
 	if (auto saveObject = static_cast<LevelEditorLayerData*>(LevelEditorLayer::get())->getSaveObject())
 	{
-		saveObject->updateTextObject(NIDManager::dumpNamedIDs(), false);
+		saveObject->m_text = NIDManager::dumpNamedIDs();
+		// saveObject->updateTextObject(NIDManager::dumpNamedIDs(), false);
 		geode::log::debug("text is now {}", saveObject->m_text);
 	}
 

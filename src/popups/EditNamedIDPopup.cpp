@@ -231,27 +231,11 @@ template <NID nid>
 void EditNamedIDPopup<nid>::onEditIDInput(EditNamedIDPopup<nid>* self, const std::string& str)
 {
 	if (auto parsedNum = geode::utils::numFromString<short>(self->m_id_input->getString()); parsedNum.isOk())
-	{
-		short nameID = parsedNum.unwrap();
-
-		// if (auto idName = NIDManager::getNameForID<nid>(nameID); idName.isOk())
-		// 	self->m_named_id_input->setString(idName.unwrap());
-		// else
-		// 	self->m_named_id_input->setString("");
-
-		self->m_changed_id_callback(nameID);
-	}
+		self->m_changed_id_callback(parsedNum.unwrap());
 }
 
 template <NID nid>
-void EditNamedIDPopup<nid>::onEditIDNameInput(EditNamedIDPopup<nid>* self, const std::string& str)
-{
-	if (auto id = NIDManager::getIDForName<nid>(str); id.isOk())
-	{
-		self->m_id_input->setString(fmt::format("{}", id.unwrap()));
-		self->m_changed_id_callback(id.unwrap());
-	}
-}
+void EditNamedIDPopup<nid>::onEditIDNameInput(EditNamedIDPopup<nid>* self, const std::string& str) {}
 
 template class EditNamedIDPopup<NID::GROUP>;
 template class EditNamedIDPopup<NID::COLLISION>;

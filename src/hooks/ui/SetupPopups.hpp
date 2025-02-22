@@ -28,9 +28,12 @@ struct NIDSetupTriggerPopup : geode::Modify<NIDSetupTriggerPopup, SetupTriggerPo
 
 	cocos2d::CCArray* createValueControlAdvanced(int, gd::string, cocos2d::CCPoint, float, bool, InputValueType, int, bool, float, float, int, int, GJInputStyle, int, bool);
 
-	void triggerArrowChanged(int, bool);
+	void triggerArrowLeft(cocos2d::CCObject*);
+	void triggerArrowRight(cocos2d::CCObject*);
 	virtual void textChanged(CCTextInputNode*) override;
 
+
+	void triggerArrowWasChanged(int, bool);
 	void onEditIDNameButton(CCObject*);
 
 	IDInputInfo commonSetup(NID, std::uint16_t, std::vector<CCNode*>&&, CCNode*, CCNode*, std::function<void(std::vector<CCNode*>&&)>&& = nullptr);
