@@ -131,16 +131,6 @@ void NIDManager::importNamedIDs(const std::string& str)
 	g_namedGroups = g_namedGroups.from(std::move(groupsStr));
 	g_namedCollisions = g_namedCollisions.from(std::move(blocksStr));
 	g_namedCounters = g_namedCounters.from(std::move(itemsStr));
-
-	geode::log::debug("named groups:");
-	for (const auto& [key, id] : g_namedGroups.namedIDs)
-		geode::log::debug("{}: {}", key, id);
-	geode::log::debug("named collisions:");
-	for (const auto& [key, id] : g_namedCollisions.namedIDs)
-		geode::log::debug("{}: {}", key, id);
-	geode::log::debug("named counters:");
-	for (const auto& [key, id] : g_namedCounters.namedIDs)
-		geode::log::debug("{}: {}", key, id);
 }
 
 void NIDManager::reset()

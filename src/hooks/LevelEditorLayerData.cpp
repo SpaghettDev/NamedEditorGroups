@@ -21,7 +21,6 @@ bool LevelEditorLayerData::init(GJGameLevel* p0, bool p1)
 
 	if (auto saveObject = getSaveObject())
 	{
-		geode::log::debug("loaded saveObject: {}", saveObject->m_text);
 		NIDManager::importNamedIDs(saveObject->m_text);
 
 		// force refresh after loading the group names
@@ -51,11 +50,7 @@ TextGameObject* LevelEditorLayerData::getSaveObject()
 void EditorPauseLayerSave::saveLevel()
 {
 	if (auto saveObject = static_cast<LevelEditorLayerData*>(LevelEditorLayer::get())->getSaveObject())
-	{
 		saveObject->m_text = NIDManager::dumpNamedIDs();
-		// saveObject->updateTextObject(NIDManager::dumpNamedIDs(), false);
-		geode::log::debug("text is now {}", saveObject->m_text);
-	}
 
 	EditorPauseLayer::saveLevel();
 }
