@@ -1,0 +1,12 @@
+#pragma once
+
+enum class NID
+{
+	GROUP,
+	COLLISION,
+	COUNTER,
+
+#ifdef SPAGHETTDEV_NAMED_EDITOR_GROUPS_EXPORTING
+	_INTERNAL_LAST
+#endif
+};
