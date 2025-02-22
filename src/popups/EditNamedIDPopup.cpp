@@ -70,7 +70,7 @@ bool EditNamedIDPopup<nid>::setup(short id, std::function<void(short)>&& changed
 	this->m_buttonMenu->addChild(m_id_input);
 
 	m_named_id_input = geode::TextInput::create(100.f, "Unnamed");
-	m_named_id_input->setFilter(ng::constants::VALID_CHARACTERS);
+	m_named_id_input->setFilter(ng::constants::VALID_NAMED_ID_CHARACTERS);
 	m_named_id_input->setPosition({ 120.f, 40.f });
 	m_named_id_input->setCallback([&](const std::string& str) { EditNamedIDPopup::onEditIDNameInput(this, std::move(str)); });
 	this->m_buttonMenu->addChild(m_named_id_input);
@@ -117,7 +117,7 @@ void EditNamedIDPopup<nid>::onInfoIcon(CCObject*)
 			"<cr>cannot</c> contain <cy>only numbers</c> or <cy>only symbols</c>, "
 			"and each ID <cr>must</c> have its own <cy>unique name</c>.\n"
 			"Valid character are: <cg>{}</c>",
-			ng::constants::VALID_CHARACTERS
+			ng::constants::VALID_NAMED_ID_CHARACTERS
 		),
 		"Ok", nullptr,
 		400.f

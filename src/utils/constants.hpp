@@ -11,9 +11,10 @@ namespace ng
 	namespace constants
 	{
 		constexpr cocos2d::CCPoint SAVE_DATA_OBJECT_POS{ -7000.f, -5000.f };
-		// constexpr cocos2d::CCPoint SAVE_DATA_OBJECT_POS{ .0f, .0f };
 
-		constexpr const char* VALID_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-,.01234567890";
+		constexpr short MAX_NAMED_ID_CHARACTERS = 20;
+		constexpr const char* VALID_NAMED_ID_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-,.01234567890";
+		constexpr std::string_view VALID_NAMED_ID_CHARACTERS_VIEW = VALID_NAMED_ID_CHARACTERS;
 
 		constexpr std::array TRIGGER_OBJECT_IDS_WITH_LABEL{
 			901u, 1616u, 1007u, 1049u,

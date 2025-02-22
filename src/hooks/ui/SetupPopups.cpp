@@ -65,7 +65,6 @@ void NIDSetupTriggerPopup::triggerArrowChanged(int senderTag, bool isRight)
 
 	auto& idInputInfo = m_fields->m_id_inputs.at(senderTag);
 
-	idInputInfo.namedIDInput->setEnabled(idInputValue != 0);
 	idInputInfo.inputButton->setEnabled(idInputValue != 0);
 	idInputInfo.namedIDInput->getInputNode()->onClickTrackNode(false);
 
@@ -86,7 +85,6 @@ void NIDSetupTriggerPopup::textChanged(CCTextInputNode* input)
 	{
 		short idInputValue = parsedNum.unwrap();
 
-		idInputInfo.namedIDInput->setEnabled(idInputValue != 0);
 		idInputInfo.inputButton->setEnabled(idInputValue != 0);
 
 		idInputInfo.namedIDInput->setString(
@@ -174,7 +172,7 @@ NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonSetup(NID nid, std
 
 	auto groupNameInput = geode::TextInput::create(110.f, "Unnamed");
 	groupNameInput->setContentHeight(20.f);
-	groupNameInput->setFilter(ng::constants::VALID_CHARACTERS);
+	groupNameInput->setFilter(ng::constants::VALID_NAMED_ID_CHARACTERS);
 	groupNameInput->setCallback([&, property](const std::string& str) {
 		NIDSetupTriggerPopup::onEditInput(this, property, std::move(str));
 	});
@@ -208,10 +206,7 @@ NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonSetup(NID nid, std
 	auto inputIDNum = numFromString<short>(inputInfo.idInput->getString()).unwrapOr(0);
 
 	if (inputIDNum == 0)
-	{
-		groupNameInput->setEnabled(false);
 		editButton->setEnabled(false);
-	}
 	else if (auto name = NIDManager::getNameForID(inputInfo.idType, inputIDNum); name.isOk())
 		groupNameInput->setString(name.unwrap());
 

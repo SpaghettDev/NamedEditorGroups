@@ -9,26 +9,28 @@
 
 geode::Result<> ng::utils::sanitizeName(const std::string_view name)
 {
-	if (name.length() > 20)
+	if (name.length() > ng::constants::MAX_NAMED_ID_CHARACTERS)
 		return geode::Err("Name is too long!");
 
-	std::string_view validCharacters = ng::constants::VALID_CHARACTERS;
-
 	bool hasAlpha = false;
-    bool hasNonAlpha = false;
+	bool hasNumber = false;
+	bool hasSymbol = false;
+
 	for (char c : name)
 	{
-		if (validCharacters.find(c) == std::string_view::npos)
+		if (ng::constants::VALID_NAMED_ID_CHARACTERS_VIEW.find(c) == std::string_view::npos)
 			return geode::Err("Name contains invalid character '{}'", c);
 
 		if (std::isalpha(c))
 			hasAlpha = true;
+		else if (std::isdigit(c))
+			hasNumber = true;
 		else
-			hasNonAlpha = true;
+			hasSymbol = true;
 	}
 
-	if (!hasAlpha || !hasNonAlpha)
-		return geode::Err("Name cannot contain only numbers or symbols!");
+	if ((!hasAlpha && !hasSymbol) || (!hasAlpha && !hasNumber))
+		return geode::Err("Name cannot contain only numbers or only symbols!");
 
 	return geode::Ok();
 }

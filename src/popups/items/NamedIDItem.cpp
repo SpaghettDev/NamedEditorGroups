@@ -202,3 +202,8 @@ void NamedIDItem::onClearButton(CCObject*)
 
 	m_name_input->setString("");
 }
+
+NamedIDItem::~NamedIDItem()
+{
+	g_currentEditingItem = nullptr;
+}

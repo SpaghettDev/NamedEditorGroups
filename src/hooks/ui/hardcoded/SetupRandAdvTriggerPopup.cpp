@@ -29,7 +29,6 @@ struct NIDModifiedRandAdvInputDelegate : public TextInputDelegate
 		{
 			short idInputValue = parsedNum.unwrap();
 
-			idInputInfo.namedIDInput->setEnabled(idInputValue != 0);
 			idInputInfo.inputButton->setEnabled(idInputValue != 0);
 
 			idInputInfo.namedIDInput->setString(

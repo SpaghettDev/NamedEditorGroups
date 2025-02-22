@@ -45,7 +45,7 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 
 		auto groupNameInput = geode::TextInput::create(100.f, "Unnamed");
 		groupNameInput->setContentHeight(20.f);
-		groupNameInput->setFilter(ng::constants::VALID_CHARACTERS);
+		groupNameInput->setFilter(ng::constants::VALID_NAMED_ID_CHARACTERS);
 		groupNameInput->setCallback([&](const std::string& str) { NIDSetGroupIDLayer::onEditInput(this, std::move(str)); });
 		groupNameInput->setPosition({ 60.f, -13.f });
 		groupNameInput->setID("group-name-input"_spr);
@@ -86,10 +86,7 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 
 
 		if (this->m_groupIDValue == 0)
-		{
-			groupNameInput->setEnabled(false);
 			editButton->setEnabled(false);
-		}
 
 		return true;
 	}
@@ -98,14 +95,12 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 	{
 		SetGroupIDLayer::onArrow(tag, increment);
 
-		m_fields->m_input->setEnabled(this->m_groupIDValue != 0);
 		m_fields->m_input_button->setEnabled(this->m_groupIDValue != 0);
 		m_fields->m_input->getInputNode()->onClickTrackNode(false);
 
-		if (auto name = NIDManager::getNameForID<NID::GROUP>(this->m_groupIDValue); name.isOk())
-			m_fields->m_input->setString(name.unwrap());
-		else
-			m_fields->m_input->setString("");
+		m_fields->m_input->setString(
+			NIDManager::getNameForID<NID::GROUP>(this->m_groupIDValue).unwrapOr("")
+		);
 	}
 
 	void textChanged(CCTextInputNode* input)
@@ -116,13 +111,11 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 
 		if (input == m_groupIDInput)
 		{
-			m_fields->m_input->setEnabled(this->m_groupIDValue != 0);
 			m_fields->m_input_button->setEnabled(this->m_groupIDValue != 0);
 
-			if (auto name = NIDManager::getNameForID<NID::GROUP>(this->m_groupIDValue); name.isOk())
-				m_fields->m_input->setString(name.unwrap());
-			else
-				m_fields->m_input->setString("");
+			m_fields->m_input->setString(
+				NIDManager::getNameForID<NID::GROUP>(this->m_groupIDValue).unwrapOr("")
+			);
 		}
 	}
 

@@ -14,6 +14,8 @@ public:
 protected:
 	bool init(NID, short, std::string&&, float);
 
+	virtual ~NamedIDItem();
+
 public:
 	void setDefaultBGColor(const cocos2d::ccColor4B& color);
 

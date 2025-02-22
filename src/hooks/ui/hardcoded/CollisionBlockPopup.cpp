@@ -106,7 +106,6 @@ struct NIDCollisionBlockPopup : geode::Modify<NIDCollisionBlockPopup, CollisionB
 
 		auto& idInputInfo = m_fields->m_id_inputs.at(BLOCK_ID_PROPERTY);
 
-		idInputInfo.namedIDInput->setEnabled(idInputValue != 0);
 		idInputInfo.inputButton->setEnabled(idInputValue != 0);
 		idInputInfo.namedIDInput->getInputNode()->onClickTrackNode(false);
 
@@ -127,7 +126,6 @@ struct NIDCollisionBlockPopup : geode::Modify<NIDCollisionBlockPopup, CollisionB
 		{
 			short idInputValue = parsedNum.unwrap();
 
-			idInputInfo.namedIDInput->setEnabled(idInputValue != 0);
 			idInputInfo.inputButton->setEnabled(idInputValue != 0);
 
 			idInputInfo.namedIDInput->setString(
