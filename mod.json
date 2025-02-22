@@ -11,6 +11,9 @@
 	"version": "v1.0.0",
 	"developer": "SpaghettDev",
 	"description": "Abstract away IDs by giving them a name!",
+	"dependencies": {
+		"geode.node-ids": ">=1.19.0"
+	},
 	"resources": {
 		"sprites": ["resources/*.png"]
 	},
