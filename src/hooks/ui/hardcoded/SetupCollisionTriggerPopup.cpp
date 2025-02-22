@@ -184,27 +184,27 @@ struct NIDSetupCollisionTriggerPopup : geode::Modify<NIDSetupCollisionTriggerPop
 	{
 		SetupCollisionTriggerPopup::onItemIDArrow(sender);
 
-		reinterpret_cast<NIDSetupTriggerPopup*>(this)->triggerArrowChanged(BLOCK_A_ID_PROPERTY, sender->getTag() == 2);
+		reinterpret_cast<NIDSetupTriggerPopup*>(this)->triggerArrowWasClicked(BLOCK_A_ID_PROPERTY, sender->getTag() == 2);
 	}
 
 	void onItemID2Arrow(CCObject* sender)
 	{
 		SetupCollisionTriggerPopup::onItemID2Arrow(sender);
 
-		reinterpret_cast<NIDSetupTriggerPopup*>(this)->triggerArrowChanged(BLOCK_B_ID_PROPERTY, sender->getTag() == 2);
+		reinterpret_cast<NIDSetupTriggerPopup*>(this)->triggerArrowWasClicked(BLOCK_B_ID_PROPERTY, sender->getTag() == 2);
 	}
 
 	void onTargetIDArrow(CCObject* sender)
 	{
 		SetupCollisionTriggerPopup::onTargetIDArrow(sender);
 
-		reinterpret_cast<NIDSetupTriggerPopup*>(this)->triggerArrowChanged(GROUP_ID_PROPERTY, sender->getTag() == 2);
+		reinterpret_cast<NIDSetupTriggerPopup*>(this)->triggerArrowWasClicked(GROUP_ID_PROPERTY, sender->getTag() == 2);
 	}
 
 	void textChanged(CCTextInputNode* input)
 	{
 		SetupCollisionTriggerPopup::textChanged(input);
 
-		reinterpret_cast<NIDSetupTriggerPopup*>(this)->textChanged(input);
+		reinterpret_cast<NIDSetupTriggerPopup*>(this)->textWasChanged(input);
 	}
 };

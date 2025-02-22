@@ -115,7 +115,7 @@ struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup
 	{
 		SetupSequenceTriggerPopup::textChanged(input);
 
-		reinterpret_cast<NIDSetupTriggerPopup*>(this)->textChanged(input);
+		reinterpret_cast<NIDSetupTriggerPopup*>(this)->textWasChanged(input);
 	}
 
 	void updateGroupIDButtons()

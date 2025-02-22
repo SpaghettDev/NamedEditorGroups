@@ -131,20 +131,20 @@ struct NIDSetupRandTriggerPopup : geode::Modify<NIDSetupRandTriggerPopup, SetupR
 	{
 		SetupRandTriggerPopup::onTargetIDArrow(sender);
 
-		reinterpret_cast<NIDSetupTriggerPopup*>(this)->triggerArrowChanged(TARGET_GROUP_ID_1_PROPERTY, sender->getTag() == 2);
+		reinterpret_cast<NIDSetupTriggerPopup*>(this)->triggerArrowWasClicked(TARGET_GROUP_ID_1_PROPERTY, sender->getTag() == 2);
 	}
 
 	void onTargetID2Arrow(CCObject* sender)
 	{
 		SetupRandTriggerPopup::onTargetID2Arrow(sender);
 
-		reinterpret_cast<NIDSetupTriggerPopup*>(this)->triggerArrowChanged(TARGET_GROUP_ID_2_PROPERTY, sender->getTag() == 2);
+		reinterpret_cast<NIDSetupTriggerPopup*>(this)->triggerArrowWasClicked(TARGET_GROUP_ID_2_PROPERTY, sender->getTag() == 2);
 	}
 
 	void textChanged(CCTextInputNode* input)
 	{
 		SetupRandTriggerPopup::textChanged(input);
 
-		reinterpret_cast<NIDSetupTriggerPopup*>(this)->textChanged(input);
+		reinterpret_cast<NIDSetupTriggerPopup*>(this)->textWasChanged(input);
 	}
 };

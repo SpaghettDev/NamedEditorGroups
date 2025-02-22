@@ -26,15 +26,9 @@ struct NIDModifiedRandAdvInputDelegate : public TextInputDelegate
 		auto& idInputInfo = STP->m_fields->m_id_inputs.at(input->getTag());
 
 		if (auto parsedNum = numFromString<short>(idInputInfo.idInput->getString()); parsedNum.isOk())
-		{
-			short idInputValue = parsedNum.unwrap();
-
-			idInputInfo.inputButton->setEnabled(idInputValue != 0);
-
 			idInputInfo.namedIDInput->setString(
-				NIDManager::getNameForID(idInputInfo.idType, idInputValue).unwrapOr("")
+				NIDManager::getNameForID(idInputInfo.idType, parsedNum.unwrap()).unwrapOr("")
 			);
-		}
 	}
 
 	void textInputOpened(CCTextInputNode* input) override
@@ -131,11 +125,11 @@ struct NIDSetupRandAdvTriggerPopup : geode::Modify<NIDSetupRandAdvTriggerPopup, 
 		this->m_buttonMenu->addChild(groupsListMenu);
 		m_fields->m_groups_list_menu = groupsListMenu;
 
-		auto editButton = static_cast<CCMenuItemSpriteExtra*>(
+		auto editInputButton = static_cast<CCMenuItemSpriteExtra*>(
 			this->m_buttonMenu->getChildByID("edit-group-name-button-1"_spr)
 		);
-		editButton->setPositionX(editButton->getPositionX() - 115.f);
-		editButton->m_pfnSelector = menu_selector(NIDSetupRandAdvTriggerPopup::onEditIDNameButton);
+		editInputButton->setPositionX(editInputButton->getPositionX() - 115.f);
+		editInputButton->m_pfnSelector = menu_selector(NIDSetupRandAdvTriggerPopup::onEditIDNameButton);
 
 		m_fields->m_modified_delegate = NIDModifiedRandAdvInputDelegate(this);
 		this->m_groupIDInput->setDelegate(&m_fields->m_modified_delegate);

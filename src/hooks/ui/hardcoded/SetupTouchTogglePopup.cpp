@@ -64,13 +64,13 @@ struct NIDSetupTouchTogglePopup : geode::Modify<NIDSetupTouchTogglePopup, SetupT
 	{
 		SetupTouchTogglePopup::onTargetIDArrow(sender);
 
-		reinterpret_cast<NIDSetupTriggerPopup*>(this)->triggerArrowChanged(GROUP_ID_PROPERTY, sender->getTag() == 2);
+		reinterpret_cast<NIDSetupTriggerPopup*>(this)->triggerArrowWasClicked(GROUP_ID_PROPERTY, sender->getTag() == 2);
 	}
 
 	void textChanged(CCTextInputNode* input)
 	{
 		SetupTouchTogglePopup::textChanged(input);
 
-		reinterpret_cast<NIDSetupTriggerPopup*>(this)->textChanged(input);
+		reinterpret_cast<NIDSetupTriggerPopup*>(this)->textWasChanged(input);
 	}
 };

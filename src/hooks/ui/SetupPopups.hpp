@@ -14,7 +14,7 @@ struct NIDSetupTriggerPopup : geode::Modify<NIDSetupTriggerPopup, SetupTriggerPo
 	struct IDInputInfo
 	{
 		geode::TextInput* namedIDInput;
-		CCMenuItemSpriteExtra* inputButton;
+		CCMenuItemSpriteExtra* editInputButton;
 		NID idType;
 
 		CCTextInputNode* idInput;
@@ -33,7 +33,8 @@ struct NIDSetupTriggerPopup : geode::Modify<NIDSetupTriggerPopup, SetupTriggerPo
 	virtual void textChanged(CCTextInputNode*) override;
 
 
-	void triggerArrowWasChanged(int, bool);
+	void triggerArrowWasClicked(int, bool);
+	void textWasChanged(CCTextInputNode*);
 	void onEditIDNameButton(CCObject*);
 
 	IDInputInfo commonSetup(NID, std::uint16_t, std::vector<CCNode*>&&, CCNode*, CCNode*, std::function<void(std::vector<CCNode*>&&)>&& = nullptr);

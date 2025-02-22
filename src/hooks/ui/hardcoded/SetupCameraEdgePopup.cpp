@@ -89,14 +89,14 @@ struct NIDSetupCameraEdgePopup : geode::Modify<NIDSetupCameraEdgePopup, SetupCam
 	{
 		SetupCameraEdgePopup::onTargetIDArrow(sender);
 
-		reinterpret_cast<NIDSetupTriggerPopup*>(this)->triggerArrowChanged(TARGET_GROUP_ID_PROPERTY, sender->getTag() == 2);
+		reinterpret_cast<NIDSetupTriggerPopup*>(this)->triggerArrowWasClicked(TARGET_GROUP_ID_PROPERTY, sender->getTag() == 2);
 	}
 
 	void textChanged(CCTextInputNode* input)
 	{
 		SetupCameraEdgePopup::textChanged(input);
 
-		reinterpret_cast<NIDSetupTriggerPopup*>(this)->textChanged(input);
+		reinterpret_cast<NIDSetupTriggerPopup*>(this)->textWasChanged(input);
 	}
 
 	void onUnlockEdge(CCObject* sender)

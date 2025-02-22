@@ -131,20 +131,20 @@ struct NIDSetupInstantCountPopup : geode::Modify<NIDSetupInstantCountPopup, Setu
 	{
 		SetupInstantCountPopup::onTargetID2Arrow(sender);
 
-		reinterpret_cast<NIDSetupTriggerPopup*>(this)->triggerArrowChanged(ITEM_ID_PROPERTY, sender->getTag() == 2);
+		reinterpret_cast<NIDSetupTriggerPopup*>(this)->triggerArrowWasClicked(ITEM_ID_PROPERTY, sender->getTag() == 2);
 	}
 
 	void onTargetIDArrow(CCObject* sender)
 	{
 		SetupInstantCountPopup::onTargetIDArrow(sender);
 
-		reinterpret_cast<NIDSetupTriggerPopup*>(this)->triggerArrowChanged(TARGET_GROUP_ID_PROPERTY, sender->getTag() == 2);
+		reinterpret_cast<NIDSetupTriggerPopup*>(this)->triggerArrowWasClicked(TARGET_GROUP_ID_PROPERTY, sender->getTag() == 2);
 	}
 
 	void textChanged(CCTextInputNode* input)
 	{
 		SetupInstantCountPopup::textChanged(input);
 
-		reinterpret_cast<NIDSetupTriggerPopup*>(this)->textChanged(input);
+		reinterpret_cast<NIDSetupTriggerPopup*>(this)->textWasChanged(input);
 	}
 };

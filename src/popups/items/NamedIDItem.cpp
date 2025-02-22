@@ -70,7 +70,7 @@ bool NamedIDItem::init(NID idType, short id, std::string&& name, float width)
 	this->updateLayout();
 
 
-	auto editButtonSpr = CCSprite::create("edit.png"_spr);
+	auto editInputButtonSpr = CCSprite::create("edit.png"_spr);
 	auto saveButtonSpr = ButtonSprite::create(
 		CCSprite::createWithSpriteFrameName("GJ_completesIcon_001.png"),
 		30, 0, 30.5f, 1.f, false, "baseBtn.png"_spr, true
@@ -78,7 +78,7 @@ bool NamedIDItem::init(NID idType, short id, std::string&& name, float width)
 	saveButtonSpr->setID("save-sprite");
 	saveButtonSpr->setVisible(false);
 	m_edit_button = CCMenuItemSpriteExtra::create(
-		editButtonSpr,
+		editInputButtonSpr,
 		this,
 		menu_selector(NamedIDItem::onEditButton)
 	);

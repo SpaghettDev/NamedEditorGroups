@@ -106,9 +106,7 @@ struct NIDCollisionBlockPopup : geode::Modify<NIDCollisionBlockPopup, CollisionB
 
 		auto& idInputInfo = m_fields->m_id_inputs.at(BLOCK_ID_PROPERTY);
 
-		idInputInfo.inputButton->setEnabled(idInputValue != 0);
 		idInputInfo.namedIDInput->getInputNode()->onClickTrackNode(false);
-
 		idInputInfo.namedIDInput->setString(
 			NIDManager::getNameForID(idInputInfo.idType, idInputValue).unwrapOr("")
 		);
@@ -123,23 +121,15 @@ struct NIDCollisionBlockPopup : geode::Modify<NIDCollisionBlockPopup, CollisionB
 		auto& idInputInfo = m_fields->m_id_inputs.at(input->getTag());
 
 		if (auto parsedNum = numFromString<short>(idInputInfo.idInput->getString()); parsedNum.isOk())
-		{
-			short idInputValue = parsedNum.unwrap();
-
-			idInputInfo.inputButton->setEnabled(idInputValue != 0);
-
 			idInputInfo.namedIDInput->setString(
-				NIDManager::getNameForID(idInputInfo.idType, idInputValue).unwrapOr("")
+				NIDManager::getNameForID(idInputInfo.idType, parsedNum.unwrap()).unwrapOr("")
 			);
-		}
 	}
 
 
 	void onEditIDNameButton(CCObject*)
 	{
-		auto STP = reinterpret_cast<NIDSetupTriggerPopup*>(this);
-
-		auto& idInputInfo = STP->m_fields->m_id_inputs.at(BLOCK_ID_PROPERTY);
+		auto& idInputInfo = m_fields->m_id_inputs.at(BLOCK_ID_PROPERTY);
 
 		ShowEditNamedIDPopup(
 			idInputInfo.idType,

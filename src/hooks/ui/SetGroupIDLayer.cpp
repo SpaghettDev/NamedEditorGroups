@@ -56,17 +56,17 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 		if (auto name = NIDManager::getNameForID<NID::GROUP>(this->m_groupIDValue); name.isOk())
 			groupNameInput->setString(name.unwrap());
 
-		auto editButtonSprite = CCSprite::create("pencil.png"_spr);
-		editButtonSprite->setScale(.4f);
-		auto editButton = CCMenuItemSpriteExtra::create(
-			editButtonSprite,
+		auto editInputButtonSprite = CCSprite::create("pencil.png"_spr);
+		editInputButtonSprite->setScale(.4f);
+		auto editInputButton = CCMenuItemSpriteExtra::create(
+			editInputButtonSprite,
 			this,
 			menu_selector(NIDSetGroupIDLayer::onEditGroupNameButton)
 		);
-		editButton->setID("group-name-input-button"_spr);
-		editButton->setPosition({ 127.f, -7.f });
-		groupIDMenu->addChild(editButton);
-		m_fields->m_input_button = editButton;
+		editInputButton->setID("group-name-input-button"_spr);
+		editInputButton->setPosition({ 127.f, -7.f });
+		groupIDMenu->addChild(editInputButton);
+		m_fields->m_input_button = editInputButton;
 
 
 		auto groupsListMenu = m_mainLayer->getChildByID("groups-list-menu");
@@ -84,10 +84,6 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 				->setCrossAxisAlignment(AxisAlignment::End)
 		);
 
-
-		if (this->m_groupIDValue == 0)
-			editButton->setEnabled(false);
-
 		return true;
 	}
 
@@ -95,7 +91,6 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 	{
 		SetGroupIDLayer::onArrow(tag, increment);
 
-		m_fields->m_input_button->setEnabled(this->m_groupIDValue != 0);
 		m_fields->m_input->getInputNode()->onClickTrackNode(false);
 
 		m_fields->m_input->setString(
@@ -110,13 +105,9 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 		if (!m_fields->m_input) return;
 
 		if (input == m_groupIDInput)
-		{
-			m_fields->m_input_button->setEnabled(this->m_groupIDValue != 0);
-
 			m_fields->m_input->setString(
 				NIDManager::getNameForID<NID::GROUP>(this->m_groupIDValue).unwrapOr("")
 			);
-		}
 	}
 
 	void updateGroupIDButtons()

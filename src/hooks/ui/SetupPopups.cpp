@@ -55,38 +55,25 @@ void NIDSetupTriggerPopup::triggerArrowLeft(CCObject* sender)
 {
 	SetupTriggerPopup::triggerArrowLeft(sender);
 
-	triggerArrowWasChanged(sender->getTag(), false);
+	triggerArrowWasClicked(sender->getTag(), false);
 }
 
 void NIDSetupTriggerPopup::triggerArrowRight(CCObject* sender)
 {
 	SetupTriggerPopup::triggerArrowRight(sender);
 
-	triggerArrowWasChanged(sender->getTag(), true);
+	triggerArrowWasClicked(sender->getTag(), true);
 }
 
 void NIDSetupTriggerPopup::textChanged(CCTextInputNode* input)
 {
 	SetupTriggerPopup::textChanged(input);
 
-	if (!m_fields->m_id_inputs.contains(input->getTag())) return;
-
-	auto& idInputInfo = m_fields->m_id_inputs.at(input->getTag());
-
-	if (auto parsedNum = numFromString<short>(idInputInfo.idInput->getString()); parsedNum.isOk())
-	{
-		short idInputValue = parsedNum.unwrap();
-
-		idInputInfo.inputButton->setEnabled(idInputValue != 0);
-
-		idInputInfo.namedIDInput->setString(
-			NIDManager::getNameForID(idInputInfo.idType, idInputValue).unwrapOr("")
-		);
-	}
+	textWasChanged(input);
 }
 
 
-void NIDSetupTriggerPopup::triggerArrowWasChanged(int senderTag, bool isRight)
+void NIDSetupTriggerPopup::triggerArrowWasClicked(int senderTag, bool isRight)
 {
 	auto inputNode = static_cast<CCTextInputNode*>(this->m_mainLayer->getChildByTag(senderTag));
 
@@ -98,12 +85,22 @@ void NIDSetupTriggerPopup::triggerArrowWasChanged(int senderTag, bool isRight)
 
 	auto& idInputInfo = m_fields->m_id_inputs.at(senderTag);
 
-	idInputInfo.inputButton->setEnabled(idInputValue != 0);
 	idInputInfo.namedIDInput->getInputNode()->onClickTrackNode(false);
-
 	idInputInfo.namedIDInput->setString(
 		NIDManager::getNameForID(idInputInfo.idType, idInputValue).unwrapOr("")
 	);
+}
+
+void NIDSetupTriggerPopup::textWasChanged(CCTextInputNode* input)
+{
+	if (!m_fields->m_id_inputs.contains(input->getTag())) return;
+
+	auto& idInputInfo = m_fields->m_id_inputs.at(input->getTag());
+
+	if (auto parsedNum = numFromString<short>(idInputInfo.idInput->getString()); parsedNum.isOk())
+		idInputInfo.namedIDInput->setString(
+			NIDManager::getNameForID(idInputInfo.idType, parsedNum.unwrap()).unwrapOr("")
+		);
 }
 
 void NIDSetupTriggerPopup::onEditIDNameButton(CCObject* sender)
@@ -195,15 +192,15 @@ NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonSetup(NID nid, std
 	mainLayer->addChild(groupNameInput);
 	inputInfo.namedIDInput = groupNameInput;
 
-	auto editButtonSprite = CCSprite::create("pencil.png"_spr);
-	editButtonSprite->setScale(std::clamp((scale - .1f) - .2f, .1f, .4f));
-	auto editButton = CCMenuItemSpriteExtra::create(
-		editButtonSprite,
+	auto editInputButtonSprite = CCSprite::create("pencil.png"_spr);
+	editInputButtonSprite->setScale(std::clamp((scale - .1f) - .2f, .1f, .4f));
+	auto editInputButton = CCMenuItemSpriteExtra::create(
+		editInputButtonSprite,
 		this,
 		menu_selector(NIDSetupTriggerPopup::onEditIDNameButton)
 	);
-	editButton->setTag(property);
-	editButton->setPosition(
+	editInputButton->setTag(property);
+	editInputButton->setPosition(
 		buttonMenu->convertToNodeSpace(
 			this->convertToWorldSpace({
 				inputNodePos.x + groupNameInput->getScaledContentWidth() / 2.f + 15.f * scale,
@@ -211,19 +208,17 @@ NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonSetup(NID nid, std
 			})
 		)
 	);
-	editButton->setID(fmt::format("edit-group-name-button-{}"_spr, property));
-	buttonMenu->addChild(editButton);
-	inputInfo.inputButton = editButton;
+	editInputButton->setID(fmt::format("edit-group-name-button-{}"_spr, property));
+	buttonMenu->addChild(editInputButton);
+	inputInfo.editInputButton = editInputButton;
 
 	auto inputIDNum = numFromString<short>(inputInfo.idInput->getString()).unwrapOr(0);
 
-	if (inputIDNum == 0)
-		editButton->setEnabled(false);
-	else if (auto name = NIDManager::getNameForID(inputInfo.idType, inputIDNum); name.isOk())
+	if (auto name = NIDManager::getNameForID(inputInfo.idType, inputIDNum); name.isOk())
 		groupNameInput->setString(name.unwrap());
 
 	if (finishedCallback)
-		finishedCallback({ groupNameInput, editButton });
+		finishedCallback({ groupNameInput, editInputButton });
 
 	return std::move(inputInfo);
 }
