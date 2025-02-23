@@ -7,6 +7,7 @@
 
 #include "utils.hpp"
 
+static bool g_isDirty;
 static NamedIDs g_namedGroups;
 static NamedIDs g_namedCollisions;
 static NamedIDs g_namedCounters;
@@ -70,6 +71,7 @@ geode::Result<> NIDManager::saveNamedID(NID nid, std::string&& name, short id)
 		ids.namedIDs.erase(idName.unwrap());
 
 	NewNamedIDEvent(nid, name, id).post();
+	g_isDirty = true;
 
 	ids.namedIDs[std::move(name)] = id;
 
@@ -84,6 +86,7 @@ geode::Result<> NIDManager::removeNamedID(NID nid, std::string&& name)
 		return geode::Err("No saved Named ID {}", name);
 
 	RemovedNamedIDEvent(nid, name, ids[name]).post();
+	g_isDirty = true;
 
 	ids.namedIDs.erase(std::move(name));
 
@@ -99,6 +102,7 @@ geode::Result<> NIDManager::removeNamedID(NID nid, short id)
 		return geode::Err(name.unwrapErr());
 
 	RemovedNamedIDEvent(nid, name.unwrap(), id).post();
+	g_isDirty = true;
 
 	ids.namedIDs.erase(std::move(name.unwrap()));
 
@@ -109,6 +113,9 @@ const std::unordered_map<std::string, short>& NIDManager::getNamedIDs(NID nid)
 {
 	return containerForID(nid).namedIDs;
 }
+
+
+bool NIDManager::isDirty() { return g_isDirty; }
 
 std::string NIDManager::dumpNamedIDs()
 {
@@ -141,4 +148,6 @@ void NIDManager::reset()
 	g_namedGroups.namedIDs.clear();
 	g_namedCollisions.namedIDs.clear();
 	g_namedCounters.namedIDs.clear();
+
+	g_isDirty = false;
 }

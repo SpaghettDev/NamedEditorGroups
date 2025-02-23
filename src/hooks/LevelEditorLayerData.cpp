@@ -26,17 +26,6 @@ bool LevelEditorLayerData::init(GJGameLevel* p0, bool p1)
 		// force refresh after loading the group names
 		ng::utils::editor::refreshObjectLabels();
 	}
-	else
-	{
-		saveObject = static_cast<TextGameObject*>(
-			this->createObject(914, { .0f, .0f }, true)
-		);
-		saveObject->updateTextObject("", false);
-		this->removeObjectFromSection(saveObject);
-		saveObject->setPosition(ng::constants::SAVE_DATA_OBJECT_POS);
-		saveObject->setScale(.0f);
-		this->addToSection(saveObject);
-	}
 
 	return true;
 }
@@ -46,11 +35,36 @@ TextGameObject* LevelEditorLayerData::getSaveObject()
 	return static_cast<TextGameObject*>(this->objectAtPosition(ng::constants::SAVE_DATA_OBJECT_POS));
 }
 
+void LevelEditorLayerData::createSaveObject()
+{
+	if (getSaveObject()) return;
+
+	auto saveObject = static_cast<TextGameObject*>(
+		this->createObject(914, { .0f, .0f }, true)
+	);
+	saveObject->updateTextObject("", false);
+	this->removeObjectFromSection(saveObject);
+	saveObject->setPosition(ng::constants::SAVE_DATA_OBJECT_POS);
+	saveObject->setScale(.0f);
+	this->addToSection(saveObject);
+}
+
 
 void EditorPauseLayerSave::saveLevel()
 {
-	if (auto saveObject = static_cast<LevelEditorLayerData*>(LevelEditorLayer::get())->getSaveObject())
+	if (NIDManager::isDirty())
+	{
+		auto lel = static_cast<LevelEditorLayerData*>(LevelEditorLayer::get());
+		auto saveObject = lel->getSaveObject();
+	
+		if (!saveObject)
+		{
+			lel->createSaveObject();
+			saveObject = lel->getSaveObject();
+		}
+	
 		saveObject->m_text = NIDManager::dumpNamedIDs();
+	}
 
 	EditorPauseLayer::saveLevel();
 }

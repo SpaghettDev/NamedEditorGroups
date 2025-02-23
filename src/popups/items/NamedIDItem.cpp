@@ -158,7 +158,7 @@ void NamedIDItem::onEditButton(CCObject* sender)
 				ng::utils::cocos::createNotificationToast(
 					reinterpret_cast<CCLayer*>(CCScene::get()),
 					fmt::format("ID {} already has this name!", otherNamedID.unwrap()),
-					1.f, 85.f
+					1.f, 45.f
 				);
 
 				m_name_input->setString(NIDManager::getNameForID(m_id_type, m_id).unwrapOr(""));
@@ -170,7 +170,7 @@ void NamedIDItem::onEditButton(CCObject* sender)
 				ng::utils::cocos::createNotificationToast(
 					reinterpret_cast<CCLayer*>(CCScene::get()),
 					res.unwrapErr(),
-					1.f, 85.f
+					1.f, 45.f
 				);
 
 				m_name_input->setString(NIDManager::getNameForID(m_id_type, m_id).unwrapOr(""));
