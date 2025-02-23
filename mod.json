@@ -10,6 +10,17 @@
 	"version": "v1.0.0",
 	"developer": "SpaghettDev",
 	"description": "Abstract away IDs by giving them a name!",
+	"links": {
+		"community": "https://discord.gg/3bShQb6Jz3",
+		"source": "https://github.com/SpaghettDev/NamedEditorGroups"
+	},
+	"issues": {
+		"info": "Report any bugs/suggestions here.",
+		"url": "https://github.com/SpaghettDev/NamedEditorGroups/issues"
+	},
+	"tags": [
+		"editor", "offline", "enhancement", "utility"
+	],
 	"dependencies": {
 		"geode.node-ids": ">=1.19.0"
 	},
