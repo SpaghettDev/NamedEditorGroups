@@ -12,25 +12,11 @@ geode::Result<> ng::utils::sanitizeName(const std::string_view name)
 	if (name.length() > ng::constants::MAX_NAMED_ID_CHARACTERS)
 		return geode::Err("Name is too long!");
 
-	bool hasAlpha = false;
-	bool hasNumber = false;
-	bool hasSymbol = false;
-
 	for (char c : name)
 	{
 		if (ng::constants::VALID_NAMED_ID_CHARACTERS_VIEW.find(c) == std::string_view::npos)
 			return geode::Err("Name contains invalid character '{}'", c);
-
-		if (std::isalpha(c))
-			hasAlpha = true;
-		else if (std::isdigit(c))
-			hasNumber = true;
-		else
-			hasSymbol = true;
 	}
-
-	if ((!hasAlpha && !hasSymbol) || (!hasAlpha && !hasNumber))
-		return geode::Err("Name cannot contain only numbers or only symbols!");
 
 	return geode::Ok();
 }

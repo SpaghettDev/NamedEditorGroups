@@ -113,9 +113,9 @@ void EditNamedIDPopup<nid>::onInfoIcon(CCObject*)
 		fmt::format(
 			"You can abstract <ca>IDs</c> away by giving them a <cg>name</c>.\n"
 			"The ID's name <cr>cannot</c> exceed <cy>20 characters</c> "
-			"<cg>(it's recommended to keep them shorter than 14 characters)</c>, "
-			"<cr>cannot</c> contain <cy>only numbers</c> or <cy>only symbols</c>, "
-			"and each ID <cr>must</c> have its own <cy>unique name</c>.\n"
+			"<cg>(it's recommended to keep them shorter than 14 characters)</c>. "
+			"It is also recommended that the ID's name <cy>shouldn't</c> only contain <cy>numbers</c> or <cy>only symbols</c>."
+			"And finally each ID <cr>must</c> have its own <cy>unique name</c>.\n"
 			"Valid character are: <cg>{}</c>",
 			ng::constants::VALID_NAMED_ID_CHARACTERS
 		),
@@ -194,8 +194,8 @@ void EditNamedIDPopup<nid>::onSaveButton(CCObject*)
 	auto&& namedIDStr = m_named_id_input->getString();
 	auto id = geode::utils::numFromString<short>(m_id_input->getString());
 
-	if (id.isErr() || id.unwrap() <= 0)
-		return ng::utils::cocos::createNotificationToast(this, "Invalid ID!", 1.f, 45.f);
+	if (id.isErr())
+		return;
 
 	if (
 		auto otherNamedID = NIDManager::getIDForName<nid>(namedIDStr);

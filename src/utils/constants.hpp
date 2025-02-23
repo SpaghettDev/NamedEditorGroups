@@ -13,7 +13,7 @@ namespace ng
 		constexpr cocos2d::CCPoint SAVE_DATA_OBJECT_POS{ -7000.f, -5000.f };
 
 		constexpr short MAX_NAMED_ID_CHARACTERS = 20;
-		constexpr const char* VALID_NAMED_ID_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@_-,.01234567890";
+		constexpr const char* VALID_NAMED_ID_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@_-,.!$^&*()+=/01234567890";
 		constexpr std::string_view VALID_NAMED_ID_CHARACTERS_VIEW = VALID_NAMED_ID_CHARACTERS;
 
 		constexpr std::array TRIGGER_OBJECT_IDS_WITH_LABEL{
