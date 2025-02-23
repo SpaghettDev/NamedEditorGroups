@@ -13,7 +13,7 @@ namespace ng
 		constexpr cocos2d::CCPoint SAVE_DATA_OBJECT_POS{ -7000.f, -5000.f };
 
 		constexpr short MAX_NAMED_ID_CHARACTERS = 20;
-		constexpr const char* VALID_NAMED_ID_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-,.01234567890";
+		constexpr const char* VALID_NAMED_ID_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@_-,.01234567890";
 		constexpr std::string_view VALID_NAMED_ID_CHARACTERS_VIEW = VALID_NAMED_ID_CHARACTERS;
 
 		constexpr std::array TRIGGER_OBJECT_IDS_WITH_LABEL{
@@ -325,9 +325,39 @@ namespace ng
 				// Group ID
 				{ 51, NID::GROUP }
 			} },
+
 			// Counter Label
 			{ 1615, {
 				{ 80, NID::COUNTER }
+			} },
+			// Checkpoint Object
+			{ 2063, {
+				// Spawn ID
+				{ 51, NID::GROUP },
+				// Target Pos
+				{ 71, NID::GROUP },
+				// Respawn ID
+				{ 448, NID::GROUP }
+			} },
+			// Teleport Orb
+			{ 3027, {
+				// Target GroupID
+				{ 51, NID::GROUP }
+			} },
+			// Toggle Orb
+			{ 1594, {
+				// Group ID
+				{ 51, NID::GROUP }
+			} },
+			// Teleport Portal
+			{ 747, {
+				// Target GroupID
+				{ 51, NID::GROUP }
+			} },
+			// Blue Teleport Portal
+			{ 2902, {
+				// Target GroupID
+				{ 51, NID::GROUP }
 			} },
 
 
