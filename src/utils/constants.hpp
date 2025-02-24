@@ -312,9 +312,9 @@ namespace ng
 				// Item ID 2
 				{ 95, NID::COUNTER },
 				// True ID
-				{ 51, NID::COUNTER },
+				{ 51, NID::GROUP },
 				// False ID
-				{ 71, NID::COUNTER }
+				{ 71, NID::GROUP }
 			} },
 			// Persistent Item Trigger
 			{ 3641, {
