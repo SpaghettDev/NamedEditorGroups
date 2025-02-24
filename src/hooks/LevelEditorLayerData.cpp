@@ -56,13 +56,13 @@ void EditorPauseLayerSave::saveLevel()
 	{
 		auto lel = static_cast<LevelEditorLayerData*>(LevelEditorLayer::get());
 		auto saveObject = lel->getSaveObject();
-	
+
 		if (!saveObject)
 		{
 			lel->createSaveObject();
 			saveObject = lel->getSaveObject();
 		}
-	
+
 		saveObject->m_text = NIDManager::dumpNamedIDs();
 	}
 

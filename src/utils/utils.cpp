@@ -13,10 +13,8 @@ geode::Result<> ng::utils::sanitizeName(const std::string_view name)
 		return geode::Err("Name is too long!");
 
 	for (char c : name)
-	{
 		if (ng::constants::VALID_NAMED_ID_CHARACTERS_VIEW.find(c) == std::string_view::npos)
 			return geode::Err("Name contains invalid character '{}'", c);
-	}
 
 	return geode::Ok();
 }

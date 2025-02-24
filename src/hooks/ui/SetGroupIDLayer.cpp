@@ -140,7 +140,7 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 						uniqueIDs.erase(id);
 			}
 		}
-		else
+		else if (LEL->m_parentGroupsDict && this->m_targetObject->m_groups)
 		{
 			for (short id : *this->m_targetObject->m_groups)
 				if (this->m_targetObject == LEL->m_parentGroupsDict->objectForKey(id))
