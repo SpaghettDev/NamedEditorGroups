@@ -7,7 +7,6 @@
 
 #include "constants.hpp"
 
-
 struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 {
 	// used to make the named group button
@@ -116,6 +115,38 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 
 		const auto LEL = LevelEditorLayer::get();
 		bool isOnlyObject = static_cast<bool>(this->m_targetObject);
+		std::set<short> uniqueIDs;
+		std::set<short> groupParentIDs;
+
+		if (!isOnlyObject)
+		{
+			auto firstObject = static_cast<GameObject*>(this->m_targetObjects->firstObject());
+			uniqueIDs.insert(firstObject->m_groups->begin(), firstObject->m_groups->end());
+
+			for (bool first = true; auto obj : CCArrayExt<GameObject*>(this->m_targetObjects))
+			{
+				for (short id : *obj->m_groups)
+					if (obj == LEL->m_parentGroupsDict->objectForKey(id))
+						groupParentIDs.insert(id);
+
+				if (first)
+				{
+					first = false;
+					continue;
+				}
+
+				for (short id : *obj->m_groups)
+					if (uniqueIDs.contains(id))
+						uniqueIDs.erase(id);
+			}
+		}
+		else
+		{
+			for (short id : *this->m_targetObject->m_groups)
+				if (this->m_targetObject == LEL->m_parentGroupsDict->objectForKey(id))
+					groupParentIDs.insert(id);
+		}
+
 
 		// looping over and modifying a CCArray is a no no
 		auto groupIDArrayCopy = this->m_groupIDObjects->shallowCopy();
@@ -126,8 +157,7 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 
 			if (auto name = NIDManager::getNameForID<NID::GROUP>(button->getTag()); name.isOk())
 			{
-				bool isGroupParent = isOnlyObject && this->m_targetObject->m_hasGroupParentsString &&
-					this->m_targetObject == LEL->m_parentGroupsDict->objectForKey(button->getTag());
+				bool isGroupParent = groupParentIDs.contains(button->getTag());
 
 				auto nameLabel = CCLabelBMFont::create(
 					name.unwrap().c_str(),
@@ -143,13 +173,24 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 				idLabel->setScale(.5f);
 				idLabel->setZOrder(-1);
 
+				std::string buttonSpriteSpr = "";
+
+				if (isOnlyObject)
+					buttonSpriteSpr = isGroupParent
+						? "GJ_button_03.png"
+						: "GJ_button_04.png";
+				else
+					buttonSpriteSpr = isGroupParent
+						? "GJ_button_03.png"
+						: uniqueIDs.contains(button->getTag())
+							? "GJ_button_05.png"
+							: "GJ_button_04.png";
+
 				auto buttonSprite = ButtonSprite::create(
 					"",
 					nameLabel->getScaledContentWidth() + idLabel->getScaledContentWidth() + PADDING,
 					0, .5f, true, "goldFont.fnt",
-					isOnlyObject ?
-						(isGroupParent ? "GJ_button_03.png" : "GJ_button_04.png")
-						: "GJ_button_05.png",
+					buttonSpriteSpr.c_str(),
 					20.f
 				);
 				buttonSprite->m_label->removeFromParent();

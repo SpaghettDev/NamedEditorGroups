@@ -16,6 +16,6 @@ The IDs are stored in the level, so anyone with the mod and a copy of the level 
 - The ID's name <cr>cannot</c> exceed <cy>20 characters</c> <cg>(it's recommended to keep them shorter than 14 characters)</c>
 - It is recommended that the ID's name <cy>shouldn't</c> only contain <cy>numbers</c> or <cy>only symbols</c>
 - Each ID <cr>must</c> have its own <cy>unique name</c>.
-- Valid Named IDs characters are: <cg>ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@_-,.!$^&*()+=/01234567890</c>
+- Valid Named IDs characters are: <cg>ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@_-,.!$^&*()+=/<>?\01234567890</c>
 
 You can also view and add Named IDs from the Level Settings popup (settings button besides the pause button in the editor) by clicking on the options button on the bottom right.

@@ -41,7 +41,7 @@ namespace ng
 		template <typename C, typename T>
 		inline std::ptrdiff_t getIndexOf(const C& container, const T& toFind)
 		{
-			auto it = std::find_if(container.cbegin(), container.cend(), [&](const T& value) {
+			const auto it = std::find_if(container.cbegin(), container.cend(), [&](const T& value) {
 				return value == toFind;
 			});
 
@@ -51,9 +51,23 @@ namespace ng
 		template <typename C, typename T>
 		inline std::ptrdiff_t getIndexOf(const C& container, std::function<bool(const T&)>&& predicate)
 		{
-			auto it = std::find_if(container.cbegin(), container.cend(), predicate);
+			const auto it = std::find_if(container.cbegin(), container.cend(), predicate);
 
 			return it != container.cend() ? (it - container.cbegin()) : -1;
+		}
+
+		template <typename T>
+		inline std::ptrdiff_t getIndexOf(const cocos2d::CCArray* array, std::function<bool(const T)>&& predicate)
+		{
+			for (std::size_t idx = 0; auto elem : geode::cocos::CCArrayExt<T>(array))
+			{
+				if (predicate(elem))
+					return idx;
+
+				idx++;
+			}
+
+			return -1;
 		}
 
 
