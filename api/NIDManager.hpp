@@ -23,13 +23,13 @@ namespace NIDManager
 {
 	namespace event
 	{
-		using EventGetNameForID = geode::DispatchEvent<geode::Result<std::string>&, NID, short>;
-		using EventGetIDForName = geode::DispatchEvent<geode::Result<short>&, NID, const std::string&>;
-		using EventGetNamedIDs = geode::DispatchEvent<std::unordered_map<std::string, short>&, NID>;
+		using EventGetNameForID = geode::DispatchEvent<std::string*, NID, short>;
+		using EventGetIDForName = geode::DispatchEvent<short*, NID, std::string>;
+		using EventGetNamedIDs = geode::DispatchEvent<std::unordered_map<std::string, short>*, NID>;
 
-		using EventSaveNamedID = geode::DispatchEvent<geode::Result<>&, NID, std::string, short>;
-		using EventRemoveNamedID1 = geode::DispatchEvent<geode::Result<>&, NID, std::string>;
-		using EventRemoveNamedID2 = geode::DispatchEvent<geode::Result<>&, NID, short>;
+		using EventSaveNamedID = geode::DispatchEvent<bool*, NID, std::string, short>;
+		using EventRemoveNamedID1 = geode::DispatchEvent<bool*, NID, std::string>;
+		using EventRemoveNamedID2 = geode::DispatchEvent<bool*, NID, short>;
 	}
 
 #ifndef NAMED_EDITOR_GROUPS_USE_EVENTS_API

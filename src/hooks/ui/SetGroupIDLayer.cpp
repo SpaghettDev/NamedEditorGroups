@@ -121,13 +121,18 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 		if (!isOnlyObject)
 		{
 			auto firstObject = static_cast<GameObject*>(this->m_targetObjects->firstObject());
-			uniqueIDs.insert(firstObject->m_groups->begin(), firstObject->m_groups->end());
+
+			if (firstObject->m_groups)
+				uniqueIDs.insert(firstObject->m_groups->begin(), firstObject->m_groups->end());
 
 			for (bool first = true; auto obj : CCArrayExt<GameObject*>(this->m_targetObjects))
 			{
-				for (short id : *obj->m_groups)
-					if (obj == LEL->m_parentGroupsDict->objectForKey(id))
-						groupParentIDs.insert(id);
+				if (obj->m_groups)
+				{
+					for (short id : *obj->m_groups)
+						if (obj == LEL->m_parentGroupsDict->objectForKey(id))
+							groupParentIDs.insert(id);
+				}
 
 				if (first)
 				{
@@ -135,9 +140,14 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 					continue;
 				}
 
-				for (short id : *obj->m_groups)
-					if (uniqueIDs.contains(id))
-						uniqueIDs.erase(id);
+				if (obj->m_groups)
+				{
+					for (short id : *obj->m_groups)
+						if (uniqueIDs.contains(id))
+							uniqueIDs.erase(id);
+						else
+							uniqueIDs.insert(id);
+				}
 			}
 		}
 		else if (LEL->m_parentGroupsDict && this->m_targetObject->m_groups)
