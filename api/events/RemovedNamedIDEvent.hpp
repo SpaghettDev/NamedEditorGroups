@@ -2,7 +2,7 @@
 
 #include <Geode/loader/Event.hpp>
 
-#include <NIDEnum.hpp>
+#include "../NIDEnum.hpp"
 
 class RemovedNamedIDEvent : public geode::Event
 {

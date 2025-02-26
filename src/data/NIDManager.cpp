@@ -2,8 +2,8 @@
 
 #include "NamedIDs.hpp"
 
-#include "../events/NewNamedIDEvent.hpp"
-#include "../events/RemovedNamedIDEvent.hpp"
+#include "events/NewNamedIDEvent.hpp"
+#include "events/RemovedNamedIDEvent.hpp"
 
 #include "utils.hpp"
 
