@@ -87,6 +87,9 @@ struct NIDCollisionBlockPopup : geode::Modify<NIDCollisionBlockPopup, CollisionB
 		m_fields->m_id_inputs[BLOCK_ID_PROPERTY] = std::move(blockIDInputInfo);
 
 
+		m_fields->m_id_inputs[BLOCK_ID_PROPERTY].namedIDInput->setCallback([&](const std::string& str) {
+			NIDCollisionBlockPopup::onEditInput(this, BLOCK_ID_PROPERTY, std::move(str));
+		});
 		static_cast<CCMenuItemSpriteExtra*>(
 			this->m_buttonMenu->getChildByID("edit-group-name-button-0"_spr)
 		)->m_pfnSelector = menu_selector(NIDCollisionBlockPopup::onEditIDNameButton);
@@ -126,6 +129,14 @@ struct NIDCollisionBlockPopup : geode::Modify<NIDCollisionBlockPopup, CollisionB
 			);
 	}
 
+
+	static void onEditInput(NIDCollisionBlockPopup* self, std::uint8_t property, const std::string& str)
+	{
+		auto& idInputInfo = self->m_fields->m_id_inputs.at(property);
+
+		if (auto name = NIDManager::getIDForName(idInputInfo.idType, str); name.isOk())
+			idInputInfo.idInput->setString(fmt::format("{}", name.unwrap()));
+	}
 
 	void onEditIDNameButton(CCObject*)
 	{

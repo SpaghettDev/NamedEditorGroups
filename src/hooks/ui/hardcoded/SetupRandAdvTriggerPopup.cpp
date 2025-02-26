@@ -196,8 +196,9 @@ struct NIDSetupRandAdvTriggerPopup : geode::Modify<NIDSetupRandAdvTriggerPopup, 
 			auto newButton = CCMenuItemSpriteExtra::create(
 				newButtonSprite,
 				this,
-				menu_selector(SetupSequenceTriggerPopup::onSelect)
+				button->m_pfnSelector
 			);
+			newButton->setTag(button->getTag());
 			groupsListMenu->addChild(newButton);
 
 			idx++;

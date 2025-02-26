@@ -174,9 +174,11 @@ struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup
 
 			auto newButton = CCMenuItemSpriteExtra::create(
 				newButtonSprite,
+				nullptr,
 				this,
-				menu_selector(SetupSequenceTriggerPopup::onSelect)
+				menu_selector(NIDSetupSequenceTriggerPopup::onSelectNewButton)
 			);
+			newButton->setTag(button->getTag());
 			groupsListMenu->addChild(newButton);
 
 			idx++;
@@ -185,6 +187,22 @@ struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup
 		groupsListMenu->updateLayout();
 	}
 
+
+	void onSelectNewButton(CCObject* sender)
+	{
+		if (this->m_selectedButton)
+			static_cast<ButtonSprite*>(static_cast<CCMenuItemSpriteExtra*>(
+				m_fields->m_groups_list_menu->getChildByTag(this->m_selectedButton->getTag())
+			)->getNormalImage())->updateBGImage("GJ_button_04.png");
+
+		if (this->m_selectedButton && this->m_selectedButton->getTag() == sender->getTag())
+			this->m_selectedButton = nullptr;
+		else
+		{
+			this->m_selectedButton = static_cast<CCMenuItemSpriteExtra*>(this->m_buttonMenu->getChildByTag(sender->getTag()));
+			static_cast<ButtonSprite*>(static_cast<CCMenuItemSpriteExtra*>(sender)->getNormalImage())->updateBGImage("GJ_button_03.png");
+		}
+	}
 
 	void onEditIDNameButton(CCObject*)
 	{

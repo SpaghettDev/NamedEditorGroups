@@ -164,6 +164,7 @@ void NamedIDsPopup::onFilterButton(CCObject*)
 		this->m_search_input->setString("");
 
 		this->updateState();
+		this->m_list->moveToTop();
 	})->show();
 }
 
