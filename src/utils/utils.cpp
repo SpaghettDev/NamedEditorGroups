@@ -45,9 +45,37 @@ void ng::utils::cocos::fixTouchPriority(cocos2d::CCTouchDelegate* delegate)
 }
 
 
-void ng::utils::editor::refreshObjectLabels()
+void ng::utils::editor::refreshObjectLabels(bool forced)
 {
 	if (const auto lel = LevelEditorLayer::get())
-		for (auto& obj : geode::cocos::CCArrayExt<GameObject*>(lel->m_objects))
-			LevelEditorLayer::updateObjectLabel(obj);
+	{
+		if (forced)
+		{
+			for (auto& obj : geode::cocos::CCArrayExt<GameObject*>(lel->m_objects))
+				lel->updateObjectLabel(obj);
+
+			return;
+		}
+
+		// thank you peter ida
+		int count = (lel->m_sections.size() == 0) ? -1 : lel->m_sections.size();
+		for (int i = lel->m_leftSectionIndex; i <= lel->m_rightSectionIndex && i < count; ++i) {
+			auto leftSection = lel->m_sections[i];
+			if (!leftSection) continue;
+
+			auto leftSectionSize = leftSection->size();
+			for (int j = lel->m_bottomSectionIndex; j <= lel->m_topSectionIndex && j < leftSectionSize; ++j) {
+				auto section = leftSection->at(j);
+				if (!section) continue;
+
+				auto sectionSize = section->size();
+				for (int k = 0; k < sectionSize; ++k) {
+					auto obj = section->at(k);
+					if (!obj) continue;
+
+					LevelEditorLayer::updateObjectLabel(obj);
+				}
+			}
+		}
+	}
 }

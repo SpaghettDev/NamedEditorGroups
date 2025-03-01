@@ -183,7 +183,7 @@ void NamedIDItem::onEditButton(CCObject* sender)
 			m_name_input->getInputNode()->onClickTrackNode(false);
 		}
 
-		ng::utils::editor::refreshObjectLabels();
+		ng::utils::editor::refreshObjectLabels(true);
 
 		if (m_name_input->getString().empty())
 		{

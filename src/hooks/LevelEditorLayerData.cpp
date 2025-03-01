@@ -8,26 +8,33 @@
 
 #include <NIDManager.hpp>
 
-#include "utils.hpp"
 #include "constants.hpp"
 
 using namespace geode::prelude;
 
-bool LevelEditorLayerData::init(GJGameLevel* p0, bool p1)
+// get the save data very early
+void LevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
 {
-	if (!LevelEditorLayer::init(p0, p1)) return false;
+	std::string_view lvlStr = levelString;
 
-	auto eui = EditorUI::get();
+	if (
+		std::size_t saveObjStrOffset = lvlStr.find(ng::constants::SAVE_OBJECT_STRING_START);
+		saveObjStrOffset != std::string_view::npos
+	) {
+		std::string_view intermediateStr = lvlStr.substr(
+			saveObjStrOffset + ng::constants::SAVE_OBJECT_STRING_START.length()
+		);
+		intermediateStr = intermediateStr.substr(
+			intermediateStr.find(ng::constants::TEXT_OBJECT_STRING_SEPARATOR) +
+			ng::constants::TEXT_OBJECT_STRING_SEPARATOR.length()
+		);
+		std::string_view saveObjStr = intermediateStr.substr(0, intermediateStr.find(';'));
 
-	if (auto saveObject = getSaveObject())
-	{
-		NIDManager::importNamedIDs(saveObject->m_text);
-
-		// force refresh after loading the group names
-		ng::utils::editor::refreshObjectLabels();
+		auto data = cocos2d::ZipUtils::base64URLDecode(gd::string{ saveObjStr.data() });
+		NIDManager::importNamedIDs(data);
 	}
 
-	return true;
+	LevelEditorLayer::createObjectsFromSetup(levelString);
 }
 
 TextGameObject* LevelEditorLayerData::getSaveObject()

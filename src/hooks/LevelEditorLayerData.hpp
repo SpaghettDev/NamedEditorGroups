@@ -7,7 +7,7 @@ using namespace geode::prelude;
 
 struct LevelEditorLayerData : geode::Modify<LevelEditorLayerData, LevelEditorLayer>
 {
-	bool init(GJGameLevel* p0, bool p1);
+	void createObjectsFromSetup(gd::string&);
 
 
 	TextGameObject* getSaveObject();

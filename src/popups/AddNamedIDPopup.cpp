@@ -70,7 +70,7 @@ void AddNamedIDPopup::onSaveButton(CCObject*)
 	if (auto res = NIDManager::saveNamedID(m_nid, std::move(namedIDStr), namedID.unwrap()); res.isErr())
 		return ng::utils::cocos::createNotificationToast(this, res.unwrapErr(), 1.f, 45.f);
 
-	ng::utils::editor::refreshObjectLabels();
+	ng::utils::editor::refreshObjectLabels(true);
 
 	if (m_saved_callback)
 		m_saved_callback(namedIDStr, namedID.unwrap());

@@ -8,6 +8,10 @@
 
 using namespace geode::prelude;
 
+auto objInArray = [](GameObject* object, const auto& container) {
+	return ng::utils::getIndexOf(container, object->m_objectID) != -1;
+};
+
 struct NIDEffectGameObject : geode::Modify<NIDEffectGameObject, EffectGameObject>
 {
 	struct Fields
@@ -19,6 +23,13 @@ struct NIDEffectGameObject : geode::Modify<NIDEffectGameObject, EffectGameObject
 	void customSetup()
 	{
 		EffectGameObject::customSetup();
+
+		bool isTrigger = objInArray(this, ng::constants::TRIGGER_OBJECT_IDS_WITH_LABEL);
+		bool isCollision = objInArray(this, ng::constants::COLLISION_OBJECT_IDS_WITH_LABEL);
+		bool isCounter = objInArray(this, ng::constants::COUNTER_OBJECT_IDS_WITH_LABEL);
+
+		if (!(isTrigger || isCollision || isCounter))
+			return;
 
 		auto idNameLabel = CCLabelBMFont::create("", "bigFont.fnt");
 		// 28.5f is content width of move trigger, which works well for all other triggers
@@ -32,14 +43,11 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 {
 	static void updateObjectLabel(GameObject* object)
 	{
-		auto objInArray = [&](const auto& container) {
-			return ng::utils::getIndexOf(container, object->m_objectID) != -1;
-		};
-		bool isTrigger = objInArray(ng::constants::TRIGGER_OBJECT_IDS_WITH_LABEL);
-		bool isCollision = objInArray(ng::constants::COLLISION_OBJECT_IDS_WITH_LABEL);
-		bool isCounter = objInArray(ng::constants::COUNTER_OBJECT_IDS_WITH_LABEL);
-
 		LevelEditorLayer::updateObjectLabel(object);
+
+		bool isTrigger = objInArray(object, ng::constants::TRIGGER_OBJECT_IDS_WITH_LABEL);
+		bool isCollision = objInArray(object, ng::constants::COLLISION_OBJECT_IDS_WITH_LABEL);
+		bool isCounter = objInArray(object, ng::constants::COUNTER_OBJECT_IDS_WITH_LABEL);
 
 		if (!(isTrigger || isCollision || isCounter))
 			return;
