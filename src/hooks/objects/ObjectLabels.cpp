@@ -27,8 +27,9 @@ struct NIDEffectGameObject : geode::Modify<NIDEffectGameObject, EffectGameObject
 		bool isTrigger = objInArray(this, ng::constants::TRIGGER_OBJECT_IDS_WITH_LABEL);
 		bool isCollision = objInArray(this, ng::constants::COLLISION_OBJECT_IDS_WITH_LABEL);
 		bool isCounter = objInArray(this, ng::constants::COUNTER_OBJECT_IDS_WITH_LABEL);
+		bool isTimer = objInArray(this, ng::constants::TIMER_OBJECT_IDS_WITH_LABEL);
 
-		if (!(isTrigger || isCollision || isCounter))
+		if (!(isTrigger || isCollision || isCounter || isTimer))
 			return;
 
 		auto idNameLabel = CCLabelBMFont::create("", "bigFont.fnt");

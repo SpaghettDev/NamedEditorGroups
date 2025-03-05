@@ -11,6 +11,7 @@ static bool g_isDirty;
 static NamedIDs g_namedGroups;
 static NamedIDs g_namedCollisions;
 static NamedIDs g_namedCounters;
+static NamedIDs g_namedTimers;
 
 NamedIDs& containerForID(NID id)
 {
@@ -23,7 +24,11 @@ NamedIDs& containerForID(NID id)
 			return g_namedCollisions;
 
 		case NID::COUNTER:
+		case NID::DYNAMIC_COUNTER_TIMER: // Fallback, will not normally get handled this way
 			return g_namedCounters;
+
+		case NID::TIMER:
+			return g_namedTimers;
 
 		default:
 			throw "Invalid NID enum value";
@@ -120,10 +125,11 @@ bool NIDManager::isDirty() { return g_isDirty; }
 std::string NIDManager::dumpNamedIDs()
 {
 	return fmt::format(
-		"{}|{}|{}",
+		"{}|{}|{}|{}",
 		g_namedGroups.dump(),
 		g_namedCollisions.dump(),
-		g_namedCounters.dump()
+		g_namedCounters.dump(),
+		g_namedTimers.dump()
 	);
 }
 
@@ -133,14 +139,21 @@ void NIDManager::importNamedIDs(const std::string& str)
 
 	auto firstDelimPos = strView.find('|');
 	auto secondDelimPos = strView.find('|', firstDelimPos + 1);
+	auto thirdDelimPos = strView.find('|', secondDelimPos + 1);
+
+	if (thirdDelimPos == std::string_view::npos) {
+		thirdDelimPos = strView.length();
+	}
 
 	auto groupsStr = strView.substr(0, firstDelimPos);
 	auto blocksStr = strView.substr(firstDelimPos + 1, secondDelimPos - firstDelimPos - 1);
-	auto itemsStr = strView.substr(secondDelimPos + 1);
+	auto itemsStr = strView.substr(secondDelimPos + 1, thirdDelimPos - secondDelimPos - 1);
+	auto timersStr = strView.substr(thirdDelimPos);
 
 	g_namedGroups = g_namedGroups.from(std::move(groupsStr));
 	g_namedCollisions = g_namedCollisions.from(std::move(blocksStr));
 	g_namedCounters = g_namedCounters.from(std::move(itemsStr));
+	g_namedTimers = g_namedTimers.from(std::move(timersStr));
 }
 
 void NIDManager::reset()
@@ -148,6 +161,7 @@ void NIDManager::reset()
 	g_namedGroups.namedIDs.clear();
 	g_namedCollisions.namedIDs.clear();
 	g_namedCounters.namedIDs.clear();
+	g_namedTimers.namedIDs.clear();
 
 	g_isDirty = false;
 }

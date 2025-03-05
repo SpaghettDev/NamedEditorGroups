@@ -34,6 +34,10 @@ namespace ng
 			1811u, 1817u, 1615u
 		};
 
+		constexpr std::array TIMER_OBJECT_IDS_WITH_LABEL{
+			1615u
+		};
+
 		const std::unordered_map<std::uint16_t, const std::unordered_map<std::uint16_t, NID>> OBJECT_ID_TO_PROPERTIES_INFO{
 			// Move Trigger
 			{ 901, {
@@ -282,37 +286,42 @@ namespace ng
 			// Timer Trigger
 			{ 3614, {
 				// Item ID
-				{ 80, NID::COUNTER },
+				{ 80, NID::TIMER },
 				// Target ID
 				{ 51, NID::GROUP }
 			} },
 			// Timer Event Trigger
 			{ 3615, {
 				// Item ID
-				{ 80, NID::COUNTER },
+				{ 80, NID::TIMER },
 				// Target ID
 				{ 51, NID::GROUP }
 			} },
 			// Timer Control Trigger
 			{ 3617, {
 				// Item ID
-				{ 80, NID::COUNTER }
+				{ 80, NID::TIMER }
 			} },
 			// Item Edit Trigger
 			{ 3619, {
 				// Item ID 1
-				{ 80, NID::COUNTER },
+				{ 80, NID::DYNAMIC_COUNTER_TIMER },
+				// 476 = 1 if item, 2 if timer
 				// Item ID 2
-				{ 95, NID::COUNTER },
+				{ 95, NID::DYNAMIC_COUNTER_TIMER },
+				// 477 = 1 if item, 2 if timer
 				// Target Item ID
-				{ 51, NID::COUNTER }
+				{ 51, NID::DYNAMIC_COUNTER_TIMER }
+				// 478 = 1 if item, 2 if timer
 			} },
 			// Item Compare Trigger
 			{ 3620, {
 				// Item ID 1
-				{ 80, NID::COUNTER },
+				{ 80, NID::DYNAMIC_COUNTER_TIMER },
+				// 476 = 1 if item, 2 if timer
 				// Item ID 2
-				{ 95, NID::COUNTER },
+				{ 95, NID::DYNAMIC_COUNTER_TIMER },
+				// 477 = 1 if item, 2 if timer
 				// True ID
 				{ 51, NID::GROUP },
 				// False ID
@@ -320,7 +329,8 @@ namespace ng
 			} },
 			// Persistent Item Trigger
 			{ 3641, {
-				{ 80, NID::COUNTER }
+				{ 80, NID::DYNAMIC_COUNTER_TIMER }
+				// 494: 1 if counter
 			} },
 			// Visibility Link Trigger
 			{ 3662, {
@@ -330,7 +340,8 @@ namespace ng
 
 			// Counter Label
 			{ 1615, {
-				{ 80, NID::COUNTER }
+				{ 80, NID::DYNAMIC_COUNTER_TIMER }
+				// 466: 1 if counter, unspecified if timer
 			} },
 			// Checkpoint Object
 			{ 2063, {
@@ -419,6 +430,39 @@ namespace ng
 				// Item ID
 				{ 80, NID::COUNTER }
 			} }
+		};
+
+		const std::unordered_map<std::uint16_t, const std::unordered_map<std::uint16_t, struct dynamic_prop_toggle_t>> DNAMIC_PROPERTIES_TOGGLES{
+
+			// Item Edit Trigger
+			{ 3619, {
+				// Item ID 1
+				{ 80, { 2, false } },
+				// Item ID 2
+				{ 95, { 102, false } },
+				// Target Item ID
+				{ 51, { 1002, false } },
+			} },
+
+			// Item Compare Trigger
+			{ 3620, {
+				// Item ID 1
+				{ 80, { 2, false } },
+				// Item ID 2
+				{ 95, { 102, false } },
+			} },
+
+			// Persistent Item Trigger
+			{ 3641, {
+				// Item ID
+				{ 80, { 494, false } },
+			} },
+
+			// Counter Label
+			{ 1615, {
+				// Item ID
+				{ 80, { 466, false } },
+			} },
 		};
 	}
 }
