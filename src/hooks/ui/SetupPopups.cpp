@@ -108,7 +108,7 @@ void NIDSetupTriggerPopup::onEditIDNameButton(CCObject* sender)
 	auto& idInputInfo = m_fields->m_id_inputs.at(sender->getTag());
 
 	ShowEditNamedIDPopup(
-		idInputInfo.idType,
+		evaluateDynamicType(idInputInfo, sender->getTag()),
 		geode::utils::numFromString<short>(idInputInfo.idInput->getString()).unwrapOr(0),
 		[&](short id) {
 			idInputInfo.idInput->setString(fmt::format("{}", id));
@@ -240,4 +240,20 @@ void NIDSetupTriggerPopup::handleSpecialCases(int gameObjectID, std::uint16_t pr
 		default:
 			break;
 	}
+}
+
+NID NIDSetupTriggerPopup::evaluateDynamicType(IDInputInfo idInputInfo, short tag) {
+	if (idInputInfo.idType != NID::DYNAMIC_COUNTER_TIMER) return idInputInfo.idType;
+
+	short toggleTag = 0;
+	auto& toggleMap = ng::constants::DNAMIC_PROPERTIES_TOGGLES.at(this->m_gameObject->m_objectID);
+	auto& toggleInfo = toggleMap.at(tag);
+
+	auto toggleNode = this->m_buttonMenu->getChildByTag(toggleInfo.togglePropID);
+	if (!toggleNode) return NID::COUNTER; // Fallback
+
+	auto toggleInput = static_cast<CCMenuItemToggler*>(toggleNode);
+	bool toggleState = toggleInput->isToggled();
+
+	return toggleState == toggleInfo.counterState ? NID::COUNTER : NID::TIMER;
 }
