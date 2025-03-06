@@ -49,8 +49,9 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 		bool isTrigger = objInArray(object, ng::constants::TRIGGER_OBJECT_IDS_WITH_LABEL);
 		bool isCollision = objInArray(object, ng::constants::COLLISION_OBJECT_IDS_WITH_LABEL);
 		bool isCounter = objInArray(object, ng::constants::COUNTER_OBJECT_IDS_WITH_LABEL);
+		bool isTimer = objInArray(object, ng::constants::TIMER_OBJECT_IDS_WITH_LABEL);
 
-		if (!(isTrigger || isCollision || isCounter))
+		if (!(isTrigger || isCollision || isCounter || isTimer))
 			return;
 
 		auto effectGameObj = static_cast<NIDEffectGameObject*>(object);
@@ -69,6 +70,7 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 			case 1615u:
 				idLabelPos = CCPoint{ 21.75f, 7.75f };
 
+				// LabelGameObject::m_label
 				if (auto label = effectGameObj->getChildByID("counter-label"); !label)
 				{
 					if (auto idLabel = effectGameObj->getChildByType<CCLabelBMFont*>(0))
@@ -94,7 +96,22 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 
 		std::string idNameStr = "";
 
-		if (isTrigger)
+		// hardcode counter object (only dynamic label)
+		if (object->m_objectID == 1615u)
+		{
+			auto labelNode = static_cast<LabelGameObject*>(object);
+			if (labelNode->m_shownSpecial != 0) // Disable if counter should show MainTime/Points/Attempts
+				idNameStr = "";
+			else if (labelNode->m_isTimeCounter)
+				idNameStr = NIDManager::getNameForID<NID::TIMER>(
+					effectGameObj->m_itemID
+				).unwrapOr("");
+			else
+				idNameStr = NIDManager::getNameForID<NID::COUNTER>(
+					effectGameObj->m_itemID
+				).unwrapOr("");
+		}
+		else if (isTrigger)
 		{
 			// random trigger
 			if (effectGameObj->m_objectID == 1912u)
@@ -123,6 +140,10 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 			).unwrapOr("");
 		else if (isCounter)
 			idNameStr = NIDManager::getNameForID<NID::COUNTER>(
+				effectGameObj->m_itemID
+			).unwrapOr("");
+		else if (isTimer) // Counter object (only timer label) will be caught by hardcode, but for futureproofing
+			idNameStr = NIDManager::getNameForID<NID::TIMER>(
 				effectGameObj->m_itemID
 			).unwrapOr("");
 
