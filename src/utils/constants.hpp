@@ -437,31 +437,52 @@ namespace ng
 			// Item Edit Trigger
 			{ 3619, {
 				// Item ID 1
-				{ 80, { 2, false } },
+				{ 80, { 476, 1 } },
 				// Item ID 2
-				{ 95, { 102, false } },
+				{ 95, { 477, 1 } },
 				// Target Item ID
-				{ 51, { 1002, false } },
+				{ 51, { 478, 1 } },
 			} },
 
 			// Item Compare Trigger
 			{ 3620, {
 				// Item ID 1
-				{ 80, { 2, false } },
+				{ 80, { 476, 1 } },
 				// Item ID 2
-				{ 95, { 102, false } },
+				{ 95, { 477, 1 } },
 			} },
 
 			// Persistent Item Trigger
 			{ 3641, {
 				// Item ID
-				{ 80, { 494, false } },
+				{ 80, { 494, 0 } },
 			} },
 
 			// Counter Label
 			{ 1615, {
 				// Item ID
-				{ 80, { 466, false } },
+				{ 80, { 466, 0 } },
+			} },
+		};
+
+		const std::unordered_map<std::uint16_t, const std::unordered_map<std::uint16_t, struct dynamic_prop_choice_t>> DNAMIC_PROPERTIES_CHOICES{
+
+			// Item Edit Trigger
+			{ 3619, {
+				// Item ID 1
+				{ 476, { 80, 1, 2 } },
+				// Item ID 2
+				{ 477, { 95, 1, 2 } },
+				// Target Item ID
+				{ 478, { 51, 1, 2 } },
+			} },
+
+			// Item Compare Trigger
+			{ 3620, {
+				// Item ID 1
+				{ 476, { 80, 1, 2 } },
+				// Item ID 2
+				{ 477, { 95, 1, 2 } },
 			} },
 		};
 	}

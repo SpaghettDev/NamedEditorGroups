@@ -15,5 +15,11 @@ enum class NID
 
 struct dynamic_prop_toggle_t {
 	uint16_t togglePropID;
-	bool counterState; // timer otherwise
+	uint8_t counterState; // timer otherwise
+};
+
+struct dynamic_prop_choice_t {
+	uint16_t targetPropID;
+	uint8_t counterState;
+	uint8_t timerState;
 };

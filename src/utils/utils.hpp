@@ -23,6 +23,8 @@ namespace ng
 				return "Counter ID";
 			else if constexpr (nid == NID::TIMER)
 				return "Timer ID";
+			else if constexpr (nid == NID::DYNAMIC_COUNTER_TIMER)
+				return "THIS SHOULD NOT HAPPEN REPORT ASAP";
 
 			throw "Invalid Named ID enum value";
 		}
@@ -37,6 +39,8 @@ namespace ng
 				return getNamedIDIndentifier<NID::COUNTER>();
 			else if (nid == NID::TIMER)
 				return getNamedIDIndentifier<NID::TIMER>();
+			else if (nid == NID::DYNAMIC_COUNTER_TIMER)
+				return getNamedIDIndentifier<NID::DYNAMIC_COUNTER_TIMER>();
 
 			throw "Invalid Named ID enum value";
 		}
