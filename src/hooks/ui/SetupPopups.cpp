@@ -133,7 +133,8 @@ NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonSetup(NID nid, std
 	CCPoint inputNodePos;
 	float scale = 1.f;
 
-	inputInfo.idType = evaluateDynamicType(nid, property);
+	inputInfo.idType = nid;
+	NID currentNid = evaluateDynamicType(nid, property);
 
 	for (auto node : nodes)
 		if (auto bg = typeinfo_cast<cocos2d::extension::CCScale9Sprite*>(node))
@@ -214,7 +215,7 @@ NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonSetup(NID nid, std
 
 	auto inputIDNum = numFromString<short>(inputInfo.idInput->getString()).unwrapOr(0);
 
-	if (auto name = NIDManager::getNameForID(inputInfo.idType, inputIDNum); name.isOk())
+	if (auto name = NIDManager::getNameForID(currentNid, inputIDNum); name.isOk())
 		groupNameInput->setString(name.unwrap());
 
 	if (finishedCallback)
