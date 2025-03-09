@@ -38,12 +38,20 @@ protected:
 	std::function<void()> m_saved_callback;
 };
 
-static inline void ShowEditNamedIDPopup(NID nid, short id, std::function<void(short)>&& changedIDCallback, std::function<void()>&& savedCallback)
+static inline void ShowEditNamedIDPopup(const NID nid, short id, std::function<void(short)>&& changedIDCallback, std::function<void()>&& savedCallback)
 {
-	if (nid == NID::GROUP)
-		EditNamedIDPopup<NID::GROUP>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show();
-	else if (nid == NID::COLLISION)
-		EditNamedIDPopup<NID::COLLISION>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show();
-	else if (nid == NID::COUNTER)
-		EditNamedIDPopup<NID::COUNTER>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show();
+	switch (nid) {
+		case NID::GROUP:
+			EditNamedIDPopup<NID::GROUP>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show();
+			break;
+		case NID::COLLISION:
+			EditNamedIDPopup<NID::COLLISION>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show();
+			break;
+		case NID::COUNTER:
+			EditNamedIDPopup<NID::COUNTER>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show();
+			break;
+		case NID::TIMER:
+			EditNamedIDPopup<NID::TIMER>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show();
+			break;
+	}
 }

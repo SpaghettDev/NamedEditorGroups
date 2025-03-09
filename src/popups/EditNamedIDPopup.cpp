@@ -240,3 +240,4 @@ void EditNamedIDPopup<nid>::onEditIDNameInput(EditNamedIDPopup<nid>* self, const
 template class EditNamedIDPopup<NID::GROUP>;
 template class EditNamedIDPopup<NID::COLLISION>;
 template class EditNamedIDPopup<NID::COUNTER>;
+template class EditNamedIDPopup<NID::TIMER>;

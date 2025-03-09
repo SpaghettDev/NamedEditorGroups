@@ -35,3 +35,6 @@
 /build
 /build-*
 /.cache
+/out
+/.vs
+/.vscode
