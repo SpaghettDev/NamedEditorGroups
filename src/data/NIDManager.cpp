@@ -148,7 +148,12 @@ void NIDManager::importNamedIDs(const std::string& str)
 	auto groupsStr = strView.substr(0, firstDelimPos);
 	auto blocksStr = strView.substr(firstDelimPos + 1, secondDelimPos - firstDelimPos - 1);
 	auto itemsStr = strView.substr(secondDelimPos + 1, thirdDelimPos - secondDelimPos - 1);
-	auto timersStr = strView.substr(thirdDelimPos + 1);
+
+	std::string timersStr;
+	if (thirdDelimPos >= strView.length())
+		timersStr = "";
+	else
+		strView.substr(thirdDelimPos + 1);
 
 	g_namedGroups = g_namedGroups.from(std::move(groupsStr));
 	g_namedCollisions = g_namedCollisions.from(std::move(blocksStr));
