@@ -16,6 +16,9 @@ using namespace geode::prelude;
 // get the save data very early
 void LevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
 {
+	if (levelString.find(ng::constants::old::SAVE_OBJECT_STRING_START) != std::string_view::npos)
+		updateSaveObject(levelString);
+
 	std::string_view lvlStr = levelString;
 
 	if (
@@ -41,6 +44,16 @@ void LevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
 	LevelEditorLayer::createObjectsFromSetup(levelString);
 }
 
+
+void LevelEditorLayerData::updateSaveObject(gd::string& levelString)
+{
+	levelString.replace(
+		levelString.find(ng::constants::old::SAVE_OBJECT_STRING_START),
+		ng::constants::old::SAVE_OBJECT_STRING_START.length(),
+		ng::constants::SAVE_OBJECT_STRING_START
+	);
+}
+
 TextGameObject* LevelEditorLayerData::getSaveObject()
 {
 	short currentLayer = this->m_currentLayer;
@@ -64,7 +77,7 @@ void LevelEditorLayerData::createSaveObject()
 	saveObject->updateTextObject("", false);
 	this->removeObjectFromSection(saveObject);
 	saveObject->setPosition(ng::constants::SAVE_DATA_OBJECT_POS);
-	saveObject->setScale(.0f);
+	saveObject->setScale(.01f);
 	this->addToSection(saveObject);
 }
 

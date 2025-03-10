@@ -10,6 +10,9 @@ struct LevelEditorLayerData : geode::Modify<LevelEditorLayerData, LevelEditorLay
 	void createObjectsFromSetup(gd::string&);
 
 
+	// transition
+	void updateSaveObject(gd::string&);
+
 	TextGameObject* getSaveObject();
 	void createSaveObject();
 };
