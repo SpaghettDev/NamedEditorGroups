@@ -32,6 +32,9 @@ struct NIDEffectGameObject : geode::Modify<NIDEffectGameObject, EffectGameObject
 		if (!(isTrigger || isCollision || isCounter || isTimer))
 			return;
 
+		// lol why does the game not do this
+		this->setCascadeOpacityEnabled(true);
+
 		auto idNameLabel = CCLabelBMFont::create("", "bigFont.fnt");
 		// 28.5f is content width of move trigger, which works well for all other triggers
 		idNameLabel->limitLabelWidth(28.5f + 10.f, .6f, .1f);
@@ -160,21 +163,6 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 
 			idNameLabel->setID("id-name-label"_spr);
 			object->addChild(idNameLabel);
-		}
-	}
-
-	void updateVisibility(float p0)
-	{
-		LevelEditorLayer::updateVisibility(p0);
-
-		if (this->m_playbackMode == PlaybackMode::Playing || this->m_previewMode) return;
-
-		if (this->m_activeObjects > 0)
-		{
-			for (auto& obj : this->m_unk3278)
-			{
-
-			}
 		}
 	}
 };
