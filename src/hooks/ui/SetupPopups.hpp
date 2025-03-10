@@ -32,16 +32,16 @@ struct NIDSetupTriggerPopup : geode::Modify<NIDSetupTriggerPopup, SetupTriggerPo
 	void triggerArrowRight(cocos2d::CCObject*);
 	virtual void textChanged(CCTextInputNode*) override;
 
-	void valueChanged(int property, float value);
-	void updateValue(int property, float value);
+	void valueChanged(int, float);
+	void updateValue(int, float);
 
-	NID evaluateDynamicType(NID, short);
+	static NID evaluateDynamicType(SetupTriggerPopup*, NID, short, GameObject*);
 
 	void triggerArrowWasClicked(int, bool);
 	void textWasChanged(CCTextInputNode*);
 	void onEditIDNameButton(CCObject*);
 
-	IDInputInfo commonSetup(NID, std::uint16_t, std::vector<CCNode*>&&, CCNode*, CCNode*, std::function<void(std::vector<CCNode*>&&)>&& = nullptr);
+	static IDInputInfo commonInputSetup(cocos2d::CCLayer*, NID, std::uint16_t, std::vector<CCNode*>&&, CCNode*, CCNode*, std::function<void(std::vector<CCNode*>&&)>&& = nullptr);
 
 	void handleSpecialCases(int, std::uint16_t, cocos2d::CCArray*);
 

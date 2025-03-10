@@ -79,7 +79,8 @@ struct NGGJPFollowCommandLayer : geode::Modify<NGGJPFollowCommandLayer, GJPFollo
 				node->setPosition({ node->getPositionX() - 50.f, node->getPositionY() + 24.f });
 		}
 
-		auto targetInputInfo = STP->commonSetup(
+		auto targetInputInfo = STP->commonInputSetup(
+			this,
 			NID::GROUP,
 			GROUP_ID_PROPERTY,
 			std::move(targetGroupIDNodes),

@@ -124,7 +124,8 @@ struct NIDGJFollowCommandLayer : geode::Modify<NIDGJFollowCommandLayer, GJFollow
 		}
 
 
-		auto targetInputInfo = STP->commonSetup(
+		auto targetInputInfo = STP->commonInputSetup(
+			this,
 			NID::GROUP,
 			TARGET_GROUP_ID_PROPERTY,
 			std::move(targetGroupIDNodes),
@@ -132,7 +133,8 @@ struct NIDGJFollowCommandLayer : geode::Modify<NIDGJFollowCommandLayer, GJFollow
 			this->m_buttonMenu
 		);
 		STP->m_fields->m_id_inputs[TARGET_GROUP_ID_PROPERTY] = std::move(targetInputInfo);
-		auto followInputInfo = STP->commonSetup(
+		auto followInputInfo = STP->commonInputSetup(
+			this,
 			NID::GROUP,
 			FOLLOW_GROUP_ID_PROPERTY,
 			std::move(followGroupIDNodes),

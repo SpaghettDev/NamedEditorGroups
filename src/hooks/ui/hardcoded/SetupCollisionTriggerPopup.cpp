@@ -150,7 +150,8 @@ struct NIDSetupCollisionTriggerPopup : geode::Modify<NIDSetupCollisionTriggerPop
 			child->setPositionY(child->getPositionY() - 10.f);
 
 
-		auto blockAInputInfo = STP->commonSetup(
+		auto blockAInputInfo = STP->commonInputSetup(
+			this,
 			NID::COLLISION,
 			BLOCK_A_ID_PROPERTY,
 			std::move(blockANodes),
@@ -159,7 +160,8 @@ struct NIDSetupCollisionTriggerPopup : geode::Modify<NIDSetupCollisionTriggerPop
 		);
 		STP->m_fields->m_id_inputs[BLOCK_A_ID_PROPERTY] = std::move(blockAInputInfo);
 
-		auto blockBInputInfo = STP->commonSetup(
+		auto blockBInputInfo = STP->commonInputSetup(
+			this,
 			NID::COLLISION,
 			BLOCK_B_ID_PROPERTY,
 			std::move(blockBNodes),
@@ -168,7 +170,8 @@ struct NIDSetupCollisionTriggerPopup : geode::Modify<NIDSetupCollisionTriggerPop
 		);
 		STP->m_fields->m_id_inputs[BLOCK_B_ID_PROPERTY] = std::move(blockBInputInfo);
 
-		auto targetIDInputInfo = STP->commonSetup(
+		auto targetIDInputInfo = STP->commonInputSetup(
+			this,
 			NID::GROUP,
 			GROUP_ID_PROPERTY,
 			std::move(targetIDNodes),

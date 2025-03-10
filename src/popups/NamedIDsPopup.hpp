@@ -16,6 +16,7 @@ public:
 	void onClearSearchButton(cocos2d::CCObject*);
 	void onFilterButton(cocos2d::CCObject*);
 	void onAddButton(cocos2d::CCObject*);
+	void onRefreshButton(cocos2d::CCObject*);
 
 	void updateList(NID);
 	void updateState();

@@ -6,6 +6,8 @@
 
 #include <NIDEnum.hpp>
 
+#include "DynamicPropertyTypes.hpp"
+
 namespace ng
 {
 	namespace constants
@@ -432,8 +434,7 @@ namespace ng
 			} }
 		};
 
-		const std::unordered_map<std::uint16_t, const std::unordered_map<std::uint16_t, struct dynamic_prop_toggle_t>> DNAMIC_PROPERTIES_TOGGLES{
-
+		const std::unordered_map<std::uint16_t, const std::unordered_map<std::uint16_t, ng::types::DynamicPropertyToggleType>> DNAMIC_PROPERTIES_TOGGLES{
 			// Item Edit Trigger
 			{ 3619, {
 				// Item ID 1
@@ -443,7 +444,6 @@ namespace ng
 				// Target Item ID
 				{ 51, { 478, 1 } },
 			} },
-
 			// Item Compare Trigger
 			{ 3620, {
 				// Item ID 1
@@ -451,13 +451,11 @@ namespace ng
 				// Item ID 2
 				{ 95, { 477, 1 } },
 			} },
-
 			// Persistent Item Trigger
 			{ 3641, {
 				// Item ID
 				{ 80, { 494, 0 } },
 			} },
-
 			// Counter Label
 			{ 1615, {
 				// Item ID
@@ -465,8 +463,7 @@ namespace ng
 			} },
 		};
 
-		const std::unordered_map<std::uint16_t, const std::unordered_map<std::uint16_t, struct dynamic_prop_choice_t>> DNAMIC_PROPERTIES_CHOICES{
-
+		const std::unordered_map<std::uint16_t, const std::unordered_map<std::uint16_t, ng::types::DynamicPropertyChoiceType>> DNAMIC_PROPERTIES_CHOICES{
 			// Item Edit Trigger
 			{ 3619, {
 				// Item ID 1
@@ -476,7 +473,6 @@ namespace ng
 				// Target Item ID
 				{ 478, { 51, 1, 2 } },
 			} },
-
 			// Item Compare Trigger
 			{ 3620, {
 				// Item ID 1

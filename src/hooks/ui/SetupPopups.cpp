@@ -11,6 +11,7 @@
 #include <NIDManager.hpp>
 
 #include "constants.hpp"
+#include "DynamicPropertyTypes.hpp"
 
 using namespace geode::prelude;
 
@@ -32,7 +33,8 @@ cocos2d::CCArray* NIDSetupTriggerPopup::createValueControlAdvanced(int property,
 
 	handleSpecialCases(this->m_gameObject->m_objectID, property, nodes);
 
-	auto inputInfo = commonSetup(
+	auto inputInfo = commonInputSetup(
+		this,
 		ng::constants::OBJECT_ID_TO_PROPERTIES_INFO.at(this->m_gameObject->m_objectID).at(property),
 		property,
 		std::move(geode::cocos::ccArrayToVector<CCNode*>(nodes)),
@@ -87,7 +89,10 @@ void NIDSetupTriggerPopup::triggerArrowWasClicked(int senderTag, bool isRight)
 
 	idInputInfo.namedIDInput->getInputNode()->onClickTrackNode(false);
 	idInputInfo.namedIDInput->setString(
-		NIDManager::getNameForID(evaluateDynamicType(idInputInfo.idType, senderTag), idInputValue).unwrapOr("")
+		NIDManager::getNameForID(
+			evaluateDynamicType(this, idInputInfo.idType, senderTag, this->m_gameObject),
+			idInputValue
+		).unwrapOr("")
 	);
 }
 
@@ -99,7 +104,10 @@ void NIDSetupTriggerPopup::textWasChanged(CCTextInputNode* input)
 
 	if (auto parsedNum = numFromString<short>(idInputInfo.idInput->getString()); parsedNum.isOk())
 		idInputInfo.namedIDInput->setString(
-			NIDManager::getNameForID(evaluateDynamicType(idInputInfo.idType, input->getTag()), parsedNum.unwrap()).unwrapOr("")
+			NIDManager::getNameForID(
+				evaluateDynamicType(this, idInputInfo.idType, input->getTag(), this->m_gameObject),
+				parsedNum.unwrap()
+			).unwrapOr("")
 		);
 }
 
@@ -108,7 +116,7 @@ void NIDSetupTriggerPopup::onEditIDNameButton(CCObject* sender)
 	auto& idInputInfo = m_fields->m_id_inputs.at(sender->getTag());
 
 	ShowEditNamedIDPopup(
-		evaluateDynamicType(idInputInfo.idType, sender->getTag()),
+		evaluateDynamicType(this, idInputInfo.idType, sender->getTag(), this->m_gameObject),
 		geode::utils::numFromString<short>(idInputInfo.idInput->getString()).unwrapOr(0),
 		[&](short id) {
 			idInputInfo.idInput->setString(fmt::format("{}", id));
@@ -123,18 +131,26 @@ void NIDSetupTriggerPopup::onEditInput(NIDSetupTriggerPopup* self, std::uint16_t
 {
 	auto& idInputInfo = self->m_fields->m_id_inputs.at(property);
 
-	if (auto name = NIDManager::getIDForName(self->evaluateDynamicType(idInputInfo.idType, property), str); name.isOk())
+	if (auto name = NIDManager::getIDForName(evaluateDynamicType(self, idInputInfo.idType, property, self->m_gameObject), str); name.isOk())
 		idInputInfo.idInput->setString(fmt::format("{}", name.unwrap()));
 }
 
-NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonSetup(NID nid, std::uint16_t property, std::vector<CCNode*>&& nodes, CCNode* mainLayer, CCNode* buttonMenu, std::function<void(std::vector<CCNode*>&&)>&& finishedCallback)
-{
+NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonInputSetup(
+	CCLayer* self, NID nid, std::uint16_t property,
+	std::vector<CCNode*>&& nodes, CCNode* mainLayer, CCNode* buttonMenu,
+	std::function<void(std::vector<CCNode*>&&)>&& finishedCallback
+) {
 	NIDSetupTriggerPopup::IDInputInfo inputInfo;
 	CCPoint inputNodePos;
 	float scale = 1.f;
 
 	inputInfo.idType = nid;
-	NID currentNid = evaluateDynamicType(nid, property);
+	NID currentNid = evaluateDynamicType(
+		static_cast<SetupTriggerPopup*>(self),
+		nid,
+		property,
+		static_cast<SetupTriggerPopup*>(self)->m_gameObject
+	);
 
 	for (auto node : nodes)
 		if (auto bg = typeinfo_cast<cocos2d::extension::CCScale9Sprite*>(node))
@@ -183,8 +199,8 @@ NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonSetup(NID nid, std
 	auto groupNameInput = geode::TextInput::create(110.f, "Unnamed");
 	groupNameInput->setContentHeight(20.f);
 	groupNameInput->setFilter(ng::constants::VALID_NAMED_ID_CHARACTERS);
-	groupNameInput->setCallback([&, property](const std::string& str) {
-		NIDSetupTriggerPopup::onEditInput(this, property, std::move(str));
+	groupNameInput->setCallback([&, self, property](const std::string& str) {
+		NIDSetupTriggerPopup::onEditInput(static_cast<NIDSetupTriggerPopup*>(self), property, std::move(str));
 	});
 	groupNameInput->setPosition({ inputNodePos.x, inputNodePos.y - 30.f * scale });
 	groupNameInput->setID(fmt::format("group-name-input-{}"_spr, property));
@@ -197,13 +213,13 @@ NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonSetup(NID nid, std
 	editInputButtonSprite->setScale(std::clamp((scale - .1f) - .2f, .1f, .4f));
 	auto editInputButton = CCMenuItemSpriteExtra::create(
 		editInputButtonSprite,
-		this,
+		self,
 		menu_selector(NIDSetupTriggerPopup::onEditIDNameButton)
 	);
 	editInputButton->setTag(property);
 	editInputButton->setPosition(
 		buttonMenu->convertToNodeSpace(
-			this->convertToWorldSpace({
+			self->convertToWorldSpace({
 				inputNodePos.x + groupNameInput->getScaledContentWidth() / 2.f + 15.f * scale,
 				groupNameInput->getPositionY() + groupNameInput->getScaledContentHeight() / 2.f - 4.f * scale
 			})
@@ -243,18 +259,19 @@ void NIDSetupTriggerPopup::handleSpecialCases(int gameObjectID, std::uint16_t pr
 	}
 }
 
-NID NIDSetupTriggerPopup::evaluateDynamicType(NID nid, short tag) {
+NID NIDSetupTriggerPopup::evaluateDynamicType(SetupTriggerPopup* self, NID nid, short property, GameObject* obj)
+{
 	if (nid != NID::DYNAMIC_COUNTER_TIMER) return nid;
 
-	auto& toggleMap = ng::constants::DNAMIC_PROPERTIES_TOGGLES.at(this->m_gameObject->m_objectID);
-	auto& toggleInfo = toggleMap.at(tag);
-	auto propVal = this->getTriggerValue(toggleInfo.togglePropID, this->m_gameObject);
+	auto& toggleMap = ng::constants::DNAMIC_PROPERTIES_TOGGLES.at(obj->m_objectID);
+	auto& toggleInfo = toggleMap.at(property);
+	auto propVal = self->getTriggerValue(toggleInfo.togglePropID, obj);
 
 	return propVal == toggleInfo.counterState ? NID::COUNTER : NID::TIMER;
 }
 
-// Persistent Item & Counter (Binary Toggles)
-void NIDSetupTriggerPopup::valueChanged(int property, float value) {
+void NIDSetupTriggerPopup::valueChanged(int property, float value)
+{
 	SetupTriggerPopup::valueChanged(property, value);
 
 	if (!ng::constants::DNAMIC_PROPERTIES_TOGGLES.contains(this->m_gameObject->m_objectID)) return;
@@ -263,7 +280,7 @@ void NIDSetupTriggerPopup::valueChanged(int property, float value) {
 
 		NID type = val.counterState == value ? NID::COUNTER : NID::TIMER;
 
-		auto inputNode = typeinfo_cast<CCTextInputNode*>(this->m_mainLayer->getChildByTag(key));
+		auto inputNode = static_cast<CCTextInputNode*>(this->m_mainLayer->getChildByTag(key));
 
 		if (!m_fields->m_id_inputs.contains(key)) return;
 
@@ -281,8 +298,8 @@ void NIDSetupTriggerPopup::valueChanged(int property, float value) {
 	}
 };
 
-// Item Edit & Item Comp (Multiple Choice Toggles)
-void NIDSetupTriggerPopup::updateValue(int property, float value) {
+void NIDSetupTriggerPopup::updateValue(int property, float value)
+{
 	SetupTriggerPopup::updateValue(property, value);
 
 	if (!ng::constants::DNAMIC_PROPERTIES_CHOICES.contains(this->m_gameObject->m_objectID)) return;
@@ -295,7 +312,7 @@ void NIDSetupTriggerPopup::updateValue(int property, float value) {
 	NID type = choiceInfo.timerState == value ? NID::TIMER :
 		choiceInfo.counterState == value ? NID::COUNTER : NID::DYNAMIC_COUNTER_TIMER;
 
-	auto inputNode = typeinfo_cast<CCTextInputNode*>(this->m_mainLayer->getChildByTag(targetTag));
+	auto inputNode = static_cast<CCTextInputNode*>(this->m_mainLayer->getChildByTag(targetTag));
 
 	if (!m_fields->m_id_inputs.contains(targetTag)) return;
 
@@ -307,7 +324,8 @@ void NIDSetupTriggerPopup::updateValue(int property, float value) {
 
 	idInputInfo.namedIDInput->getInputNode()->onClickTrackNode(false);
 	idInputInfo.namedIDInput->setString(
-		type == NID::DYNAMIC_COUNTER_TIMER ? "" :
-		NIDManager::getNameForID(type, idInputValue).unwrapOr("")
+		type == NID::DYNAMIC_COUNTER_TIMER
+			? ""
+			: NIDManager::getNameForID(type, idInputValue).unwrapOr("")
 	);
 };

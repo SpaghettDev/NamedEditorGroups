@@ -8,6 +8,7 @@
 
 #include <NIDManager.hpp>
 
+#include "../base64/base64.hpp"
 #include "constants.hpp"
 
 using namespace geode::prelude;
@@ -30,8 +31,11 @@ void LevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
 		);
 		std::string_view saveObjStr = intermediateStr.substr(0, intermediateStr.find(';'));
 
-		auto data = cocos2d::ZipUtils::base64URLDecode(gd::string{ saveObjStr.data() });
-		NIDManager::importNamedIDs(data);
+		// TODO: maybe do something here idk
+		if (auto data = ng::base64::base64URLDecode(saveObjStr))
+			NIDManager::importNamedIDs(data.unwrap());
+		else
+			log::warn("Unable to import Named IDs! Error: {}", data.unwrapErr());
 	}
 
 	LevelEditorLayer::createObjectsFromSetup(levelString);
@@ -39,16 +43,24 @@ void LevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
 
 TextGameObject* LevelEditorLayerData::getSaveObject()
 {
-	return static_cast<TextGameObject*>(this->objectAtPosition(ng::constants::SAVE_DATA_OBJECT_POS));
+	short currentLayer = this->m_currentLayer;
+	this->m_currentLayer = -1;
+	auto object = static_cast<TextGameObject*>(this->objectAtPosition(ng::constants::SAVE_DATA_OBJECT_POS));
+	this->m_currentLayer = currentLayer;
+
+	return object;
 }
 
 void LevelEditorLayerData::createSaveObject()
 {
 	if (getSaveObject()) return;
 
+	short currentLayer = this->m_currentLayer;
+	this->m_currentLayer = -1;
 	auto saveObject = static_cast<TextGameObject*>(
 		this->createObject(914, { .0f, .0f }, true)
 	);
+	this->m_currentLayer = currentLayer;
 	saveObject->updateTextObject("", false);
 	this->removeObjectFromSection(saveObject);
 	saveObject->setPosition(ng::constants::SAVE_DATA_OBJECT_POS);

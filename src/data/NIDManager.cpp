@@ -23,8 +23,8 @@ NamedIDs& containerForID(NID id)
 		case NID::COLLISION:
 			return g_namedCollisions;
 
+		case NID::DYNAMIC_COUNTER_TIMER: [[fallthrough]];
 		case NID::COUNTER:
-		case NID::DYNAMIC_COUNTER_TIMER: // Fallback, will not normally get handled this way
 			return g_namedCounters;
 
 		case NID::TIMER:
@@ -141,19 +141,11 @@ void NIDManager::importNamedIDs(const std::string& str)
 	auto secondDelimPos = strView.find('|', firstDelimPos + 1);
 	auto thirdDelimPos = strView.find('|', secondDelimPos + 1);
 
-	if (thirdDelimPos == std::string_view::npos) {
-		thirdDelimPos = strView.length();
-	}
-
 	auto groupsStr = strView.substr(0, firstDelimPos);
 	auto blocksStr = strView.substr(firstDelimPos + 1, secondDelimPos - firstDelimPos - 1);
 	auto itemsStr = strView.substr(secondDelimPos + 1, thirdDelimPos - secondDelimPos - 1);
-
-	std::string timersStr;
-	if (thirdDelimPos >= strView.length())
-		timersStr = "";
-	else
-		strView.substr(thirdDelimPos + 1);
+	auto timersStr = thirdDelimPos == std::string::npos
+		? "" : strView.substr(thirdDelimPos + 1);
 
 	g_namedGroups = g_namedGroups.from(std::move(groupsStr));
 	g_namedCollisions = g_namedCollisions.from(std::move(blocksStr));

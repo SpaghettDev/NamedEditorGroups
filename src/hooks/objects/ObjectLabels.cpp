@@ -70,7 +70,6 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 			case 1615u:
 				idLabelPos = CCPoint{ 21.75f, 7.75f };
 
-				// LabelGameObject::m_label
 				if (auto label = effectGameObj->getChildByID("counter-label"); !label)
 				{
 					if (auto idLabel = effectGameObj->getChildByType<CCLabelBMFont*>(0))
@@ -96,11 +95,13 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 
 		std::string idNameStr = "";
 
-		// hardcode counter object (only dynamic label)
+		// counter object
 		if (object->m_objectID == 1615u)
 		{
 			auto labelNode = static_cast<LabelGameObject*>(object);
-			if (labelNode->m_shownSpecial != 0) // Disable if counter should show MainTime/Points/Attempts
+
+			// Disable if counter should show MainTime/Points/Attempts
+			if (labelNode->m_shownSpecial != 0)
 				idNameStr = "";
 			else if (labelNode->m_isTimeCounter)
 				idNameStr = NIDManager::getNameForID<NID::TIMER>(
@@ -120,12 +121,13 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 
 				auto id1 = NIDManager::getNameForID<NID::GROUP>(
 					effectGameObj->m_targetGroupID
-				).unwrapOr(fmt::format("{}", effectGameObj->m_targetGroupID));
+				).unwrapOr("");
 				auto id2 = NIDManager::getNameForID<NID::GROUP>(
 					effectGameObj->m_centerGroupID
-				).unwrapOr(fmt::format("{}", effectGameObj->m_centerGroupID));
+				).unwrapOr("");
 
-				idNameStr = fmt::format("{}/\n{}", id1, id2);
+				if (!id1.empty() && !id2.empty())
+					idNameStr = fmt::format("{}/\n{}", id1, id2);
 
 				idLabelPos = CCPoint{ idLabelPos.x + .75f, idLabelPos.y - 5.5f };
 			}
@@ -142,7 +144,7 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 			idNameStr = NIDManager::getNameForID<NID::COUNTER>(
 				effectGameObj->m_itemID
 			).unwrapOr("");
-		else if (isTimer) // Counter object (only timer label) will be caught by hardcode, but for futureproofing
+		else if (isTimer)
 			idNameStr = NIDManager::getNameForID<NID::TIMER>(
 				effectGameObj->m_itemID
 			).unwrapOr("");

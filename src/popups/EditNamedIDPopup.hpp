@@ -40,7 +40,8 @@ protected:
 
 static inline void ShowEditNamedIDPopup(const NID nid, short id, std::function<void(short)>&& changedIDCallback, std::function<void()>&& savedCallback)
 {
-	switch (nid) {
+	switch (nid)
+	{
 		case NID::GROUP:
 			EditNamedIDPopup<NID::GROUP>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show();
 			break;
@@ -53,5 +54,8 @@ static inline void ShowEditNamedIDPopup(const NID nid, short id, std::function<v
 		case NID::TIMER:
 			EditNamedIDPopup<NID::TIMER>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show();
 			break;
+
+		default:
+			throw "Invalid NID enum value";
 	}
 }

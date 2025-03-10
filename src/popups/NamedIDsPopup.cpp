@@ -87,6 +87,15 @@ bool NamedIDsPopup::setup()
 	);
 	this->m_buttonMenu->addChildAtPosition(addButton, Anchor::TopRight, { -49.f, -20.f });
 
+	auto refreshButtonSpr = CCSprite::createWithSpriteFrameName("GJ_updateBtn_001.png");
+	refreshButtonSpr->setScale(.8f);
+	auto refreshButton = CCMenuItemSpriteExtra::create(
+		refreshButtonSpr,
+		this,
+		menu_selector(NamedIDsPopup::onRefreshButton)
+	);
+	this->m_buttonMenu->addChildAtPosition(refreshButton, Anchor::BottomLeft, { 3.f, 3.f });
+
 	m_layer_bg = CCLayerColor::create({ 0, 0, 0, 75 });
 	m_layer_bg->setContentSize(SCROLL_LAYER_SIZE);
 	m_layer_bg->ignoreAnchorPointForPosition(false);
@@ -175,6 +184,11 @@ void NamedIDsPopup::onAddButton(CCObject*)
 	})->show();
 }
 
+void NamedIDsPopup::onRefreshButton(CCObject*)
+{
+	ng::utils::editor::refreshObjectLabels(true);
+}
+
 void NamedIDsPopup::updateList(NID nid)
 {
 	m_ids_type = nid;
@@ -205,7 +219,7 @@ void NamedIDsPopup::updateState()
 	m_list->m_contentLayer->removeAllChildren();
 	updateList(m_ids_type);
 
-	if (!query.empty())
+	if (!query.empty() && !NIDManager::getNamedIDs(m_ids_type).empty())
 	{
 		bool bg = false;
 

@@ -183,7 +183,7 @@ void NamedIDItem::onEditButton(CCObject* sender)
 			m_name_input->getInputNode()->onClickTrackNode(false);
 		}
 
-		ng::utils::editor::refreshObjectLabels(true);
+		ng::utils::editor::refreshObjectLabels(GEODE_DESKTOP(true) GEODE_MOBILE(false));
 
 		if (m_name_input->getString().empty())
 		{

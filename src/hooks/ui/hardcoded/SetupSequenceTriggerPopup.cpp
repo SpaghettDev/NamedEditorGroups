@@ -76,7 +76,8 @@ struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup
 		groupIDNodes[1]->setTag(GROUP_ID_PROPERTY);
 
 
-		auto inputInfo = STP->commonSetup(
+		auto inputInfo = STP->commonInputSetup(
+			this,
 			NID::GROUP,
 			GROUP_ID_PROPERTY,
 			std::move(groupIDNodes),

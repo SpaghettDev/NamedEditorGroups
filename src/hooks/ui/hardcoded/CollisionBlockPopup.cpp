@@ -24,8 +24,6 @@ struct NIDCollisionBlockPopup : geode::Modify<NIDCollisionBlockPopup, CollisionB
 	{
 		if (!CollisionBlockPopup::init(p0, p1)) return false;
 
-		auto STP = reinterpret_cast<NIDSetupTriggerPopup*>(this);
-
 		std::vector<CCNode*> blockIDNodes;
 		blockIDNodes.reserve(5);
 
@@ -77,7 +75,8 @@ struct NIDCollisionBlockPopup : geode::Modify<NIDCollisionBlockPopup, CollisionB
 		blockIDNodes[1]->setTag(BLOCK_ID_PROPERTY);
 
 
-		auto blockIDInputInfo = STP->commonSetup(
+		auto blockIDInputInfo = NIDSetupTriggerPopup::commonInputSetup(
+			this,
 			NID::COLLISION,
 			BLOCK_ID_PROPERTY,
 			std::move(blockIDNodes),

@@ -106,7 +106,8 @@ struct NIDSetupCountTriggerPopup : geode::Modify<NIDSetupCountTriggerPopup, Setu
 		));
 
 
-		auto itemIDInputInfo = STP->commonSetup(
+		auto itemIDInputInfo = STP->commonInputSetup(
+			this,
 			NID::COUNTER,
 			ITEM_ID_PROPERTY,
 			std::move(itemIDNodes),
@@ -115,7 +116,8 @@ struct NIDSetupCountTriggerPopup : geode::Modify<NIDSetupCountTriggerPopup, Setu
 		);
 		STP->m_fields->m_id_inputs[ITEM_ID_PROPERTY] = std::move(itemIDInputInfo);
 
-		auto targetIDInputInfo = STP->commonSetup(
+		auto targetIDInputInfo = STP->commonInputSetup(
+			this,
 			NID::GROUP,
 			TARGET_GROUP_ID_PROPERTY,
 			std::move(targetIDNodes),

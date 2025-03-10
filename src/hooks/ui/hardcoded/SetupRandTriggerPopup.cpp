@@ -106,7 +106,8 @@ struct NIDSetupRandTriggerPopup : geode::Modify<NIDSetupRandTriggerPopup, SetupR
 		));
 
 
-		auto groupID1InputInfo = STP->commonSetup(
+		auto groupID1InputInfo = STP->commonInputSetup(
+			this,
 			NID::GROUP,
 			TARGET_GROUP_ID_1_PROPERTY,
 			std::move(groupID1Nodes),
@@ -115,7 +116,8 @@ struct NIDSetupRandTriggerPopup : geode::Modify<NIDSetupRandTriggerPopup, SetupR
 		);
 		STP->m_fields->m_id_inputs[TARGET_GROUP_ID_1_PROPERTY] = std::move(groupID1InputInfo);
 
-		auto groupID2InputInfo = STP->commonSetup(
+		auto groupID2InputInfo = STP->commonInputSetup(
+			this,
 			NID::GROUP,
 			TARGET_GROUP_ID_2_PROPERTY,
 			std::move(groupID2Nodes),

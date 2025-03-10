@@ -73,7 +73,8 @@ struct NIDSetupCameraEdgePopup : geode::Modify<NIDSetupCameraEdgePopup, SetupCam
 		targetIDNodes[1]->setTag(TARGET_GROUP_ID_PROPERTY);
 
 
-		auto targetIDInputInfo = STP->commonSetup(
+		auto targetIDInputInfo = STP->commonInputSetup(
+			this,
 			NID::GROUP,
 			TARGET_GROUP_ID_PROPERTY,
 			std::move(targetIDNodes),

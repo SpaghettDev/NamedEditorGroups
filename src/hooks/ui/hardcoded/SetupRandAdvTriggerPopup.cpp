@@ -99,7 +99,8 @@ struct NIDSetupRandAdvTriggerPopup : geode::Modify<NIDSetupRandAdvTriggerPopup, 
 		));
 
 
-		auto inputInfo = STP->commonSetup(
+		auto inputInfo = STP->commonInputSetup(
+			this,
 			NID::GROUP,
 			GROUP_ID_PROPERTY,
 			std::move(groupIDNodes),

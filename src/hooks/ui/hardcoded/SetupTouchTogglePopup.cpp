@@ -48,7 +48,8 @@ struct NIDSetupTouchTogglePopup : geode::Modify<NIDSetupTouchTogglePopup, SetupT
 				return castedNode && castedNode->getTag() == 2;
 		}));
 
-		auto inputInfo = STP->commonSetup(
+		auto inputInfo = STP->commonInputSetup(
+			this,
 			NID::GROUP,
 			GROUP_ID_PROPERTY,
 			std::move(groupIDNodes),

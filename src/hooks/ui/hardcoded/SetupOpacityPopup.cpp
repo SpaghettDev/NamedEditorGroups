@@ -38,7 +38,8 @@ struct NIDSetupOpacityPopup : geode::Modify<NIDSetupOpacityPopup, SetupOpacityPo
 		nodes.emplace_back(this->m_buttonMenu->getChildByTag(1));
 		nodes.emplace_back(this->m_buttonMenu->getChildByTag(2));
 
-		auto inputInfo = STP->commonSetup(
+		auto inputInfo = STP->commonInputSetup(
+			this,
 			NID::GROUP,
 			GROUP_ID_PROPERTY,
 			std::move(nodes),
