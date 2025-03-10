@@ -32,6 +32,10 @@ struct NIDSetupTriggerPopup : geode::Modify<NIDSetupTriggerPopup, SetupTriggerPo
 	void triggerArrowRight(cocos2d::CCObject*);
 	virtual void textChanged(CCTextInputNode*) override;
 
+	void valueChanged(int property, float value);
+	void updateValue(int property, float value);
+
+	NID evaluateDynamicType(NID, short);
 
 	void triggerArrowWasClicked(int, bool);
 	void textWasChanged(CCTextInputNode*);

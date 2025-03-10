@@ -87,7 +87,7 @@ void NIDSetupTriggerPopup::triggerArrowWasClicked(int senderTag, bool isRight)
 
 	idInputInfo.namedIDInput->getInputNode()->onClickTrackNode(false);
 	idInputInfo.namedIDInput->setString(
-		NIDManager::getNameForID(idInputInfo.idType, idInputValue).unwrapOr("")
+		NIDManager::getNameForID(evaluateDynamicType(idInputInfo.idType, senderTag), idInputValue).unwrapOr("")
 	);
 }
 
@@ -99,7 +99,7 @@ void NIDSetupTriggerPopup::textWasChanged(CCTextInputNode* input)
 
 	if (auto parsedNum = numFromString<short>(idInputInfo.idInput->getString()); parsedNum.isOk())
 		idInputInfo.namedIDInput->setString(
-			NIDManager::getNameForID(idInputInfo.idType, parsedNum.unwrap()).unwrapOr("")
+			NIDManager::getNameForID(evaluateDynamicType(idInputInfo.idType, input->getTag()), parsedNum.unwrap()).unwrapOr("")
 		);
 }
 
@@ -108,7 +108,7 @@ void NIDSetupTriggerPopup::onEditIDNameButton(CCObject* sender)
 	auto& idInputInfo = m_fields->m_id_inputs.at(sender->getTag());
 
 	ShowEditNamedIDPopup(
-		idInputInfo.idType,
+		evaluateDynamicType(idInputInfo.idType, sender->getTag()),
 		geode::utils::numFromString<short>(idInputInfo.idInput->getString()).unwrapOr(0),
 		[&](short id) {
 			idInputInfo.idInput->setString(fmt::format("{}", id));
@@ -123,7 +123,7 @@ void NIDSetupTriggerPopup::onEditInput(NIDSetupTriggerPopup* self, std::uint16_t
 {
 	auto& idInputInfo = self->m_fields->m_id_inputs.at(property);
 
-	if (auto name = NIDManager::getIDForName(idInputInfo.idType, str); name.isOk())
+	if (auto name = NIDManager::getIDForName(self->evaluateDynamicType(idInputInfo.idType, property), str); name.isOk())
 		idInputInfo.idInput->setString(fmt::format("{}", name.unwrap()));
 }
 
@@ -134,6 +134,7 @@ NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonSetup(NID nid, std
 	float scale = 1.f;
 
 	inputInfo.idType = nid;
+	NID currentNid = evaluateDynamicType(nid, property);
 
 	for (auto node : nodes)
 		if (auto bg = typeinfo_cast<cocos2d::extension::CCScale9Sprite*>(node))
@@ -214,7 +215,7 @@ NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonSetup(NID nid, std
 
 	auto inputIDNum = numFromString<short>(inputInfo.idInput->getString()).unwrapOr(0);
 
-	if (auto name = NIDManager::getNameForID(inputInfo.idType, inputIDNum); name.isOk())
+	if (auto name = NIDManager::getNameForID(currentNid, inputIDNum); name.isOk())
 		groupNameInput->setString(name.unwrap());
 
 	if (finishedCallback)
@@ -241,3 +242,72 @@ void NIDSetupTriggerPopup::handleSpecialCases(int gameObjectID, std::uint16_t pr
 			break;
 	}
 }
+
+NID NIDSetupTriggerPopup::evaluateDynamicType(NID nid, short tag) {
+	if (nid != NID::DYNAMIC_COUNTER_TIMER) return nid;
+
+	auto& toggleMap = ng::constants::DNAMIC_PROPERTIES_TOGGLES.at(this->m_gameObject->m_objectID);
+	auto& toggleInfo = toggleMap.at(tag);
+	auto propVal = this->getTriggerValue(toggleInfo.togglePropID, this->m_gameObject);
+
+	return propVal == toggleInfo.counterState ? NID::COUNTER : NID::TIMER;
+}
+
+// Persistent Item & Counter (Binary Toggles)
+void NIDSetupTriggerPopup::valueChanged(int property, float value) {
+	SetupTriggerPopup::valueChanged(property, value);
+
+	if (!ng::constants::DNAMIC_PROPERTIES_TOGGLES.contains(this->m_gameObject->m_objectID)) return;
+	for (auto const& [key, val] : ng::constants::DNAMIC_PROPERTIES_TOGGLES.at(this->m_gameObject->m_objectID)) {
+		if (val.togglePropID != property) continue;
+
+		NID type = val.counterState == value ? NID::COUNTER : NID::TIMER;
+
+		auto inputNode = typeinfo_cast<CCTextInputNode*>(this->m_mainLayer->getChildByTag(key));
+
+		if (!m_fields->m_id_inputs.contains(key)) return;
+
+		auto parsedIdInputValue = geode::utils::numFromString<short>(inputNode->getString());
+		if (parsedIdInputValue.isErr()) return;
+		short idInputValue = parsedIdInputValue.unwrap();
+
+		auto& idInputInfo = m_fields->m_id_inputs.at(key);
+
+		idInputInfo.namedIDInput->getInputNode()->onClickTrackNode(false);
+		idInputInfo.namedIDInput->setString(
+			NIDManager::getNameForID(type, idInputValue).unwrapOr("")
+		);
+		break;
+	}
+};
+
+// Item Edit & Item Comp (Multiple Choice Toggles)
+void NIDSetupTriggerPopup::updateValue(int property, float value) {
+	SetupTriggerPopup::updateValue(property, value);
+
+	if (!ng::constants::DNAMIC_PROPERTIES_CHOICES.contains(this->m_gameObject->m_objectID)) return;
+	auto& choiceProperties = ng::constants::DNAMIC_PROPERTIES_CHOICES.at(this->m_gameObject->m_objectID);
+
+	if (!choiceProperties.contains(property)) return;
+	auto& choiceInfo = choiceProperties.at(property);
+
+	auto targetTag = choiceInfo.targetPropID;
+	NID type = choiceInfo.timerState == value ? NID::TIMER :
+		choiceInfo.counterState == value ? NID::COUNTER : NID::DYNAMIC_COUNTER_TIMER;
+
+	auto inputNode = typeinfo_cast<CCTextInputNode*>(this->m_mainLayer->getChildByTag(targetTag));
+
+	if (!m_fields->m_id_inputs.contains(targetTag)) return;
+
+	auto parsedIdInputValue = geode::utils::numFromString<short>(inputNode->getString());
+	if (parsedIdInputValue.isErr()) return;
+	short idInputValue = parsedIdInputValue.unwrap();
+
+	auto& idInputInfo = m_fields->m_id_inputs.at(targetTag);
+
+	idInputInfo.namedIDInput->getInputNode()->onClickTrackNode(false);
+	idInputInfo.namedIDInput->setString(
+		type == NID::DYNAMIC_COUNTER_TIMER ? "" :
+		NIDManager::getNameForID(type, idInputValue).unwrapOr("")
+	);
+};
