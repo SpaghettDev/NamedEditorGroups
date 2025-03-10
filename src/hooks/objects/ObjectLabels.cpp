@@ -162,4 +162,19 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 			object->addChild(idNameLabel);
 		}
 	}
+
+	void updateVisibility(float p0)
+	{
+		LevelEditorLayer::updateVisibility(p0);
+
+		if (this->m_playbackMode == PlaybackMode::Playing || this->m_previewMode) return;
+
+		if (this->m_activeObjects > 0)
+		{
+			for (auto& obj : this->m_unk3278)
+			{
+
+			}
+		}
+	}
 };

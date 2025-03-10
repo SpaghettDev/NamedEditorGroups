@@ -89,7 +89,7 @@ namespace ng
 
 		namespace editor
 		{
-			void refreshObjectLabels(bool);
+			void refreshObjectLabels();
 		}
 	}
 }

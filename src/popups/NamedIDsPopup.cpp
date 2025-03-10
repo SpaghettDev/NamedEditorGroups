@@ -186,7 +186,7 @@ void NamedIDsPopup::onAddButton(CCObject*)
 
 void NamedIDsPopup::onRefreshButton(CCObject*)
 {
-	ng::utils::editor::refreshObjectLabels(true);
+	ng::utils::editor::refreshObjectLabels();
 }
 
 void NamedIDsPopup::updateList(NID nid)

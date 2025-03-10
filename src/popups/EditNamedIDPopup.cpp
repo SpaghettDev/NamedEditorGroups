@@ -212,7 +212,7 @@ void EditNamedIDPopup<nid>::onSaveButton(CCObject*)
 	else if (auto res = NIDManager::saveNamedID<nid>(std::move(namedIDStr), id.unwrap()); res.isErr())
 		return ng::utils::cocos::createNotificationToast(this, res.unwrapErr(), 1.f, 45.f);
 
-	ng::utils::editor::refreshObjectLabels(GEODE_DESKTOP(true) GEODE_MOBILE(false));
+	ng::utils::editor::refreshObjectLabels();
 
 	if (m_saved_callback)
 		m_saved_callback();
