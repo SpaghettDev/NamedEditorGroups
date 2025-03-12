@@ -16,7 +16,13 @@ using namespace geode::prelude;
 // get the save data very early
 void LevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
 {
-	if (levelString.find(ng::constants::old::SAVE_OBJECT_STRING_START) != std::string_view::npos)
+#ifdef GEODE_IS_ANDROID
+	auto levelStr = std::string{ levelString };
+#else
+	auto& levelStr = levelString;
+#endif
+
+	if (levelStr.find(ng::constants::old::SAVE_OBJECT_STRING_START) != std::string_view::npos)
 		updateSaveObject(levelString);
 
 	std::string_view lvlStr = levelString;
@@ -47,11 +53,25 @@ void LevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
 
 void LevelEditorLayerData::updateSaveObject(gd::string& levelString)
 {
+#ifdef GEODE_IS_ANDROID
+	auto lvlStr = std::string{ levelString };
+
+	lvlStr.replace(
+		lvlStr.find(ng::constants::old::SAVE_OBJECT_STRING_START),
+		ng::constants::old::SAVE_OBJECT_STRING_START.length(),
+		ng::constants::SAVE_OBJECT_STRING_START
+	);
+#else
 	levelString.replace(
 		levelString.find(ng::constants::old::SAVE_OBJECT_STRING_START),
 		ng::constants::old::SAVE_OBJECT_STRING_START.length(),
 		ng::constants::SAVE_OBJECT_STRING_START
 	);
+#endif
+
+#ifdef GEODE_IS_ANDROID
+	levelString = lvlStr;
+#endif
 }
 
 TextGameObject* LevelEditorLayerData::getSaveObject()
