@@ -4,7 +4,7 @@ geode::Result<std::size_t> findBase64Index(char c)
 {
 	if (c == '=') return geode::Ok(0);
 
-	size_t index = ng::base64::impl::BASE64_CHARS.find(c);
+	std::size_t index = ng::base64::impl::BASE64_CHARS.find(c);
 	if (index == std::string::npos)
 		return geode::Err("Invalid Base64 character");
 

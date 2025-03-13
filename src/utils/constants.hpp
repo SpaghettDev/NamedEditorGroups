@@ -27,6 +27,8 @@ namespace ng
 		constexpr const char* VALID_NAMED_ID_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@_-,.!$^&*()+=/<>?\\01234567890";
 		constexpr std::string_view VALID_NAMED_ID_CHARACTERS_VIEW = VALID_NAMED_ID_CHARACTERS;
 
+		constexpr std::uint16_t MAX_DESCRIPTION_LENGTH = 100;
+
 		constexpr std::array TRIGGER_OBJECT_IDS_WITH_LABEL{
 			901u, 1616u, 1007u, 1049u,
 			1268u, 1346u, 2067u, 1347u,

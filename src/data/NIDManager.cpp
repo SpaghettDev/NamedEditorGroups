@@ -47,9 +47,9 @@ geode::Result<std::string> NIDManager::getNameForID(NID nid, short id)
 	);
 
 	if (it == ids.namedIDs.end())
-		return std::move(geode::Err("ID {} has no name associated to it", id));
+		return geode::Err("ID {} has no name associated to it", id);
 
-	return std::move(geode::Ok(it->first));
+	return geode::Ok(it->first);
 }
 
 geode::Result<short> NIDManager::getIDForName(NID nid, const std::string& name)
@@ -57,9 +57,9 @@ geode::Result<short> NIDManager::getIDForName(NID nid, const std::string& name)
 	const auto& ids = containerForID(nid);
 
 	if (!ids.namedIDs.contains(name))
-		return std::move(geode::Err("Name {} has no ID associated to it", name));
+		return geode::Err("Name {} has no ID associated to it", name);
 
-	return std::move(geode::Ok(ids[name]));
+	return geode::Ok(ids[name]);
 }
 
 geode::Result<> NIDManager::saveNamedID(NID nid, std::string&& name, short id)

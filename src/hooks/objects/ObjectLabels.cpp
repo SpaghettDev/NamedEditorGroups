@@ -2,9 +2,11 @@
 #include <Geode/modify/LevelEditorLayer.hpp>
 
 #include <NIDManager.hpp>
+#include <NIDExtrasManager.hpp>
 
 #include "utils.hpp"
 #include "constants.hpp"
+#include "globals.hpp"
 
 using namespace geode::prelude;
 
@@ -61,6 +63,7 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 
 		bool& hasIDNameLabel = effectGameObj->m_fields->m_has_id_name_label;
 		CCLabelBMFont* idNameLabel = effectGameObj->m_fields->m_id_name_label;
+		std::string idNameStr = "";
 		CCPoint idLabelPos;
 
 		switch (object->m_objectID)
@@ -95,8 +98,6 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 				}
 				break;
 		}
-
-		std::string idNameStr = "";
 
 		// counter object
 		if (object->m_objectID == 1615u)
@@ -151,6 +152,35 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 			idNameStr = NIDManager::getNameForID<NID::TIMER>(
 				effectGameObj->m_itemID
 			).unwrapOr("");
+
+		if (ng::globals::g_isEditorIDAPILoaded)
+		{
+			NID nid;
+			short id;
+
+			if (isTrigger)
+				nid = NID::GROUP;
+			else if (isCollision)
+				nid = NID::COLLISION;
+			else if (isCounter)
+				nid = NID::COUNTER;
+			else if (isTimer)
+				nid = NID::TIMER;
+
+			if (isTrigger)
+			{
+				idNameLabel->setVisible(
+					NIDExtrasManager::getIsNamedIDPreviewed(nid, effectGameObj->m_targetGroupID).unwrapOr(true) &&
+					NIDExtrasManager::getIsNamedIDPreviewed(nid, effectGameObj->m_centerGroupID).unwrapOr(true)
+				);
+			}
+			else
+			{
+				idNameLabel->setVisible(
+					NIDExtrasManager::getIsNamedIDPreviewed(nid, effectGameObj->m_itemID).unwrapOr(true)
+				);
+			}
+		}
 
 		idNameLabel->setString(idNameStr.c_str());
 		// 28.5f is content width of move trigger, which works well for all other triggers

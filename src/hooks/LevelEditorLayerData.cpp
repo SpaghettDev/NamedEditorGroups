@@ -7,8 +7,12 @@
 #include <Geode/binding/TextGameObject.hpp>
 
 #include <NIDManager.hpp>
+#include <NIDExtrasManager.hpp>
+
+#include <cvolton.level-id-api/include/EditorIDs.hpp>
 
 #include "../base64/base64.hpp"
+#include "globals.hpp"
 #include "constants.hpp"
 
 using namespace geode::prelude;
@@ -21,6 +25,13 @@ void LevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
 #else
 	auto& levelStr = levelString;
 #endif
+
+	if (ng::globals::g_isEditorIDAPILoaded)
+	{
+		int id;
+		EditorIDs::event::GetLevelID2("cvolton.level-id-api/v1/get-level-id-2", &id, this->m_level, true).post();
+		NIDExtrasManager::init(id);
+	}
 
 	if (levelStr.find(ng::constants::old::SAVE_OBJECT_STRING_START) != std::string_view::npos)
 		updateSaveObject(levelString);
@@ -118,12 +129,16 @@ void EditorPauseLayerSave::saveLevel()
 		saveObject->m_text = NIDManager::dumpNamedIDs();
 	}
 
+	if (NIDExtrasManager::isDirty())
+		NIDExtrasManager::save();
+
 	EditorPauseLayer::saveLevel();
 }
 
 void EditorPauseLayerSave::onExitEditor(CCObject* sender)
 {
 	NIDManager::reset();
+	NIDExtrasManager::reset();
 
 	EditorPauseLayer::onExitEditor(sender);
 }

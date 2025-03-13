@@ -13,6 +13,7 @@
 #include <NIDManager.hpp>
 
 #include "utils.hpp"
+#include "globals.hpp"
 
 using namespace geode::prelude;
 
@@ -66,6 +67,18 @@ bool NamedIDsPopup::setup()
 	this->setID("NamedIDsPopup");
 	this->setTitle("Edit Named IDs");
 
+	if (ng::globals::g_isEditorIDAPILoaded)
+	{
+		auto settingsButtonSpr = CCSprite::createWithSpriteFrameName("GJ_optionsBtn_001.png");
+		settingsButtonSpr->setScale(.5f);
+		auto settingsButton = CCMenuItemSpriteExtra::create(
+			settingsButtonSpr,
+			this,
+			menu_selector(NamedIDsPopup::onSettingsButton)
+		);
+		this->m_buttonMenu->addChildAtPosition(settingsButton, Anchor::TopLeft, { 65.f, -20.f });
+	}
+
 	auto filterButtonSpr = ButtonSprite::create(
 		CCSprite::createWithSpriteFrameName("GJ_filterIcon_001.png"),
 		30, 0, 30.5f, 1.f, false, "GJ_button_04.png", true
@@ -87,14 +100,14 @@ bool NamedIDsPopup::setup()
 	);
 	this->m_buttonMenu->addChildAtPosition(addButton, Anchor::TopRight, { -49.f, -20.f });
 
-	auto refreshButtonSpr = CCSprite::createWithSpriteFrameName("GJ_updateBtn_001.png");
-	refreshButtonSpr->setScale(.8f);
-	auto refreshButton = CCMenuItemSpriteExtra::create(
-		refreshButtonSpr,
+	auto shareButtonSpr = CCSprite::createWithSpriteFrameName("GJ_shareBtn_001.png");
+	shareButtonSpr->setScale(.48f);
+	auto shareButton = CCMenuItemSpriteExtra::create(
+		shareButtonSpr,
 		this,
-		menu_selector(NamedIDsPopup::onRefreshButton)
+		menu_selector(NamedIDsPopup::onShareButton)
 	);
-	this->m_buttonMenu->addChildAtPosition(refreshButton, Anchor::BottomLeft, { 3.f, 3.f });
+	this->m_buttonMenu->addChildAtPosition(shareButton, Anchor::BottomLeft, { 3.f, 3.f });
 
 	m_layer_bg = CCLayerColor::create({ 0, 0, 0, 75 });
 	m_layer_bg->setContentSize(SCROLL_LAYER_SIZE);
@@ -158,6 +171,14 @@ bool NamedIDsPopup::setup()
 	return true;
 }
 
+void NamedIDsPopup::onClose(CCObject* sender)
+{
+	if (ng::globals::g_isEditorIDAPILoaded)
+		ng::utils::editor::refreshObjectLabels();
+
+	Popup::onClose(sender);
+}
+
 void NamedIDsPopup::onClearSearchButton(CCObject*)
 {
 	m_search_input->setString("");
@@ -184,9 +205,17 @@ void NamedIDsPopup::onAddButton(CCObject*)
 	})->show();
 }
 
-void NamedIDsPopup::onRefreshButton(CCObject*)
+void NamedIDsPopup::onSettingsButton(CCObject*)
 {
-	ng::utils::editor::refreshObjectLabels();
+	m_adv_mode = !m_adv_mode;
+
+	for (auto& item : CCArrayExt<NamedIDItem*>(m_list->m_contentLayer->getChildren()))
+		item->showAdvancedOptions(m_adv_mode);
+}
+
+void NamedIDsPopup::onShareButton(CCObject*)
+{
+
 }
 
 void NamedIDsPopup::updateList(NID nid)

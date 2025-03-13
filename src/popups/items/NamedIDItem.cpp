@@ -3,8 +3,12 @@
 #include <Geode/binding/LevelEditorLayer.hpp>
 
 #include <NIDManager.hpp>
+#include <NIDExtrasManager.hpp>
+
+#include "../EditDescriptionPopup.hpp"
 
 #include "utils.hpp"
+#include "globals.hpp"
 
 using namespace geode::prelude;
 
@@ -45,11 +49,52 @@ bool NamedIDItem::init(NID idType, short id, std::string&& name, float width)
 		30.f, 0, .5f, true,
 		"goldFont.fnt", "GJ_button_04.png", 20.f
 	);
+	m_name_label->setCascadeColorEnabled(true);
 	m_name_menu->addChild(m_name_label);
+
+	auto previewButtonSpr = CCSprite::create("preview.png"_spr);
+	auto previewToggledButtonSpr = CCSprite::create("previewToggled.png"_spr);
+	previewButtonSpr->setScale(.3f);
+	previewToggledButtonSpr->setScale(.3f);
+	previewToggledButtonSpr->setVisible(false);
+	previewToggledButtonSpr->setID("toggled-sprite");
+	m_preview_button = CCMenuItemSpriteExtra::create(
+		previewButtonSpr,
+		this,
+		menu_selector(NamedIDItem::onPreviewButton)
+	);
+	m_preview_button->addChild(previewToggledButtonSpr);
+	previewToggledButtonSpr->setPosition(previewButtonSpr->getPosition());
+	m_preview_button->setVisible(false);
+	m_name_menu->addChild(m_preview_button);
+
+	if (ng::globals::g_isEditorIDAPILoaded)
+	{
+		if (!NIDExtrasManager::getIsNamedIDPreviewed(m_id_type, m_id).unwrapOr(true))
+		{
+			m_preview_toggled = false;
+			previewToggledButtonSpr->setVisible(true);
+			previewButtonSpr->setVisible(false);
+
+			m_name_label->setColor({ 125, 125, 125});
+		}
+	}
+
+	auto descriptionButtonSpr = CCSprite::create("description.png"_spr);
+	descriptionButtonSpr->setScale(.65f);
+	m_description_button = CCMenuItemSpriteExtra::create(
+		descriptionButtonSpr,
+		this,
+		menu_selector(NamedIDItem::onDescriptionButton)
+	);
+	m_description_button->setVisible(false);
+	m_name_menu->addChild(m_description_button);
 
 	m_name_menu->setLayout(
 		RowLayout::create()
 			->setAxisAlignment(AxisAlignment::Start)
+			->setAutoScale(false)
+			->setGap(4.f)
 	);
 	m_name_menu->getLayout()->ignoreInvisibleChildren(true);
 	this->addChildAtPosition(m_name_menu, Anchor::Left, { 10.f, .0 }, { .0f, .5f });
@@ -75,7 +120,7 @@ bool NamedIDItem::init(NID idType, short id, std::string&& name, float width)
 		CCSprite::createWithSpriteFrameName("GJ_completesIcon_001.png"),
 		30, 0, 30.5f, 1.f, false, "baseBtn.png"_spr, true
 	);
-	saveButtonSpr->setID("save-sprite");
+	saveButtonSpr->setID("toggled-sprite");
 	saveButtonSpr->setVisible(false);
 	m_edit_button = CCMenuItemSpriteExtra::create(
 		editInputButtonSpr,
@@ -124,7 +169,7 @@ void NamedIDItem::onEditButton(CCObject* sender)
 	if (m_editing && g_currentEditingItem && g_currentEditingItem != this)
 	{
 		g_currentEditingItem->m_editing = false;
-		g_currentEditingItem->m_edit_button->getChildByID("save-sprite")->setVisible(false);
+		g_currentEditingItem->m_edit_button->getChildByID("toggled-sprite")->setVisible(false);
 		g_currentEditingItem->m_edit_button->getNormalImage()->setVisible(true);
 		g_currentEditingItem->m_cancel_button->setVisible(false);
 
@@ -134,7 +179,7 @@ void NamedIDItem::onEditButton(CCObject* sender)
 		g_currentEditingItem->m_name_input->setEnabled(false);
 	}
 
-	button->getChildByID("save-sprite")->setVisible(m_editing);
+	button->getChildByID("toggled-sprite")->setVisible(m_editing);
 	button->getNormalImage()->setVisible(!m_editing);
 	m_cancel_button->setVisible(m_editing);
 
@@ -201,6 +246,33 @@ void NamedIDItem::onClearButton(CCObject*)
 	if (!m_editing) return;
 
 	m_name_input->setString("");
+}
+
+void NamedIDItem::onPreviewButton(CCObject*)
+{
+	m_preview_toggled = !m_preview_toggled;
+
+	m_preview_button->getNormalImage()->setVisible(m_preview_toggled);
+	m_preview_button->getChildByID("toggled-sprite")->setVisible(!m_preview_toggled);
+
+	static_cast<void>(
+		NIDExtrasManager::setNamedIDIsPreviewed(m_id_type, m_id, m_preview_toggled)
+	);
+
+	m_name_label->setColor(m_preview_toggled ? ccColor3B{ 255, 255, 255 } : ccColor3B{ 125, 125, 125 });
+}
+
+void NamedIDItem::onDescriptionButton(CCObject*)
+{
+	EditDescriptionPopup::create(m_id_type, m_id)->show();
+}
+
+void NamedIDItem::showAdvancedOptions(bool state)
+{
+	m_preview_button->setVisible(state);
+	m_description_button->setVisible(state);
+
+	m_name_menu->updateLayout();
 }
 
 NamedIDItem::~NamedIDItem()

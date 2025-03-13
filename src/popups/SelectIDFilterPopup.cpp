@@ -8,7 +8,7 @@ SelectIDFilterPopup* SelectIDFilterPopup::create(NID currNid, std::function<void
 {
 	auto ret = new SelectIDFilterPopup();
 
-	if (ret && ret->initAnchored(150.f, 135.f, currNid, std::move(onChangedCallback)))
+	if (ret && ret->initAnchored(150.f, 150.f, currNid, std::move(onChangedCallback)))
 		ret->autorelease();
 	else
 	{

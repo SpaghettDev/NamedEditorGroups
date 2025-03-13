@@ -23,6 +23,10 @@ namespace ng
 				return "Counter ID";
 			else if constexpr (nid == NID::TIMER)
 				return "Timer ID";
+			else if constexpr (nid == NID::COLOR)
+				return "Color ID";
+			else if constexpr (nid == NID::ANIMATION)
+				return "Animation ID";
 
 			throw "Invalid Named ID enum value";
 		}
@@ -37,6 +41,10 @@ namespace ng
 				return getNamedIDIndentifier<NID::COUNTER>();
 			else if (nid == NID::TIMER)
 				return getNamedIDIndentifier<NID::TIMER>();
+			else if (nid == NID::COLOR)
+				return getNamedIDIndentifier<NID::COLOR>();
+			else if (nid == NID::ANIMATION)
+				return getNamedIDIndentifier<NID::ANIMATION>();
 
 			throw "Invalid Named ID enum value";
 		}

@@ -1,5 +1,5 @@
 {
-	"geode": "4.2.0",
+	"geode": "4.3.1",
 	"gd": {
 		"win": "2.2074",
 		"android": "2.2074",
@@ -22,7 +22,11 @@
 		"editor", "offline", "enhancement", "utility"
 	],
 	"dependencies": {
-		"geode.node-ids": ">=1.19.0"
+		"geode.node-ids": ">=1.19.0",
+		"cvolton.level-id-api": {
+			"version": ">=1.1.0",
+			"importance": "suggested"
+		}
 	},
 	"resources": {
 		"sprites": ["resources/*.png"]

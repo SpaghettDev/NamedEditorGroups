@@ -4,7 +4,8 @@ template <class>
 struct ToFilterImpl;
 
 template <class... Args>
-struct ToFilterImpl<geode::DispatchEvent<Args...>> {
+struct ToFilterImpl<geode::DispatchEvent<Args...>>
+{
 	using type = geode::DispatchFilter<Args...>;
 };
 

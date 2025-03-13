@@ -9,14 +9,16 @@
 
 #include "NIDEnum.hpp"
 
-#ifdef GEODE_IS_WINDOWS
-	#ifdef SPAGHETTDEV_NAMED_EDITOR_GROUPS_EXPORTING
-		#define NAMED_EDITOR_GROUPS_DLL __declspec(dllexport)
+#ifndef NAMED_EDITOR_GROUPS_DLL
+	#ifdef GEODE_IS_WINDOWS
+		#ifdef SPAGHETTDEV_NAMED_EDITOR_GROUPS_EXPORTING
+			#define NAMED_EDITOR_GROUPS_DLL __declspec(dllexport)
+		#else
+			#define NAMED_EDITOR_GROUPS_DLL __declspec(dllimport)
+		#endif
 	#else
-		#define NAMED_EDITOR_GROUPS_DLL __declspec(dllimport)
+		#define NAMED_EDITOR_GROUPS_DLL __attribute__((visibility("default")))
 	#endif
-#else
-	#define NAMED_EDITOR_GROUPS_DLL __attribute__((visibility("default")))
 #endif
 
 namespace NIDManager
