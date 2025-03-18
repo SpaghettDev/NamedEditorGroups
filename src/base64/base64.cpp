@@ -1,12 +1,12 @@
 #include "base64.hpp"
 
-geode::Result<std::size_t> findBase64Index(char c)
+geode::Result<std::size_t> 	findBase64Index(char c)
 {
 	if (c == '=') return geode::Ok(0);
 
 	std::size_t index = ng::base64::impl::BASE64_CHARS.find(c);
 	if (index == std::string::npos)
-		return geode::Err("Invalid Base64 character");
+		return geode::Err("Invalid Base64 character '{}'", c);
 
 	return geode::Ok(index);
 }
@@ -67,4 +67,26 @@ geode::Result<std::string> ng::base64::base64URLDecode(const std::string_view in
 	}
 
 	return geode::Ok(decoded);
+}
+
+bool ng::base64::isBase64URLLike(const std::string_view input)
+{
+	if (input.length() % 4 != 0)
+		return false;
+
+	for (char c : input)
+		if (impl::BASE64_CHARS.find(c) == std::string::npos)
+			return false;
+
+	std::size_t padPos = input.find('=');
+	if (padPos != std::string::npos)
+	{
+		if (input.substr(padPos).find_first_not_of('=') != std::string::npos)
+			return false;
+
+		if (input.size() - padPos > 2)
+			return false;
+	}
+
+	return true;
 }

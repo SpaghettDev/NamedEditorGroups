@@ -15,5 +15,7 @@ namespace ng
 
 		geode::Result<std::string> base64URLEncode(const std::string_view input);
 		geode::Result<std::string> base64URLDecode(const std::string_view input);
+
+		bool isBase64URLLike(const std::string_view input);
 	}
 }

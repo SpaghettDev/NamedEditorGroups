@@ -35,3 +35,12 @@ endif()
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
 setup_geode_mod(${PROJECT_NAME})
+
+# Debug macro
+if (NOT DEFINED ENV{GITHUB_ACTIONS} AND (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo"))
+    target_compile_definitions(
+        ${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Debug>:NID_DEBUG_BUILD>
+            $<$<CONFIG:RelWithDebInfo>:NID_DEBUG_BUILD>
+    )
+endif()

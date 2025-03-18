@@ -1,5 +1,7 @@
 #include "LevelEditorLayerData.hpp"
 
+#include <Geode/utils/general.hpp>
+
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include <Geode/modify/EditorUI.hpp>
 
@@ -29,7 +31,7 @@ void LevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
 	if (ng::globals::g_isEditorIDAPILoaded)
 	{
 		int id;
-		EditorIDs::event::GetLevelID2("cvolton.level-id-api/v1/get-level-id-2", &id, this->m_level, true).post();
+		EditorIDs::Event::GetLevelID2("cvolton.level-id-api/v1/get-level-id-2", &id, this->m_level, true).post();
 		NIDExtrasManager::init(id);
 	}
 
@@ -51,11 +53,53 @@ void LevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
 		);
 		std::string_view saveObjStr = intermediateStr.substr(0, intermediateStr.find(';'));
 
-		// TODO: maybe do something here idk
 		if (auto data = ng::base64::base64URLDecode(saveObjStr))
-			NIDManager::importNamedIDs(data.unwrap());
+		{
+			if (auto importRes = NIDManager::importNamedIDs(data.unwrap()); importRes.isErr())
+			{
+				m_fields->m_had_error = true;
+
+				auto errorPopup = FLAlertLayer::create(
+					nullptr,
+					"Error importing NamedIDs",
+					fmt::format(
+						"<cr>{}</c>\n"
+						"Save string has been copied to clipboard "
+						"and the save object has been deleted.",
+						importRes.unwrapErr()
+					),
+					"OK",
+					nullptr,
+					350.f
+				);
+				errorPopup->m_scene = this;
+				errorPopup->show();
+
+				geode::utils::clipboard::write(std::string{ saveObjStr });
+			}
+		}
 		else
-			log::warn("Unable to import Named IDs! Error: {}", data.unwrapErr());
+		{
+			m_fields->m_had_error = true;
+
+			auto errorPopup = FLAlertLayer::create(
+				nullptr,
+				"Error importing NamedIDs",
+				fmt::format(
+					"Unable to decode base64 in NamedIDS: <cr>{}</c>\n"
+					"Save string has been copied to clipboard "
+					"and the save object has been deleted.",
+					data.unwrapErr()
+				),
+				"OK",
+				nullptr,
+				350.f
+			);
+			errorPopup->m_scene = this;
+			errorPopup->show();
+
+			geode::utils::clipboard::write(std::string{ saveObjStr });
+		}
 	}
 
 	LevelEditorLayer::createObjectsFromSetup(levelString);
@@ -91,6 +135,13 @@ TextGameObject* LevelEditorLayerData::getSaveObject()
 	this->m_currentLayer = -1;
 	auto object = static_cast<TextGameObject*>(this->objectAtPosition(ng::constants::SAVE_DATA_OBJECT_POS));
 	this->m_currentLayer = currentLayer;
+
+	if (m_fields->m_had_error)
+	{
+		this->removeObject(object, true);
+		object = nullptr;
+		m_fields->m_had_error = false;
+	}
 
 	return object;
 }

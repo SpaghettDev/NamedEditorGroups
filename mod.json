@@ -7,7 +7,7 @@
 	},
 	"id": "spaghettdev.named-editor-groups",
 	"name": "Named Editor Groups",
-	"version": "v1.0.4",
+	"version": "v2.0.0",
 	"developer": "SpaghettDev",
 	"description": "Abstract away IDs by giving them a name!",
 	"links": {
@@ -24,7 +24,7 @@
 	"dependencies": {
 		"geode.node-ids": ">=1.19.0",
 		"cvolton.level-id-api": {
-			"version": ">=1.1.0",
+			"version": ">=1.2.0",
 			"importance": "suggested"
 		}
 	},

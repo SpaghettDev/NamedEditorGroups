@@ -8,6 +8,7 @@
 
 #include "AddNamedIDPopup.hpp"
 #include "SelectIDFilterPopup.hpp"
+#include "SharePopup.hpp"
 #include "items/NamedIDItem.hpp"
 
 #include <NIDManager.hpp>
@@ -215,7 +216,7 @@ void NamedIDsPopup::onSettingsButton(CCObject*)
 
 void NamedIDsPopup::onShareButton(CCObject*)
 {
-
+	SharePopup::create()->show();
 }
 
 void NamedIDsPopup::updateList(NID nid)

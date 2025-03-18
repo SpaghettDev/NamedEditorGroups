@@ -8,7 +8,7 @@ SelectIDFilterPopup* SelectIDFilterPopup::create(NID currNid, std::function<void
 {
 	auto ret = new SelectIDFilterPopup();
 
-	if (ret && ret->initAnchored(150.f, 150.f, currNid, std::move(onChangedCallback)))
+	if (ret && ret->initAnchored(150.f, 190.f, currNid, std::move(onChangedCallback)))
 		ret->autorelease();
 	else
 	{
@@ -27,16 +27,16 @@ bool SelectIDFilterPopup::setup(NID currNid, std::function<void(NID)>&& onChange
 	this->setTitle("Filter Named IDs");
 
 	m_toggles_menu = CCMenu::create();
-	m_toggles_menu->setContentSize({ 130.f, 80.f });
+	m_toggles_menu->setContentSize({ 130.f, 130.f });
 	m_toggles_menu->setLayout(
 		ColumnLayout::create()
 			->setAxisReverse(true)
 			->setGap(10.f)
 	);
-	m_toggles_menu->setPosition({ 75.5f, 58.f });
+	m_toggles_menu->setPosition({ 75.5f, 85.f });
 	this->m_buttonMenu->addChild(m_toggles_menu);
 
-	for (NID nid = NID::GROUP; nid < NID::DYNAMIC_COUNTER_TIMER; nid = static_cast<NID>(static_cast<int>(nid) + 1))
+	for (NID nid = NID::GROUP; nid <= NID::_INTERNAL_TLAST; nid = static_cast<NID>(static_cast<int>(nid) + 1))
 	{
 		auto toggleMenu = CCMenu::create();
 		toggleMenu->setContentSize({ 150.f, 50.f });

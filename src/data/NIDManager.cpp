@@ -133,24 +133,54 @@ std::string NIDManager::dumpNamedIDs()
 	);
 }
 
-void NIDManager::importNamedIDs(const std::string& str)
+geode::Result<> NIDManager::importNamedIDs(const std::string& str)
 {
 	auto strView = std::string_view{ std::move(str) };
 
 	auto firstDelimPos = strView.find('|');
 	auto secondDelimPos = strView.find('|', firstDelimPos + 1);
 	auto thirdDelimPos = strView.find('|', secondDelimPos + 1);
+	auto fourthDelimPos = strView.find('|', thirdDelimPos + 1);
+	auto fifthDelimPos = strView.find('|', fourthDelimPos + 1);
+
+	if (
+		firstDelimPos == std::string_view::npos ||
+		secondDelimPos == std::string_view::npos
+	)
+		return geode::Err("Malformed NamedIDs string: Required delimiters not present");
 
 	auto groupsStr = strView.substr(0, firstDelimPos);
 	auto blocksStr = strView.substr(firstDelimPos + 1, secondDelimPos - firstDelimPos - 1);
 	auto itemsStr = strView.substr(secondDelimPos + 1, thirdDelimPos - secondDelimPos - 1);
+	// these were added in later updates
 	auto timersStr = thirdDelimPos == std::string::npos
-		? "" : strView.substr(thirdDelimPos + 1);
+		? "" : strView.substr(thirdDelimPos + 1, fourthDelimPos - thirdDelimPos - 1);
+	auto colorsStr = fourthDelimPos == std::string::npos
+		? "" : strView.substr(fourthDelimPos + 1, fifthDelimPos - fourthDelimPos - 1);
+	auto animationsStr = fifthDelimPos == std::string::npos
+		? "" : strView.substr(fifthDelimPos + 1);
 
-	g_namedGroups = g_namedGroups.from(std::move(groupsStr));
-	g_namedCollisions = g_namedCollisions.from(std::move(blocksStr));
-	g_namedCounters = g_namedCounters.from(std::move(itemsStr));
-	g_namedTimers = g_namedTimers.from(std::move(timersStr));
+	if (auto&& namedGroupsRes = NamedIDs::from(std::move(groupsStr)); namedGroupsRes.isOk())
+		g_namedGroups = std::move(namedGroupsRes.unwrap());
+	else
+		return geode::Err("Unable to parse Group NamedIDs: {}", namedGroupsRes.unwrapErr());
+
+	if (auto&& namedCollisionsRes = NamedIDs::from(std::move(blocksStr)); namedCollisionsRes.isOk())
+		g_namedCollisions = std::move(namedCollisionsRes.unwrap());
+	else
+		return geode::Err("Unable to parse Collision NamedIDs: {}", namedCollisionsRes.unwrapErr());
+
+	if (auto&& namedCountersRes = NamedIDs::from(std::move(itemsStr)); namedCountersRes.isOk())
+		g_namedCounters = std::move(namedCountersRes.unwrap());
+	else
+		return geode::Err("Unable to parse Counter NamedIDs: {}", namedCountersRes.unwrapErr());
+
+	if (auto&& namedTimersRes = NamedIDs::from(std::move(timersStr)); namedTimersRes.isOk())
+		g_namedTimers = std::move(namedTimersRes.unwrap());
+	else
+		return geode::Err("Unable to parse Counter NamedIDs: {}", namedTimersRes.unwrapErr());
+
+	return geode::Ok();
 }
 
 void NIDManager::reset()

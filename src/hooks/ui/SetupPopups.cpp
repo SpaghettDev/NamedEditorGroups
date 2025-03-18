@@ -275,7 +275,9 @@ void NIDSetupTriggerPopup::valueChanged(int property, float value)
 	SetupTriggerPopup::valueChanged(property, value);
 
 	if (!ng::constants::DNAMIC_PROPERTIES_TOGGLES.contains(this->m_gameObject->m_objectID)) return;
-	for (auto const& [key, val] : ng::constants::DNAMIC_PROPERTIES_TOGGLES.at(this->m_gameObject->m_objectID)) {
+
+	for (auto const& [key, val] : ng::constants::DNAMIC_PROPERTIES_TOGGLES.at(this->m_gameObject->m_objectID))
+	{
 		if (val.togglePropID != property) continue;
 
 		NID type = val.counterState == value ? NID::COUNTER : NID::TIMER;

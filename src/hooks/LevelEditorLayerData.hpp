@@ -7,6 +7,11 @@ using namespace geode::prelude;
 
 struct LevelEditorLayerData : geode::Modify<LevelEditorLayerData, LevelEditorLayer>
 {
+	struct Fields
+	{
+		bool m_had_error;
+	};
+
 	void createObjectsFromSetup(gd::string&);
 
 
