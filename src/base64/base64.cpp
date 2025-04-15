@@ -71,7 +71,7 @@ geode::Result<std::string> ng::base64::base64URLDecode(const std::string_view in
 
 bool ng::base64::isBase64URLLike(const std::string_view input)
 {
-	if (input.length() % 4 != 0)
+	if (input.size() % 4 != 0)
 		return false;
 
 	for (char c : input)

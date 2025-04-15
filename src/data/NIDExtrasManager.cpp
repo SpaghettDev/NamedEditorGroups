@@ -315,7 +315,7 @@ void NIDExtrasManager::save()
 		{
 			fileOut.write(reinterpret_cast<const char*>(&pair.first), sizeof(pair.first));
 
-			std::size_t descLen = pair.second.description.length();
+			std::size_t descLen = pair.second.description.size();
 			fileOut.write(reinterpret_cast<const char*>(&descLen), sizeof(descLen));
 			fileOut.write(pair.second.description.c_str(), descLen);
 

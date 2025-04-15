@@ -38,7 +38,7 @@ geode::Result<std::pair<std::string, std::string>> ng::utils::parseNamedIDString
 				fmt::format("{}", ng::utils::numberFromStart(str).unwrap())
 			});
 		}
-		else if (idPos == format.length() - 4)
+		else if (idPos == format.size() - 4)
 		{
 			std::string name;
 			name = str.substr(0, str.find_first_of("0123465789"));
@@ -58,17 +58,17 @@ geode::Result<std::pair<std::string, std::string>> ng::utils::parseNamedIDString
 
 	if (namePos < idPos)
 		return geode::Ok(std::pair{
-			str.substr(0, sepPos), str.substr(sepPos + separator.length()) }
+			str.substr(0, sepPos), str.substr(sepPos + separator.size()) }
 		);
 	else
 		return geode::Ok(std::pair{
-			str.substr(sepPos + separator.length()), str.substr(0, sepPos) }
+			str.substr(sepPos + separator.size()), str.substr(0, sepPos) }
 		);
 }
 
 geode::Result<> ng::utils::sanitizeName(const std::string_view name)
 {
-	if (name.length() > ng::constants::MAX_NAMED_ID_LENGTH)
+	if (name.size() > ng::constants::MAX_NAMED_ID_LENGTH)
 		return geode::Err("Name is too long!");
 
 	for (char c : name)
