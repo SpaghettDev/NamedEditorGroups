@@ -1,10 +1,12 @@
 #include <Geode/modify/SetGroupIDLayer.hpp>
 
-#include "../LevelEditorLayerData.hpp"
-#include "../popups/EditNamedIDPopup.hpp"
-
 #include <NIDManager.hpp>
 
+#include "../LevelEditorLayerData.hpp"
+#include "../popups/EditNamedIDPopup.hpp"
+#include "../popups/NamedIDsPopup.hpp"
+
+#include "utils.hpp"
 #include "constants.hpp"
 
 struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
@@ -45,7 +47,7 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 		auto groupNameInput = geode::TextInput::create(100.f, "Unnamed");
 		groupNameInput->setContentHeight(20.f);
 		groupNameInput->setFilter(ng::constants::VALID_NAMED_ID_CHARACTERS);
-		groupNameInput->setCallback([&](const std::string& str) { NIDSetGroupIDLayer::onEditInput(this, std::move(str)); });
+		groupNameInput->setCallback([&](const std::string& str) { NIDSetGroupIDLayer::onEditInput(this, str); });
 		groupNameInput->setPosition({ 60.f, -13.f });
 		groupNameInput->setID("group-name-input"_spr);
 		groupNameInput->getBGSprite()->setContentSize({ 220.f, 55.f });
@@ -83,6 +85,22 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 				->setCrossAxisAlignment(AxisAlignment::End)
 		);
 
+
+		if (auto actionsMenu = this->m_mainLayer->getChildByID("actions-menu"))
+		{
+			auto nidSettingsSpr = CCSprite::createWithSpriteFrameName("GJ_menuBtn_001.png");
+			nidSettingsSpr->setScale(.65f);
+			auto nidSettingsButton = CCMenuItemSpriteExtra::create(
+				nidSettingsSpr,
+				this,
+				menu_selector(NIDSetGroupIDLayer::onNIDSettingsButton)
+			);
+			nidSettingsButton->setPosition({ 185.f, -115.f });
+			nidSettingsButton->setID("settings-button"_spr);
+			actionsMenu->addChild(nidSettingsButton);
+			actionsMenu->updateLayout();
+		}
+
 		return true;
 	}
 
@@ -95,6 +113,13 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 		m_fields->m_input->setString(
 			NIDManager::getNameForID<NID::GROUP>(this->m_groupIDValue).unwrapOr("")
 		);
+	}
+
+	void onClose(CCObject* sender)
+	{
+		ng::utils::editor::refreshObjectLabels();
+
+		SetGroupIDLayer::onClose(sender);
 	}
 
 	void textChanged(CCTextInputNode* input)
@@ -115,40 +140,30 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 
 		const auto LEL = LevelEditorLayer::get();
 		bool isOnlyObject = static_cast<bool>(this->m_targetObject);
-		std::set<short> uniqueIDs;
+		std::set<short> commonIDs;
 		std::set<short> groupParentIDs;
-
+		std::vector<std::set<short>> groupIDs;
+		
 		if (!isOnlyObject)
 		{
-			auto firstObject = static_cast<GameObject*>(this->m_targetObjects->firstObject());
+			groupIDs.reserve(this->m_targetObjects->count());
 
-			if (firstObject->m_groups)
-				uniqueIDs.insert(firstObject->m_groups->begin(), firstObject->m_groups->end());
-
-			for (bool first = true; auto obj : CCArrayExt<GameObject*>(this->m_targetObjects))
+			for (auto obj : CCArrayExt<GameObject*>(this->m_targetObjects))
 			{
 				if (obj->m_groups)
 				{
 					for (short id : *obj->m_groups)
 						if (obj == LEL->m_parentGroupsDict->objectForKey(id))
 							groupParentIDs.insert(id);
-				}
 
-				if (first)
-				{
-					first = false;
-					continue;
-				}
-
-				if (obj->m_groups)
-				{
-					for (short id : *obj->m_groups)
-						if (uniqueIDs.contains(id))
-							uniqueIDs.erase(id);
-						else
-							uniqueIDs.insert(id);
+					std::set<short> objIDs;
+					objIDs.insert(obj->m_groups->begin(), obj->m_groups->end());
+					objIDs.erase(0);
+					groupIDs.emplace_back(std::move(objIDs));
 				}
 			}
+
+			commonIDs = ng::utils::multiSetIntersection(std::move(groupIDs));
 		}
 		else if (LEL->m_parentGroupsDict && this->m_targetObject->m_groups)
 		{
@@ -192,7 +207,7 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 				else
 					buttonSpriteSpr = isGroupParent
 						? "GJ_button_03.png"
-						: uniqueIDs.contains(button->getTag())
+						: !commonIDs.contains(button->getTag())
 							? "GJ_button_05.png"
 							: "GJ_button_04.png";
 
@@ -277,6 +292,11 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 				this->textChanged(this->m_groupIDInput);
 				this->updateGroupIDButtons();
 		})->show();
+	}
+
+	void onNIDSettingsButton(CCObject*)
+	{
+		NamedIDsPopup::create()->show();
 	}
 
 	static void onEditInput(NIDSetGroupIDLayer* self, const std::string& str)

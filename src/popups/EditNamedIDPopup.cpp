@@ -66,13 +66,13 @@ bool EditNamedIDPopup<nid>::setup(short id, std::function<void(short)>&& changed
 	m_id_input->setCommonFilter(CommonFilter::Uint);
 	m_id_input->setMaxCharCount(4);
 	m_id_input->setPosition({ 120.f, 90.f });
-	m_id_input->setCallback([&](const std::string& str) { EditNamedIDPopup::onEditIDInput(this, std::move(str)); });
+	m_id_input->setCallback([&](const std::string& str) { EditNamedIDPopup::onEditIDInput(this, str); });
 	this->m_buttonMenu->addChild(m_id_input);
 
 	m_named_id_input = geode::TextInput::create(100.f, "Unnamed");
 	m_named_id_input->setFilter(ng::constants::VALID_NAMED_ID_CHARACTERS);
 	m_named_id_input->setPosition({ 120.f, 40.f });
-	m_named_id_input->setCallback([&](const std::string& str) { EditNamedIDPopup::onEditIDNameInput(this, std::move(str)); });
+	m_named_id_input->setCallback([&](const std::string& str) { EditNamedIDPopup::onEditIDNameInput(this, str); });
 	this->m_buttonMenu->addChild(m_named_id_input);
 
 	auto clearNamedIDButton = CCMenuItemSpriteExtra::create(
@@ -112,11 +112,12 @@ void EditNamedIDPopup<nid>::onInfoIcon(CCObject*)
 		"Help",
 		fmt::format(
 			"You can abstract <ca>IDs</c> away by giving them a <cg>name</c>.\n"
-			"The ID's name <cr>cannot</c> exceed <cy>20 characters</c> "
+			"The ID's name <cr>cannot</c> exceed <cy>{} characters</c> "
 			"<cg>(it's recommended to keep them shorter than 14 characters)</c>. "
 			"It is also recommended that the ID's name <cy>shouldn't</c> only contain <cy>numbers</c> or <cy>only symbols</c>.\n"
 			"And finally each ID <cr>must</c> have its own <cy>unique name</c>.\n"
 			"Valid character are: <cg>{}</c>",
+			ng::constants::MAX_NAMED_ID_LENGTH,
 			ng::constants::VALID_NAMED_ID_CHARACTERS
 		),
 		"Ok", nullptr,
@@ -241,3 +242,5 @@ template class EditNamedIDPopup<NID::GROUP>;
 template class EditNamedIDPopup<NID::COLLISION>;
 template class EditNamedIDPopup<NID::COUNTER>;
 template class EditNamedIDPopup<NID::TIMER>;
+template class EditNamedIDPopup<NID::EFFECT>;
+template class EditNamedIDPopup<NID::COLOR>;

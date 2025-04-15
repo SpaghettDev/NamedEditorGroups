@@ -10,7 +10,7 @@
 
 #include "globals.hpp"
 
-#define LEVEL_ID_API_CHECK()                \
+#define LEVEL_ID_API_CHECK()                 \
 	if (!ng::globals::g_isEditorIDAPILoaded) \
 		return geode::Err("Level ID API is not installed")
 
@@ -21,8 +21,10 @@ static NamedIDsExtras g_namedGroupIDsExtras;
 static NamedIDsExtras g_namedCollisionIDsExtras;
 static NamedIDsExtras g_namedCounterIDsExtras;
 static NamedIDsExtras g_namedTimerIDsExtras;
+static NamedIDsExtras g_namedEffectIDsExtras;
+static NamedIDsExtras g_namedColorIDsExtras;
 
-NamedIDsExtras& containerForID(NID id)
+NamedIDsExtras& containerForNID(NID id)
 {
 	switch (id)
 	{
@@ -39,6 +41,12 @@ NamedIDsExtras& containerForID(NID id)
 		case NID::TIMER:
 			return g_namedTimerIDsExtras;
 
+		case NID::EFFECT:
+			return g_namedEffectIDsExtras;
+
+		case NID::COLOR:
+			return g_namedColorIDsExtras;
+
 		default:
 			throw "Invalid NID enum value";
 	}
@@ -49,7 +57,7 @@ geode::Result<bool> NIDExtrasManager::getIsNamedIDPreviewed(NID nid, short id)
 {
 	LEVEL_ID_API_CHECK();
 
-	const auto& ids = containerForID(nid);
+	const auto& ids = containerForNID(nid);
 
 	if (!ids.extras.contains(id))
 		return geode::Ok(true);
@@ -72,7 +80,7 @@ geode::Result<std::string> NIDExtrasManager::getNamedIDDescription(NID nid, shor
 {
 	LEVEL_ID_API_CHECK();
 
-	const auto& ids = containerForID(nid);
+	const auto& ids = containerForNID(nid);
 
 	if (!ids.extras.contains(id))
 		return geode::Err("ID {} doesn't have a description", id);
@@ -95,15 +103,12 @@ geode::Result<> NIDExtrasManager::setNamedIDIsPreviewed(NID nid, short id, bool 
 {
 	LEVEL_ID_API_CHECK();
 
-	auto& ids = containerForID(nid);
+	auto& ids = containerForNID(nid);
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 	if (!ids.extras.contains(id))
 		ids.extras[id] = { "", state };
 	else
 		ids[id].isPreviewed = state;
-#pragma clang diagnostic pop
 
 	NewNamedIDExtrasEvent(nid, id, ids[id]).post();
 	g_isDirty = true;
@@ -126,15 +131,12 @@ geode::Result<> NIDExtrasManager::setNamedIDDescription(NID nid, short id, std::
 {
 	LEVEL_ID_API_CHECK();
 
-	auto& ids = containerForID(nid);
+	auto& ids = containerForNID(nid);
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 	if (!ids.extras.contains(id))
 		ids.extras[id] = { std::move(description), true };
 	else
 		ids[id].description = std::move(description);
-#pragma clang diagnostic pop
 
 	NewNamedIDExtrasEvent(nid, id, ids[id]).post();
 	g_isDirty = true;
@@ -153,16 +155,35 @@ geode::Result<> NIDExtrasManager::setNamedIDDescription(NID nid, std::string&& n
 	return setNamedIDDescription(nid, res.unwrap(), std::move(description));
 }
 
+geode::Result<NamedIDExtra> NIDExtrasManager::getNamedIDExtras(NID nid, short id)
+{
+	LEVEL_ID_API_CHECK();
+
+	auto& ids = containerForNID(nid);
+	if (!ids.extras.contains(id))
+		return geode::Err("ID {} doesn't have extra data", id);
+
+	return geode::Ok(ids.extras[id]);
+}
+
+geode::Result<NamedIDExtra> NIDExtrasManager::getNamedIDExtras(NID nid, std::string&& name)
+{
+	LEVEL_ID_API_CHECK();
+
+	auto res = NIDManager::getIDForName(nid, std::move(name));
+	if (res.isErr())
+		return geode::Err(res.unwrapErr());
+
+	return getNamedIDExtras(nid, res.unwrap());
+}
+
 geode::Result<> NIDExtrasManager::setNamedIDExtras(NID nid, short id, NamedIDExtra&& extras)
 {
 	LEVEL_ID_API_CHECK();
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-	containerForID(nid).extras[id] = std::move(extras);
-#pragma clang diagnostic pop
+	containerForNID(nid).extras[id] = std::move(extras);
 
-	NewNamedIDExtrasEvent(nid, id, containerForID(nid).extras[id]).post();
+	NewNamedIDExtrasEvent(nid, id, containerForNID(nid).extras[id]).post();
 	g_isDirty = true;
 
 	return geode::Ok();
@@ -183,7 +204,7 @@ geode::Result<> NIDExtrasManager::removeNamedIDExtras(NID nid, short id)
 {
 	LEVEL_ID_API_CHECK();
 
-	auto& ids = containerForID(nid);
+	auto& ids = containerForNID(nid);
 
 	if (!ids.extras.contains(id))
 		return geode::Err("ID {} doesn't have extra data", id);
@@ -205,6 +226,13 @@ geode::Result<> NIDExtrasManager::removeNamedIDExtras(NID nid, std::string&& nam
 		return geode::Err(res.unwrapErr());
 
 	return removeNamedIDExtras(nid, res.unwrap());
+}
+
+geode::Result<NamedIDsExtras> NIDExtrasManager::getNIDExtras(NID nid)
+{
+	LEVEL_ID_API_CHECK();
+
+	return geode::Ok(containerForNID(nid));
 }
 
 bool NIDExtrasManager::isDirty() { return g_isDirty; }

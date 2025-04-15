@@ -1,14 +1,16 @@
 #include "SelectIDFilterPopup.hpp"
 
+#include <NIDManager.hpp>
+
 #include "utils.hpp"
 
 using namespace geode::prelude;
 
-SelectIDFilterPopup* SelectIDFilterPopup::create(NID currNid, std::function<void(NID)>&& onChangedCallback)
+SelectIDFilterPopup* SelectIDFilterPopup::create(NID currentNid, std::function<void(NID)>&& onChangedCallback)
 {
 	auto ret = new SelectIDFilterPopup();
 
-	if (ret && ret->initAnchored(150.f, 190.f, currNid, std::move(onChangedCallback)))
+	if (ret && ret->initAnchored(220.f, 130.f, currentNid, std::move(onChangedCallback)))
 		ret->autorelease();
 	else
 	{
@@ -19,7 +21,7 @@ SelectIDFilterPopup* SelectIDFilterPopup::create(NID currNid, std::function<void
 	return ret;
 }
 
-bool SelectIDFilterPopup::setup(NID currNid, std::function<void(NID)>&& onChangedCallback)
+bool SelectIDFilterPopup::setup(NID currentNid, std::function<void(NID)>&& onChangedCallback)
 {
 	m_on_changed_callback = std::move(onChangedCallback);
 
@@ -27,13 +29,19 @@ bool SelectIDFilterPopup::setup(NID currNid, std::function<void(NID)>&& onChange
 	this->setTitle("Filter Named IDs");
 
 	m_toggles_menu = CCMenu::create();
-	m_toggles_menu->setContentSize({ 130.f, 130.f });
+	m_toggles_menu->setContentSize({ 200.f, 75.f });
 	m_toggles_menu->setLayout(
 		ColumnLayout::create()
+			->setAutoScale(true)
 			->setAxisReverse(true)
+			->setGrowCrossAxis(true)
+			->setCrossAxisReverse(true)
+			->setCrossAxisOverflow(false)
+			->setAxisAlignment(AxisAlignment::Even)
+			->setCrossAxisAlignment(AxisAlignment::Between)
 			->setGap(10.f)
 	);
-	m_toggles_menu->setPosition({ 75.5f, 85.f });
+	m_toggles_menu->setPosition({ 110.f, 55.f });
 	this->m_buttonMenu->addChild(m_toggles_menu);
 
 	for (NID nid = NID::GROUP; nid <= NID::_INTERNAL_TLAST; nid = static_cast<NID>(static_cast<int>(nid) + 1))
@@ -60,10 +68,13 @@ bool SelectIDFilterPopup::setup(NID currNid, std::function<void(NID)>&& onChange
 		nidButton->setSizeMult(1.2f);
 		nidButton->setTag(static_cast<int>(nid));
 		nidButton->setID("toggle-button");
-		nidButton->toggle(nid == currNid);
+		nidButton->toggle(nid == currentNid);
 		toggleMenu->addChild(nidButton);
 
-		auto nidLabel = CCLabelBMFont::create(ng::utils::getNamedIDIndentifier(nid).data(), "bigFont.fnt");
+		auto nidLabel = CCLabelBMFont::create(
+			fmt::format("{} ({})", ng::utils::getNamedIDIndentifier(nid), NIDManager::getNamedIDs(nid).size()).c_str(),
+			"bigFont.fnt"
+		);
 		nidLabel->limitLabelWidth(100.f, 1.f, .1f);
 		toggleMenu->addChild(nidLabel);
 

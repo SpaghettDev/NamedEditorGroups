@@ -21,13 +21,6 @@
 	"tags": [
 		"editor", "offline", "enhancement", "utility"
 	],
-	"dependencies": {
-		"geode.node-ids": ">=1.19.0",
-		"cvolton.level-id-api": {
-			"version": ">=1.2.0",
-			"importance": "suggested"
-		}
-	},
 	"resources": {
 		"sprites": ["resources/*.png"]
 	},
@@ -35,5 +28,15 @@
 		"include": [
 			"api/*.hpp"
 		]
+	},
+	"settings": {
+		"auto-name-format": {
+			"type": "string",
+			"name": "Auto Name Format",
+			"description": "The format to use when auto naming groups (Build helper, Re-Group). Use {id} for the ID and {name} for the name.",
+			"default": "{name}-{id}",
+			"match": "^(?=.*\\{name\\})(?=.*\\{id\\})(?!.*\\{\\}).*",
+			"filter": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@_-,.!$^&*()+=/<>?\\01234567890{}[]|~`%:;\"'"
+		}
 	}
 }

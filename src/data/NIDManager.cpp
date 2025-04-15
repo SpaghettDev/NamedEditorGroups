@@ -12,8 +12,10 @@ static NamedIDs g_namedGroups;
 static NamedIDs g_namedCollisions;
 static NamedIDs g_namedCounters;
 static NamedIDs g_namedTimers;
+static NamedIDs g_namedEffects;
+static NamedIDs g_namedColors;
 
-NamedIDs& containerForID(NID id)
+NamedIDs& containerForNID(NID id)
 {
 	switch (id)
 	{
@@ -30,6 +32,12 @@ NamedIDs& containerForID(NID id)
 		case NID::TIMER:
 			return g_namedTimers;
 
+		case NID::EFFECT:
+			return g_namedEffects;
+
+		case NID::COLOR:
+			return g_namedColors;
+
 		default:
 			throw "Invalid NID enum value";
 	}
@@ -38,7 +46,7 @@ NamedIDs& containerForID(NID id)
 
 geode::Result<std::string> NIDManager::getNameForID(NID nid, short id)
 {
-	const auto& ids = containerForID(nid);
+	const auto& ids = containerForNID(nid);
 
 	auto it = std::find_if(
 		ids.namedIDs.begin(),
@@ -54,7 +62,7 @@ geode::Result<std::string> NIDManager::getNameForID(NID nid, short id)
 
 geode::Result<short> NIDManager::getIDForName(NID nid, const std::string& name)
 {
-	const auto& ids = containerForID(nid);
+	const auto& ids = containerForNID(nid);
 
 	if (!ids.namedIDs.contains(name))
 		return geode::Err("Name {} has no ID associated to it", name);
@@ -70,7 +78,7 @@ geode::Result<> NIDManager::saveNamedID(NID nid, std::string&& name, short id)
 	if (auto sanitizeRes = ng::utils::sanitizeName(name); sanitizeRes.isErr())
 		return sanitizeRes;
 
-	auto& ids = containerForID(nid);
+	auto& ids = containerForNID(nid);
 
 	if (auto idName = getNameForID(nid, id); idName.isOk())
 		ids.namedIDs.erase(idName.unwrap());
@@ -85,7 +93,7 @@ geode::Result<> NIDManager::saveNamedID(NID nid, std::string&& name, short id)
 
 geode::Result<> NIDManager::removeNamedID(NID nid, std::string&& name)
 {
-	auto& ids = containerForID(nid);
+	auto& ids = containerForNID(nid);
 
 	if (!ids.namedIDs.contains(name))
 		return geode::Err("No saved Named ID {}", name);
@@ -100,7 +108,7 @@ geode::Result<> NIDManager::removeNamedID(NID nid, std::string&& name)
 
 geode::Result<> NIDManager::removeNamedID(NID nid, short id)
 {
-	auto& ids = containerForID(nid);
+	auto& ids = containerForNID(nid);
 	auto&& name = getNameForID(nid, id);
 
 	if (name.isErr())
@@ -116,7 +124,7 @@ geode::Result<> NIDManager::removeNamedID(NID nid, short id)
 
 const std::unordered_map<std::string, short>& NIDManager::getNamedIDs(NID nid)
 {
-	return containerForID(nid).namedIDs;
+	return containerForNID(nid).namedIDs;
 }
 
 
@@ -125,23 +133,39 @@ bool NIDManager::isDirty() { return g_isDirty; }
 std::string NIDManager::dumpNamedIDs()
 {
 	return fmt::format(
-		"{}|{}|{}|{}",
+		"{}|{}|{}|{}|{}|{}",
 		g_namedGroups.dump(),
 		g_namedCollisions.dump(),
 		g_namedCounters.dump(),
-		g_namedTimers.dump()
+		g_namedTimers.dump(),
+		g_namedEffects.dump(),
+		g_namedColors.dump()
 	);
 }
 
 geode::Result<> NIDManager::importNamedIDs(const std::string& str)
 {
+	auto parseStr = [](NamedIDs& namedIDs, std::string_view&& str, const std::string_view name) -> geode::Result<> {
+		if (auto&& namedIDsRes = NamedIDs::from(std::move(str)))
+		{
+			namedIDs = std::move(namedIDsRes.unwrap());
+			return geode::Ok();
+		}
+		else
+			return geode::Err("Unable to parse {} NamedIDs: {}", name, namedIDsRes.unwrapErr());
+	};
+
 	auto strView = std::string_view{ std::move(str) };
 
 	auto firstDelimPos = strView.find('|');
 	auto secondDelimPos = strView.find('|', firstDelimPos + 1);
 	auto thirdDelimPos = strView.find('|', secondDelimPos + 1);
-	auto fourthDelimPos = strView.find('|', thirdDelimPos + 1);
-	auto fifthDelimPos = strView.find('|', fourthDelimPos + 1);
+	auto fourthDelimPos = thirdDelimPos == std::string_view::npos
+		? std::string_view::npos
+		: strView.find('|', thirdDelimPos + 1);
+	auto fifthDelimPos = fourthDelimPos == std::string_view::npos
+		? std::string_view::npos
+		: strView.find('|', fourthDelimPos + 1);
 
 	if (
 		firstDelimPos == std::string_view::npos ||
@@ -153,32 +177,33 @@ geode::Result<> NIDManager::importNamedIDs(const std::string& str)
 	auto blocksStr = strView.substr(firstDelimPos + 1, secondDelimPos - firstDelimPos - 1);
 	auto itemsStr = strView.substr(secondDelimPos + 1, thirdDelimPos - secondDelimPos - 1);
 	// these were added in later updates
-	auto timersStr = thirdDelimPos == std::string::npos
+	auto timersStr = thirdDelimPos == std::string_view::npos
 		? "" : strView.substr(thirdDelimPos + 1, fourthDelimPos - thirdDelimPos - 1);
-	auto colorsStr = fourthDelimPos == std::string::npos
+	auto effectsStr = fourthDelimPos == std::string_view::npos
 		? "" : strView.substr(fourthDelimPos + 1, fifthDelimPos - fourthDelimPos - 1);
-	auto animationsStr = fifthDelimPos == std::string::npos
-		? "" : strView.substr(fifthDelimPos + 1);
+	auto colorsStr = fifthDelimPos == std::string_view::npos
+		? "" : strView.substr(fifthDelimPos + 1, strView.size() - fifthDelimPos - 1);
 
-	if (auto&& namedGroupsRes = NamedIDs::from(std::move(groupsStr)); namedGroupsRes.isOk())
-		g_namedGroups = std::move(namedGroupsRes.unwrap());
-	else
-		return geode::Err("Unable to parse Group NamedIDs: {}", namedGroupsRes.unwrapErr());
+	if (auto res = parseStr(g_namedGroups, std::move(groupsStr), "Group"); res.isErr())
+		return res;
 
-	if (auto&& namedCollisionsRes = NamedIDs::from(std::move(blocksStr)); namedCollisionsRes.isOk())
-		g_namedCollisions = std::move(namedCollisionsRes.unwrap());
-	else
-		return geode::Err("Unable to parse Collision NamedIDs: {}", namedCollisionsRes.unwrapErr());
+	if (auto res = parseStr(g_namedCollisions, std::move(blocksStr), "Collision"); res.isErr())
+		return res;
 
-	if (auto&& namedCountersRes = NamedIDs::from(std::move(itemsStr)); namedCountersRes.isOk())
-		g_namedCounters = std::move(namedCountersRes.unwrap());
-	else
-		return geode::Err("Unable to parse Counter NamedIDs: {}", namedCountersRes.unwrapErr());
+	if (auto res = parseStr(g_namedCounters, std::move(itemsStr), "Counter"); res.isErr())
+		return res;
 
-	if (auto&& namedTimersRes = NamedIDs::from(std::move(timersStr)); namedTimersRes.isOk())
-		g_namedTimers = std::move(namedTimersRes.unwrap());
-	else
-		return geode::Err("Unable to parse Counter NamedIDs: {}", namedTimersRes.unwrapErr());
+	if (thirdDelimPos != std::string_view::npos)
+		if (auto res = parseStr(g_namedTimers, std::move(timersStr), "Timer"); res.isErr())
+			return res;
+
+	if (fourthDelimPos != std::string_view::npos)
+		if (auto res = parseStr(g_namedEffects, std::move(effectsStr), "Effect"); res.isErr())
+			return res;
+
+	if (fifthDelimPos != std::string_view::npos)
+		if (auto res = parseStr(g_namedColors, std::move(colorsStr), "Color"); res.isErr())
+			return res;
 
 	return geode::Ok();
 }
@@ -189,6 +214,8 @@ void NIDManager::reset()
 	g_namedCollisions.namedIDs.clear();
 	g_namedCounters.namedIDs.clear();
 	g_namedTimers.namedIDs.clear();
+	g_namedEffects.namedIDs.clear();
+	g_namedColors.namedIDs.clear();
 
 	g_isDirty = false;
 }

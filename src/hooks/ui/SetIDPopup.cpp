@@ -12,11 +12,11 @@ using namespace geode::prelude;
 NID nidForPopup(SetIDPopup* popup)
 {
 	// order is important here
-	if (typeinfo_cast<SetIDPopup*>(popup))
-		return NID::GROUP;
-	else if (typeinfo_cast<SetColorIDPopup*>(popup))
+	if (typeinfo_cast<SetColorIDPopup*>(popup))
 		return NID::COLOR;
 	else if (typeinfo_cast<FindObjectPopup*>(popup))
+		return NID::GROUP;
+	else if (typeinfo_cast<SetIDPopup*>(popup))
 		return NID::GROUP;
 
 	throw "Invalid SetIDPopup type!";
@@ -26,7 +26,7 @@ struct NIDSetIDPopup : geode::Modify<NIDSetIDPopup, SetIDPopup>
 {
 	struct Fields
 	{
-        NIDSetupTriggerPopup::IDInputInfo m_id_input{
+		NIDSetupTriggerPopup::IDInputInfo m_id_input{
 			nullptr, nullptr, NID::GROUP, nullptr, { nullptr, nullptr }
 		};
 	};
@@ -69,24 +69,25 @@ struct NIDSetIDPopup : geode::Modify<NIDSetIDPopup, SetIDPopup>
 				this->m_buttonMenu
 			);
 
-            inputInfo.namedIDInput->setCallback([&](const std::string& str) {
-                NIDSetIDPopup::onEditInput(this, std::move(str));
-            });            
-            static_cast<CCMenuItemSpriteExtra*>(
-                this->m_buttonMenu->getChildByID("edit-group-name-button-0"_spr)
-            )->m_pfnSelector = menu_selector(NIDSetIDPopup::onEditIDNameButton);
+			inputInfo.namedIDInput->setCallback([&](const std::string& str) {
+				NIDSetIDPopup::onEditInput(this, std::move(str));
+			});
+			static_cast<CCMenuItemSpriteExtra*>(
+				this->m_buttonMenu->getChildByID("edit-group-name-button-0"_spr)
+			)->m_pfnSelector = menu_selector(NIDSetIDPopup::onEditIDNameButton);
 
-            m_fields->m_id_input = std::move(inputInfo);
+			m_fields->m_id_input = std::move(inputInfo);
 		}
 
 		return true;
 	}
 
-    void onItemIDArrow(CCObject* sender)
+	void onItemIDArrow(CCObject* sender)
 	{
 		SetIDPopup::onItemIDArrow(sender);
-
-        auto& idInputInfo = m_fields->m_id_input;
+		
+		auto& idInputInfo = m_fields->m_id_input;
+		if (!idInputInfo) return;
 
 		auto parsedIdInputValue = geode::utils::numFromString<short>(idInputInfo.idInput->getString());
 		if (parsedIdInputValue.isErr()) return;
@@ -103,8 +104,7 @@ struct NIDSetIDPopup : geode::Modify<NIDSetIDPopup, SetIDPopup>
 		SetIDPopup::textChanged(input);
 
 		auto& idInputInfo = m_fields->m_id_input;
-
-		if (!idInputInfo.idInput) return;
+		if (!idInputInfo || !idInputInfo.idInput) return;
 
 		if (auto parsedNum = numFromString<short>(idInputInfo.idInput->getString()); parsedNum.isOk())
 			idInputInfo.namedIDInput->setString(
@@ -113,17 +113,17 @@ struct NIDSetIDPopup : geode::Modify<NIDSetIDPopup, SetIDPopup>
 	}
 
 
-    static void onEditInput(NIDSetIDPopup* self, const std::string& str)
-    {
-        auto& idInputInfo = self->m_fields->m_id_input;
+	static void onEditInput(NIDSetIDPopup* self, const std::string& str)
+	{
+		auto& idInputInfo = self->m_fields->m_id_input;
 
 		if (auto name = NIDManager::getIDForName(idInputInfo.idType, str); name.isOk())
 			idInputInfo.idInput->setString(fmt::format("{}", name.unwrap()));
-    }
+	}
 
-    void onEditIDNameButton(CCObject*)
-    {
-        auto& idInputInfo = m_fields->m_id_input;
+	void onEditIDNameButton(CCObject*)
+	{
+		auto& idInputInfo = m_fields->m_id_input;
 
 		ShowEditNamedIDPopup(
 			idInputInfo.idType,
@@ -135,5 +135,5 @@ struct NIDSetIDPopup : geode::Modify<NIDSetIDPopup, SetIDPopup>
 				this->textChanged(idInputInfo.idInput);
 			}
 		);
-    }
+	}
 };

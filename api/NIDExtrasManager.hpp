@@ -22,11 +22,26 @@
 
 namespace NIDExtrasManager
 {
-	// TODO: add others and app to API.cpp
 	namespace event
 	{
-		using EventGetIsNamedIDPreviewed = geode::DispatchEvent<bool*, NID>;
-		using EventGetNamedIDDescription = geode::DispatchEvent<std::string*, NID>;
+		using EventGetIDIsPreviewed = geode::DispatchEvent<bool*, NID, short>;
+		using EventGetNamedIDIsPreviewed = geode::DispatchEvent<bool*, NID, std::string>;
+		using EventSetIDIsPreviewed = geode::DispatchEvent<bool*, NID, short, bool>;
+		using EventSetNamedIDIsPreviewed = geode::DispatchEvent<bool*, NID, std::string, bool>;
+
+		using EventGetIDDescription = geode::DispatchEvent<std::string*, NID, short>;
+		using EventGetNamedIDDescription = geode::DispatchEvent<std::string*, NID, std::string>;
+		using EventSetIDDescription = geode::DispatchEvent<bool*, NID, short, std::string>;
+		using EventSetNamedIDDescription = geode::DispatchEvent<bool*, NID, std::string, std::string>;
+
+		using EventGetIDExtras = geode::DispatchEvent<NamedIDExtra*, NID, short>;
+		using EventGetNamedIDExtras = geode::DispatchEvent<NamedIDExtra*, NID, std::string>;
+		using EventSetIDExtras = geode::DispatchEvent<bool*, NID, short, NamedIDExtra>;
+		using EventSetNamedIDExtras = geode::DispatchEvent<bool*, NID, std::string, NamedIDExtra>;
+		using EventRemoveIDExtras = geode::DispatchEvent<bool*, NID, short>;
+		using EventRemoveNamedIDExtras = geode::DispatchEvent<bool*, NID, std::string>;
+
+		using EventGetAllNIDExtras = geode::DispatchEvent<NamedIDsExtras*, NID>;
 	}
 
 #ifndef NAMED_EDITOR_GROUPS_USE_EVENTS_API
@@ -87,6 +102,20 @@ namespace NIDExtrasManager
 		return setNamedIDDescription(ID, name, static_cast<std::string&&>(description));
 	}
 
+	NAMED_EDITOR_GROUPS_DLL geode::Result<NamedIDExtra> getNamedIDExtras(NID nid, short id);
+	template <NID ID>
+	geode::Result<NamedIDExtra> getNamedIDExtras(short id)
+	{
+		return getNamedIDExtras(ID, id);
+	}
+
+	NAMED_EDITOR_GROUPS_DLL geode::Result<NamedIDExtra> getNamedIDExtras(NID nid, std::string&& name);
+	template <NID ID>
+	geode::Result<NamedIDExtra> getNamedIDExtras(std::string&& name)
+	{
+		return getNamedIDExtras(ID, name);
+	}
+
 	NAMED_EDITOR_GROUPS_DLL geode::Result<> setNamedIDExtras(NID nid, short id, NamedIDExtra&& extras);
 	template <NID ID>
 	geode::Result<> setNamedIDExtras(short id, NamedIDExtra&& extras)
@@ -113,6 +142,13 @@ namespace NIDExtrasManager
 	geode::Result<> removeNamedIDExtras(std::string&& name)
 	{
 		return removeNamedIDExtras(ID, static_cast<std::string&&>(name));
+	}
+
+	NAMED_EDITOR_GROUPS_DLL geode::Result<NamedIDsExtras> getNIDExtras(NID nid);
+	template <NID ID>
+	geode::Result<NamedIDsExtras> getNIDExtras()
+	{
+		return getNIDExtras(ID);
 	}
 
 #ifdef SPAGHETTDEV_NAMED_EDITOR_GROUPS_EXPORTING

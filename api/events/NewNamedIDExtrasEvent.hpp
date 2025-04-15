@@ -5,8 +5,6 @@
 #include "../NIDEnum.hpp"
 #include "../types/NamedIDExtras.hpp"
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 class NewNamedIDExtrasEvent : public geode::Event
 {
 public:
@@ -23,4 +21,3 @@ protected:
 	short m_id;
 	NamedIDExtra m_extras;
 };
-#pragma clang diagnostic pop

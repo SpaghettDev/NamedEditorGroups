@@ -9,7 +9,7 @@
 #include "AddNamedIDPopup.hpp"
 #include "SelectIDFilterPopup.hpp"
 #include "SharePopup.hpp"
-#include "items/NamedIDItem.hpp"
+#include "cells/NamedIDCell.hpp"
 
 #include <NIDManager.hpp>
 
@@ -33,7 +33,7 @@ namespace
 		return false;
 	}
 
-	static bool matchesSearch(const std::string& query, NamedIDItem* item)
+	static bool matchesSearch(const std::string& query, NamedIDCell* item)
 	{
 		bool doesMatch = false;
 		double weighted = 0;
@@ -210,7 +210,7 @@ void NamedIDsPopup::onSettingsButton(CCObject*)
 {
 	m_adv_mode = !m_adv_mode;
 
-	for (auto& item : CCArrayExt<NamedIDItem*>(m_list->m_contentLayer->getChildren()))
+	for (auto& item : CCArrayExt<NamedIDCell*>(m_list->m_contentLayer->getChildren()))
 		item->showAdvancedOptions(m_adv_mode);
 }
 
@@ -233,7 +233,7 @@ void NamedIDsPopup::updateList(NID nid)
 
 		for (auto& [name, id] : elements)
 		{
-			auto item = NamedIDItem::create(m_ids_type, id, std::move(name), SCROLL_LAYER_SIZE.width);
+			auto item = NamedIDCell::create(m_ids_type, id, std::move(name), m_adv_mode, SCROLL_LAYER_SIZE.width);
 			item->setDefaultBGColor({ 0, 0, 0, static_cast<GLubyte>(bg ? 60 : 20) });
 			m_list->m_contentLayer->addChild(item);
 
@@ -253,7 +253,7 @@ void NamedIDsPopup::updateState()
 	{
 		bool bg = false;
 
-		for (auto& item : CCArrayExt<NamedIDItem*>(m_list->m_contentLayer->getChildren()->shallowCopy()))
+		for (auto& item : CCArrayExt<NamedIDCell*>(m_list->m_contentLayer->getChildren()->shallowCopy()))
 		{
 			item->setDefaultBGColor({ 0, 0, 0, static_cast<GLubyte>(bg ? 60 : 20) });
 

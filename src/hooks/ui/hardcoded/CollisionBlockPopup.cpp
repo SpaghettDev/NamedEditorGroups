@@ -87,7 +87,7 @@ struct NIDCollisionBlockPopup : geode::Modify<NIDCollisionBlockPopup, CollisionB
 
 
 		m_fields->m_id_inputs[BLOCK_ID_PROPERTY].namedIDInput->setCallback([&](const std::string& str) {
-			NIDCollisionBlockPopup::onEditInput(this, BLOCK_ID_PROPERTY, std::move(str));
+			NIDCollisionBlockPopup::onEditInput(this, BLOCK_ID_PROPERTY, str);
 		});
 		static_cast<CCMenuItemSpriteExtra*>(
 			this->m_buttonMenu->getChildByID("edit-group-name-button-0"_spr)

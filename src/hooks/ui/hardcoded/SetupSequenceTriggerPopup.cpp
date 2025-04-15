@@ -1,4 +1,5 @@
 #include <Geode/modify/SetupSequenceTriggerPopup.hpp>
+#include <Geode/binding/TextInputDelegate.hpp>
 
 #include "../SetupPopups.hpp"
 #include "../popups/EditNamedIDPopup.hpp"
@@ -9,6 +10,60 @@
 
 using namespace geode::prelude;
 
+struct NIDModifiedSequenceInputDelegate : public TextInputDelegate
+{
+	NIDModifiedSequenceInputDelegate() = default;
+	NIDModifiedSequenceInputDelegate(SetupTriggerPopup* popup)
+		: m_popup(popup)
+	{}
+
+	void textChanged(CCTextInputNode* input) override
+	{
+		auto STP = reinterpret_cast<NIDSetupTriggerPopup*>(m_popup);
+
+		m_popup->textChanged(input);
+
+		if (!STP->m_fields->m_id_inputs.contains(input->getTag())) return;
+
+		auto& idInputInfo = STP->m_fields->m_id_inputs.at(input->getTag());
+
+		if (auto parsedNum = numFromString<short>(idInputInfo.idInput->getString()); parsedNum.isOk())
+		{
+			idInputInfo.namedIDInput->setString(
+				NIDManager::getNameForID(idInputInfo.idType, parsedNum.unwrap()).unwrapOr("")
+			);
+
+			// garbage.
+			auto delegate = input->m_delegate;
+			input->setDelegate(nullptr);
+			STP->updateValue(-1, parsedNum.unwrap());
+			input->setDelegate(delegate);
+		}
+	}
+
+	void textInputOpened(CCTextInputNode* input) override
+	{ m_popup->textInputOpened(input); }
+
+	void textInputClosed(CCTextInputNode* input) override
+	{ m_popup->textInputClosed(input); }
+
+	void textInputShouldOffset(CCTextInputNode* input, float p1) override
+	{ m_popup->textInputShouldOffset(input, p1); }
+
+	void textInputReturn(CCTextInputNode* input) override
+	{ m_popup->textInputReturn(input); }
+
+	bool allowTextInput(CCTextInputNode* input) override
+	{ return m_popup->allowTextInput(input); }
+
+	void enterPressed(CCTextInputNode* input) override
+	{ m_popup->enterPressed(input); }
+
+private:
+	SetupTriggerPopup* m_popup;
+};
+
+
 struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup, SetupSequenceTriggerPopup>
 {
 	static constexpr std::uint16_t GROUP_ID_PROPERTY = 51;
@@ -16,6 +71,7 @@ struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup
 	struct Fields
 	{
 		CCMenu* m_groups_list_menu;
+		NIDModifiedSequenceInputDelegate m_modified_delegate;
 	};
 
 	bool init(SequenceTriggerGameObject* p0)
@@ -84,6 +140,14 @@ struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
+		m_fields->m_modified_delegate = NIDModifiedSequenceInputDelegate{ this };
+		inputInfo.idInput->setDelegate(&m_fields->m_modified_delegate);
+		inputInfo.namedIDInput->setCallback([&](const std::string& str) {
+			NIDSetupSequenceTriggerPopup::onEditInput(this, str);
+		});
+		static_cast<CCMenuItemSpriteExtra*>(
+			this->m_buttonMenu->getChildByID("edit-group-name-button-51"_spr)
+		)->m_pfnSelector = menu_selector(NIDSetupSequenceTriggerPopup::onEditIDNameButton);
 		STP->m_fields->m_id_inputs[GROUP_ID_PROPERTY] = std::move(inputInfo);
 
 
@@ -103,24 +167,16 @@ struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup
 		this->m_buttonMenu->addChild(groupsListMenu);
 		m_fields->m_groups_list_menu = groupsListMenu;
 
-		static_cast<CCMenuItemSpriteExtra*>(
-			this->m_buttonMenu->getChildByID("edit-group-name-button-51"_spr)
-		)->m_pfnSelector = menu_selector(NIDSetupSequenceTriggerPopup::onEditIDNameButton);
-
 		this->updateGroupIDButtons();
 
 		return true;
 	}
 
-	void textChanged(CCTextInputNode* input)
-	{
-		SetupSequenceTriggerPopup::textChanged(input);
-
-		reinterpret_cast<NIDSetupTriggerPopup*>(this)->textWasChanged(input);
-	}
-
 	void updateGroupIDButtons()
 	{
+		const auto& chanceObjects = static_cast<SequenceTriggerGameObject*>(
+			this->m_gameObject
+		)->m_chanceObjects;
 		int selectedTag = -1;
 		if (this->m_selectedButton)
 			selectedTag = this->m_selectedButton->getTag();
@@ -136,22 +192,16 @@ struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup
 		for (auto button : CCArrayExt<CCMenuItemSpriteExtra*>(this->m_groupButtons))
 			button->setVisible(false);
 
-		for (std::size_t idx; auto button : CCArrayExt<CCMenuItemSpriteExtra*>(this->m_groupButtons))
+		for (std::size_t idx = 0; const auto& chanceObj : chanceObjects)
 		{
-			bool isSelectedButton = button->getTag() == selectedTag;
-			auto buttonSprite = button->getChildByType<ButtonSprite*>(0);
-			std::uint16_t groupID;
-			int count;
+			// idk maybe paginate in the future
+			if (idx > 32) break;
 
-			{
-				auto text = std::string_view{ buttonSprite->getChildByType<CCLabelBMFont*>(0)->getString() };
-
-				groupID = geode::utils::numFromString<std::uint16_t>(text.substr(0, text.find('-'))).unwrap();
-				count = geode::utils::numFromString<int>(text.substr(text.find('-') + 1)).unwrap();
-			}
+			bool isSelectedButton = idx == selectedTag;
+			short groupID = chanceObj.m_groupID;
 
 			auto newButtonSprite = ButtonSprite::create(
-				fmt::format("{}-{}", groupID, count).c_str(),
+				fmt::format("{}-{}", groupID, chanceObj.m_chance).c_str(),
 				40, 0, .5f, true, "bigFont.fnt",
 				isSelectedButton
 					? "GJ_button_03.png"
@@ -170,6 +220,7 @@ struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup
 				nameLabel->limitLabelWidth(35.f, .5f, .1f);
 				nameLabel->setZOrder(1);
 				nameLabel->setPosition({ buttonLabelPos.x, buttonLabelPos.y - 6.f });
+				nameLabel->setID("name-label"_spr);
 				newButtonSprite->addChild(nameLabel);
 			}
 
@@ -179,7 +230,7 @@ struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup
 				this,
 				menu_selector(NIDSetupSequenceTriggerPopup::onSelectNewButton)
 			);
-			newButton->setTag(button->getTag());
+			newButton->setTag(idx);
 			groupsListMenu->addChild(newButton);
 
 			idx++;
@@ -192,16 +243,36 @@ struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup
 	void onSelectNewButton(CCObject* sender)
 	{
 		if (this->m_selectedButton)
-			static_cast<ButtonSprite*>(static_cast<CCMenuItemSpriteExtra*>(
+		{
+			auto button = static_cast<ButtonSprite*>(static_cast<CCMenuItemSpriteExtra*>(
 				m_fields->m_groups_list_menu->getChildByTag(this->m_selectedButton->getTag())
-			)->getNormalImage())->updateBGImage("GJ_button_04.png");
+			)->getNormalImage());
+			
+			button->updateBGImage("GJ_button_04.png");
+			
+			if (auto nameLabel = button->getChildByID("name-label"_spr))
+			{
+				button->m_label->setPositionY(button->m_label->getPositionY() + 4.f);
+				nameLabel->setPositionY(button->m_label->getPositionY() - 10.f);
+			}
+		}
 
 		if (this->m_selectedButton && this->m_selectedButton->getTag() == sender->getTag())
 			this->m_selectedButton = nullptr;
 		else
 		{
-			this->m_selectedButton = static_cast<CCMenuItemSpriteExtra*>(this->m_buttonMenu->getChildByTag(sender->getTag()));
-			static_cast<ButtonSprite*>(static_cast<CCMenuItemSpriteExtra*>(sender)->getNormalImage())->updateBGImage("GJ_button_03.png");
+			this->m_selectedButton = static_cast<CCMenuItemSpriteExtra*>(
+				m_fields->m_groups_list_menu->getChildByTag(sender->getTag())
+			);
+			auto button = static_cast<ButtonSprite*>(static_cast<CCMenuItemSpriteExtra*>(sender)->getNormalImage());
+			
+			button->updateBGImage("GJ_button_03.png");
+			
+			if (auto nameLabel = button->getChildByID("name-label"_spr))
+			{
+				button->m_label->setPositionY(button->m_label->getPositionY() + 4.f);
+				nameLabel->setPositionY(button->m_label->getPositionY() - 10.f);
+			}
 		}
 	}
 
@@ -222,5 +293,19 @@ struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup
 				this->updateGroupIDButtons();
 			}
 		);
+	}
+
+	static void onEditInput(NIDSetupSequenceTriggerPopup* self, const std::string& str)
+	{
+		auto& idInputInfo = reinterpret_cast<NIDSetupTriggerPopup*>(self)->m_fields->m_id_inputs.at(GROUP_ID_PROPERTY);
+
+		if (auto idRes = NIDManager::getIDForName<NID::GROUP>(str); idRes.isOk())
+		{
+			auto id = idRes.unwrap();
+
+			idInputInfo.idInput->setString(fmt::format("{}", id));
+			// garbage.
+			self->updateValue(-1, id);
+		}
 	}
 };

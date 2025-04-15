@@ -58,10 +58,11 @@ void LevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
 			if (auto importRes = NIDManager::importNamedIDs(data.unwrap()); importRes.isErr())
 			{
 				m_fields->m_had_error = true;
+				NIDManager::reset();
 
 				auto errorPopup = FLAlertLayer::create(
 					nullptr,
-					"Error importing NamedIDs",
+					"Error parsing save object",
 					fmt::format(
 						"<cr>{}</c>\n"
 						"Save string has been copied to clipboard "
@@ -81,10 +82,11 @@ void LevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
 		else
 		{
 			m_fields->m_had_error = true;
+			NIDManager::reset();
 
 			auto errorPopup = FLAlertLayer::create(
 				nullptr,
-				"Error importing NamedIDs",
+				"Error parsing save object",
 				fmt::format(
 					"Unable to decode base64 in NamedIDS: <cr>{}</c>\n"
 					"Save string has been copied to clipboard "

@@ -86,6 +86,11 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 				}
 				break;
 
+			// Link Visible Trigger
+			case 3662u:
+				idLabelPos = CCPoint{ 18.f, 22.f };
+				break;
+
 			default:
 				if (auto label = effectGameObj->getChildByID("target-id-label"))
 				{
@@ -105,8 +110,7 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 			auto labelNode = static_cast<LabelGameObject*>(object);
 
 			// Disable if counter should show MainTime/Points/Attempts
-			if (labelNode->m_shownSpecial != 0)
-				idNameStr = "";
+			if (labelNode->m_shownSpecial != 0);
 			else if (labelNode->m_isTimeCounter)
 				idNameStr = NIDManager::getNameForID<NID::TIMER>(
 					effectGameObj->m_itemID
@@ -116,30 +120,35 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 					effectGameObj->m_itemID
 				).unwrapOr("");
 		}
-		else if (isTrigger)
+		// Pulse Trigger
+		else if (object->m_objectID == 1006u)
 		{
-			// random trigger
-			if (effectGameObj->m_objectID == 1912u)
-			{
-				idNameStr = "";
+			auto pulseTrigger = static_cast<EffectGameObject*>(object);
 
-				auto id1 = NIDManager::getNameForID<NID::GROUP>(
-					effectGameObj->m_targetGroupID
-				).unwrapOr("");
-				auto id2 = NIDManager::getNameForID<NID::GROUP>(
-					effectGameObj->m_centerGroupID
-				).unwrapOr("");
-
-				if (!id1.empty() && !id2.empty())
-					idNameStr = fmt::format("{}/\n{}", id1, id2);
-
-				idLabelPos = CCPoint{ idLabelPos.x + .75f, idLabelPos.y - 5.5f };
-			}
-			else
+			if (pulseTrigger->m_pulseTargetType == 1)
 				idNameStr = NIDManager::getNameForID<NID::GROUP>(
 					effectGameObj->m_targetGroupID
 				).unwrapOr("");
 		}
+		// random trigger
+		else if (effectGameObj->m_objectID == 1912u)
+		{
+			auto id1 = NIDManager::getNameForID<NID::GROUP>(
+				effectGameObj->m_targetGroupID
+			).unwrapOr("");
+			auto id2 = NIDManager::getNameForID<NID::GROUP>(
+				effectGameObj->m_centerGroupID
+			).unwrapOr("");
+
+			if (!id1.empty() && !id2.empty())
+				idNameStr = fmt::format("{}/\n{}", id1, id2);
+
+			idLabelPos = CCPoint{ idLabelPos.x + .75f, idLabelPos.y - 5.5f };
+		}
+		else if (isTrigger)
+			idNameStr = NIDManager::getNameForID<NID::GROUP>(
+				effectGameObj->m_targetGroupID
+			).unwrapOr("");
 		else if (isCollision)
 			idNameStr = NIDManager::getNameForID<NID::COLLISION>(
 				effectGameObj->m_itemID

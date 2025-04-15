@@ -2,21 +2,18 @@
 
 #include <cstdint>
 
-namespace ng
+namespace ng::types
 {
-	namespace types
+	struct DynamicPropertyToggleType
 	{
-		struct DynamicPropertyToggleType
-		{
-			std::uint16_t togglePropID;
-			std::uint8_t counterState; // timer otherwise
-		};
-		
-		struct DynamicPropertyChoiceType
-		{
-			std::uint16_t targetPropID;
-			std::uint8_t counterState;
-			std::uint8_t timerState;
-		};
-	}
+		std::uint16_t togglePropID;
+		std::uint8_t counterState; // timer otherwise
+	};
+
+	struct DynamicPropertyChoiceType
+	{
+		std::uint16_t targetPropID;
+		std::uint8_t counterState;
+		std::uint8_t timerState;
+	};
 }

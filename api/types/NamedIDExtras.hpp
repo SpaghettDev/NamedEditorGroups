@@ -2,12 +2,27 @@
 
 #include <string>
 
+static_assert(true); // clangd bug fix
+
 #pragma pack(push, 1)
 struct NamedIDExtra
 {
 	// increments by 1 for regular changes
 	// increments by 10 when the reserved space is not enough to hold new data
 	static constexpr std::uint16_t VERSION = 1;
+
+	NamedIDExtra(std::string&& description, bool isPreviewed)
+		: description(static_cast<std::string&&>(description)), isPreviewed(isPreviewed)
+	{};
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+	NamedIDExtra() = default;
+	NamedIDExtra(const NamedIDExtra&) = default;
+	NamedIDExtra(NamedIDExtra&&) = default;
+	NamedIDExtra& operator=(const NamedIDExtra&) = default;
+	NamedIDExtra& operator=(NamedIDExtra&&) = default;
+#pragma clang diagnostic pop
 
 	std::string description;
 	bool isPreviewed = true;

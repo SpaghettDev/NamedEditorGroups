@@ -38,7 +38,7 @@ std::string NamedIDs::dump() const
 
 geode::Result<NamedIDs> NamedIDs::from(std::string_view str)
 {
-	NamedIDs res;
+	NamedIDs res{};
 	auto parseStr = [](std::string_view str, std::size_t posStart, std::size_t posEnd, bool isEnd = false) -> geode::Result<std::pair<std::string, short>> {
 		auto ngSeparatorIdx = str.find(':', posStart);
 	

@@ -25,6 +25,11 @@ public:
 	void onClearIDNameButton(cocos2d::CCObject*);
 	virtual void onSaveButton(cocos2d::CCObject*);
 
+	geode::TextInput* getIDInput() { return m_id_input; }
+	geode::TextInput* getNamedIDInput() { return m_named_id_input; }
+	CCMenuItemSpriteExtra* getLeftArrowButton() { return m_left_arrow_button; }
+	CCMenuItemSpriteExtra* getRightArrowButton() { return m_right_arrow_button; }
+
 	static void onEditIDInput(EditNamedIDPopup*, const std::string&);
 	static void onEditIDNameInput(EditNamedIDPopup*, const std::string&);
 
@@ -53,6 +58,12 @@ static inline void ShowEditNamedIDPopup(const NID nid, short id, std::function<v
 			break;
 		case NID::TIMER:
 			EditNamedIDPopup<NID::TIMER>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show();
+			break;
+		case NID::EFFECT:
+			EditNamedIDPopup<NID::EFFECT>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show();
+			break;
+		case NID::COLOR:
+			EditNamedIDPopup<NID::COLOR>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show();
 			break;
 
 		default:

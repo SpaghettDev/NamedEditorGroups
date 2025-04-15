@@ -1,4 +1,5 @@
 #include <Geode/modify/SetupRandAdvTriggerPopup.hpp>
+#include <Geode/binding/TextInputDelegate.hpp>
 
 #include "../SetupPopups.hpp"
 #include "../popups/EditNamedIDPopup.hpp"
@@ -11,6 +12,7 @@ using namespace geode::prelude;
 
 struct NIDModifiedRandAdvInputDelegate : public TextInputDelegate
 {
+	NIDModifiedRandAdvInputDelegate() = default;
 	NIDModifiedRandAdvInputDelegate(SetupTriggerPopup* popup)
 		: m_popup(popup)
 	{}
@@ -61,7 +63,7 @@ struct NIDSetupRandAdvTriggerPopup : geode::Modify<NIDSetupRandAdvTriggerPopup, 
 	struct Fields
 	{
 		CCMenu* m_groups_list_menu;
-		NIDModifiedRandAdvInputDelegate m_modified_delegate{ nullptr };
+		NIDModifiedRandAdvInputDelegate m_modified_delegate;
 	};
 
 	bool init(RandTriggerGameObject* p0, CCArray* p1)
