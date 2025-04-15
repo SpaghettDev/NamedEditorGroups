@@ -21,6 +21,13 @@
 	"tags": [
 		"editor", "offline", "enhancement", "utility"
 	],
+	"dependencies": {
+		"geode.node-ids": ">=1.19.0",
+		"cvolton.level-id-api": {
+			"version": ">=1.2.0",
+			"importance": "suggested"
+		}
+	},
 	"resources": {
 		"sprites": ["resources/*.png"]
 	},

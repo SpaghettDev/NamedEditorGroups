@@ -166,11 +166,11 @@ geode::Result<NamedIDExtra> NIDExtrasManager::getNamedIDExtras(NID nid, short id
 	return geode::Ok(ids.extras[id]);
 }
 
-geode::Result<NamedIDExtra> NIDExtrasManager::getNamedIDExtras(NID nid, std::string&& name)
+geode::Result<NamedIDExtra> NIDExtrasManager::getNamedIDExtras(NID nid, const std::string& name)
 {
 	LEVEL_ID_API_CHECK();
 
-	auto res = NIDManager::getIDForName(nid, std::move(name));
+	auto res = NIDManager::getIDForName(nid, name);
 	if (res.isErr())
 		return geode::Err(res.unwrapErr());
 

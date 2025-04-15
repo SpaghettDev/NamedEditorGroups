@@ -18,7 +18,7 @@ namespace ng::types
 		{
 			switch (m_classType)
 			{
-				case 1: {
+				case GameObjectClassType::Effect: {
 					auto effectObj = static_cast<EffectGameObject*>(obj);
 					m_targetGroupID = effectObj->m_targetGroupID;
 					m_centerGroupID = effectObj->m_centerGroupID;
@@ -42,7 +42,7 @@ namespace ng::types
 
 		std::array<short, 10> m_groups;
 		short m_groupCount;
-		int m_classType;
+		GameObjectClassType m_classType;
 		int m_targetGroupID;
 		int m_centerGroupID;
 		int m_targetModCenterID;

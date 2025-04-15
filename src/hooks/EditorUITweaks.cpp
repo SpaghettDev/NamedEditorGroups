@@ -57,7 +57,7 @@ struct NIDEditorUITweaks : geode::Modify<NIDEditorUITweaks, EditorUI>
 				}
 			}
 
-			if (object.m_classType == 1)
+			if (object.m_classType == GameObjectClassType::Effect)
 			{
 				auto newEffectObj = static_cast<EffectGameObject*>(newObj);
 

@@ -85,7 +85,7 @@ namespace NIDExtrasManager
 	template <NID ID>
 	geode::Result<> setNamedIDIsPreviewed(std::string&& name, bool state)
 	{
-		return setNamedIDIsPreviewed(ID, name, state);
+		return setNamedIDIsPreviewed(ID, static_cast<std::string&&>(name), state);
 	}
 
 	NAMED_EDITOR_GROUPS_DLL geode::Result<> setNamedIDDescription(NID nid, short id, std::string&& description);
@@ -99,7 +99,7 @@ namespace NIDExtrasManager
 	template <NID ID>
 	geode::Result<> setNamedIDDescription(std::string&& name, std::string&& description)
 	{
-		return setNamedIDDescription(ID, name, static_cast<std::string&&>(description));
+		return setNamedIDDescription(ID, static_cast<std::string&&>(name), static_cast<std::string&&>(description));
 	}
 
 	NAMED_EDITOR_GROUPS_DLL geode::Result<NamedIDExtra> getNamedIDExtras(NID nid, short id);
@@ -109,7 +109,7 @@ namespace NIDExtrasManager
 		return getNamedIDExtras(ID, id);
 	}
 
-	NAMED_EDITOR_GROUPS_DLL geode::Result<NamedIDExtra> getNamedIDExtras(NID nid, std::string&& name);
+	NAMED_EDITOR_GROUPS_DLL geode::Result<NamedIDExtra> getNamedIDExtras(NID nid, const std::string& name);
 	template <NID ID>
 	geode::Result<NamedIDExtra> getNamedIDExtras(std::string&& name)
 	{
@@ -120,14 +120,14 @@ namespace NIDExtrasManager
 	template <NID ID>
 	geode::Result<> setNamedIDExtras(short id, NamedIDExtra&& extras)
 	{
-		return setNamedIDExtras(ID, id, extras);
+		return setNamedIDExtras(ID, id, static_cast<NamedIDExtra&&>(extras));
 	}
 
 	NAMED_EDITOR_GROUPS_DLL geode::Result<> setNamedIDExtras(NID nid, std::string&& name, NamedIDExtra&& extras);
 	template <NID ID>
 	geode::Result<> setNamedIDExtras(std::string&& name, NamedIDExtra&& extras)
 	{
-		return setNamedIDExtras(ID, static_cast<std::string&&>(name), extras);
+		return setNamedIDExtras(ID, static_cast<std::string&&>(name), static_cast<NamedIDExtra&&>(extras));
 	}
 
 	NAMED_EDITOR_GROUPS_DLL geode::Result<> removeNamedIDExtras(NID nid, short id);
