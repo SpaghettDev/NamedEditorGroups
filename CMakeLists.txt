@@ -26,11 +26,7 @@ target_include_directories(${PROJECT_NAME}
 
 target_include_directories(${PROJECT_NAME} PUBLIC api/)
 
-if (MSVC)
-    target_compile_options(${PROJECT_NAME} PUBLIC /FI"${SRC_DIR}/prelude.hpp")
-else()
-    target_compile_options(${PROJECT_NAME} PUBLIC -include "${SRC_DIR}/prelude.hpp")
-endif()
+target_precompile_headers(${PROJECT_NAME} PUBLIC "${SRC_DIR}/prelude.hpp")
 
 if (PROJECT_IS_TOP_LEVEL)
     target_compile_definitions(${PROJECT_NAME} PRIVATE SPAGHETTDEV_NAMED_EDITOR_GROUPS_EXPORTING)
