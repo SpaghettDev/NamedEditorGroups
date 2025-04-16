@@ -45,11 +45,11 @@ void LevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
 		saveObjStrOffset != std::string_view::npos
 	) {
 		std::string_view intermediateStr = lvlStr.substr(
-			saveObjStrOffset + ng::constants::SAVE_OBJECT_STRING_START.length()
+			saveObjStrOffset + ng::constants::SAVE_OBJECT_STRING_START.size()
 		);
 		intermediateStr = intermediateStr.substr(
 			intermediateStr.find(ng::constants::TEXT_OBJECT_STRING_SEPARATOR) +
-			ng::constants::TEXT_OBJECT_STRING_SEPARATOR.length()
+			ng::constants::TEXT_OBJECT_STRING_SEPARATOR.size()
 		);
 		std::string_view saveObjStr = intermediateStr.substr(0, intermediateStr.find(';'));
 
@@ -115,13 +115,13 @@ void LevelEditorLayerData::updateSaveObject(gd::string& levelString)
 
 	lvlStr.replace(
 		lvlStr.find(ng::constants::old::SAVE_OBJECT_STRING_START),
-		ng::constants::old::SAVE_OBJECT_STRING_START.length(),
+		ng::constants::old::SAVE_OBJECT_STRING_START.size(),
 		ng::constants::SAVE_OBJECT_STRING_START
 	);
 #else
 	levelString.replace(
 		levelString.find(ng::constants::old::SAVE_OBJECT_STRING_START),
-		ng::constants::old::SAVE_OBJECT_STRING_START.length(),
+		ng::constants::old::SAVE_OBJECT_STRING_START.size(),
 		ng::constants::SAVE_OBJECT_STRING_START
 	);
 #endif

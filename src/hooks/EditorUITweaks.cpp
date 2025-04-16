@@ -135,7 +135,7 @@ struct NIDEditorUITweaks : geode::Modify<NIDEditorUITweaks, EditorUI>
 		std::string newName{};
 
 		// id is last
-		if (nameFormatRaw.find("{id}") == nameFormatRaw.length() - 4 && ng::utils::endsWithNumbers(name))
+		if (nameFormatRaw.find("{id}") == nameFormatRaw.size() - 4 && ng::utils::endsWithNumbers(name))
 		{
 			auto numRes = ng::utils::numberFromEnd(name);
 			if (numRes.isErr()) return geode::Err("");
@@ -166,7 +166,7 @@ struct NIDEditorUITweaks : geode::Modify<NIDEditorUITweaks, EditorUI>
 
 			newName = fmt::format(fmt::runtime(nameFormat), num, rawName);
 		}
-		else if (name.length() <= ng::constants::MAX_NAMED_ID_LENGTH - 2)
+		else if (name.size() <= ng::constants::MAX_NAMED_ID_LENGTH - 2)
 		{
 			if (nameFormatRaw.find("{id}") == 0)
 				newName = fmt::format(fmt::runtime(nameFormat), 2, name);
@@ -174,7 +174,7 @@ struct NIDEditorUITweaks : geode::Modify<NIDEditorUITweaks, EditorUI>
 				newName = fmt::format(fmt::runtime(nameFormat), name, 2);
 		}
 
-		if (newName.length() > ng::constants::MAX_NAMED_ID_LENGTH)
+		if (newName.size() > ng::constants::MAX_NAMED_ID_LENGTH)
 			return geode::Err("");
 
 		return geode::Ok(newName);

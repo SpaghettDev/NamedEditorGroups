@@ -72,7 +72,7 @@ bool EditDescriptionPopup::setup(NID nid, short id)
 	saveButtonSpr->m_subSprite->setScale(.75f);
 
 	m_char_count = CCLabelBMFont::create(
-		fmt::format("{}", ng::constants::MAX_DESCRIPTION_LENGTH - description.length()).c_str(),
+		fmt::format("{}", ng::constants::MAX_DESCRIPTION_LENGTH - description.size()).c_str(),
 		"chatFont.fnt"
 	);
 	m_char_count->setScale(.9f);
@@ -91,12 +91,12 @@ void EditDescriptionPopup::textChanged(CCTextInputNode* input)
 {
 	std::string str = input->getString();
 
-	std::int64_t size = ng::constants::MAX_DESCRIPTION_LENGTH - str.length();
+	std::int64_t size = ng::constants::MAX_DESCRIPTION_LENGTH - str.size();
 	m_char_count->setString(
 		fmt::format("{}", size).c_str()
 	);
 
-	if (str.length() > ng::constants::MAX_DESCRIPTION_LENGTH)
+	if (str.size() > ng::constants::MAX_DESCRIPTION_LENGTH)
 	{
 		m_char_count->setColor({ 255, 0, 0 });
 		m_char_count->setOpacity(255);
@@ -115,7 +115,7 @@ void EditDescriptionPopup::onDeleteButton(CCObject*)
 
 void EditDescriptionPopup::onSaveButton(CCObject*)
 {
-	if (m_input->getString().length() > ng::constants::MAX_DESCRIPTION_LENGTH)
+	if (m_input->getString().size() > ng::constants::MAX_DESCRIPTION_LENGTH)
 		return ng::utils::cocos::createNotificationToast(this, "Description is too long!", .5f, 60.f);
 
 	static_cast<void>(
