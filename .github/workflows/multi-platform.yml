@@ -40,8 +40,8 @@ jobs:
         uses: geode-sdk/build-geode-mod@main
         with:
           sdk: nightly
-          bindings: SpaghettDev/bindings
-          bindings-ref: namededitorgroups
+          bindings: geode-sdk/bindings
+          bindings-ref: main
           combine: true
           target: ${{ matrix.config.target }}
 
