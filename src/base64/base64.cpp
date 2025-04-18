@@ -1,6 +1,6 @@
 #include "base64.hpp"
 
-geode::Result<std::size_t> 	findBase64Index(char c)
+geode::Result<std::size_t> findBase64Index(char c)
 {
 	if (c == '=') return geode::Ok(0);
 

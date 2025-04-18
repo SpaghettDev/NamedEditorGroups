@@ -21,6 +21,6 @@ The IDs are stored in the level, so anyone with the mod and a copy of the level 
 - Each ID <cr>must</c> have its own <cy>unique name</c>.
 - Valid Named IDs characters are: <cg>ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@_-,.!$^&*()+=/<>?\01234567890</c>
 - You can Export/Import Named IDs
-- You can make IDs previewable or not, and give them descriptions by clicking the settings button besides in the Edit Named IDs popup (<cy>requires</c> <cg>Editor Level ID API</c>, <cr>this data is not saved in the level and not exported</c>)
+- You can make IDs previewable or not, and give them descriptions by clicking the settings button besides in the Edit Named IDs popup (<cy>requires</c> <cg>[Level ID API by Cvolton](mod:cvolton.level-id-api)</c>, <cr>this data is not saved in the level and not exported</c>)
 
 You can also view and add Named IDs from the Level Settings popup (settings button besides the pause button in the editor) by clicking on the options button on the bottom right.

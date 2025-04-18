@@ -149,12 +149,12 @@ void SharePopup::onImportButton(CCObject*)
 		return errorPopup->show();
 	}
 
-	ng::utils::cocos::createNotificationToast(this, "Successfully imported NamedIDs", 1.f, 30.f);
+	ng::utils::cocos::createNotificationToast(this, "Successfully imported NamedIDs", 1.f, 60.f);
 }
 
 void SharePopup::onExportButton(CCObject*)
 {
 	geode::utils::clipboard::write(NIDManager::dumpNamedIDs());
 
-	ng::utils::cocos::createNotificationToast(this, "Successfully copied to clipboard", .5f, 30.f);
+	ng::utils::cocos::createNotificationToast(this, "Successfully copied to clipboard", .5f, 60.f);
 }

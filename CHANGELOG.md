@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.0] - 2025-04-18
+
+## Added
+
+- Timer IDs
+- Effect IDs
+- Color IDs
+- iOS support
+- Build Helper support (name format can be modified in mod settings)
+- Ability to set description and preview to Named IDs (needs [Level ID API by Cvolton](mod:cvolton.level-id-api))
+- Import/Export Named IDs
+- Shortcut to Named IDs popup in Set Group ID Layer
+- SetIDPopup support (Find GroupID, GroupID filter, Color fiter in delete tab)
+- Spawn Group ID input
+- Named ID count in filter popup
+
+## Changed
+
+- Name length limit (20 -> 24)
+- API version (v1 -> v2)
+- Better error handling when parsing save object
+- Save object location
+- Name preview for Link Visibility trigger
+- Increased performance of trigger popups setup
+- Increased performance of object labels refresh
+
+## Fixed
+
+- Save object getting saved on the current editor layer instead of 0
+- Selecting multiple objects would incorrectly highlight the wrong IDs
+- Missing Named ID input for some triggers
+- Counter Label trigger incorrect ID type (#12), thank you [FreakyRobot](https://github.com/MaSp005)
+- Sequence Trigger crashing/adding wrong IDs
+
 ## [1.0.4] - 2025-03-01
 
 ### Fixed
