@@ -10,62 +10,6 @@
 
 #include "constants.hpp"
 
-geode::Result<std::pair<std::string, std::string>> ng::utils::parseNamedIDString(
-	const std::string_view format,
-	const std::string_view str
-) {
-	std::size_t namePos = format.find("{name}");
-	std::size_t idPos = format.find("{id}");
-	
-	if (namePos == std::string::npos || idPos == std::string::npos)
-		return geode::Err("Format doesn't contain required formatters {name} or {id}!");
-
-	std::string separator;
-	if (namePos < idPos)
-		separator = format.substr(namePos + 6, idPos - (namePos + 6));
-	else
-		separator = format.substr((idPos + 3) + 1, namePos - ((idPos + 3) + 1));
-
-	if (separator.empty())
-	{
-		if (idPos == 0)
-		{
-			std::string name;
-			name = str.substr(str.find_first_not_of("0123465789"));
-
-			return geode::Ok(std::pair{
-				name,
-				fmt::format("{}", ng::utils::numberFromStart(str).unwrap())
-			});
-		}
-		else if (idPos == format.size() - 4)
-		{
-			std::string name;
-			name = str.substr(0, str.find_first_of("0123465789"));
-
-			return geode::Ok(std::pair{
-				name,
-				fmt::format("{}", ng::utils::numberFromEnd(str).unwrap())
-			});
-		}
-
-		return geode::Err("Couldn't extract name or ID from string!");
-	}
-
-	std::size_t sepPos = str.find(separator);
-	if (sepPos == std::string::npos)
-		return geode::Err("String does not match format!");
-
-	if (namePos < idPos)
-		return geode::Ok(std::pair{
-			str.substr(0, sepPos), str.substr(sepPos + separator.size()) }
-		);
-	else
-		return geode::Ok(std::pair{
-			str.substr(sepPos + separator.size()), str.substr(0, sepPos) }
-		);
-}
-
 geode::Result<> ng::utils::sanitizeName(const std::string_view name)
 {
 	if (name.size() > ng::constants::MAX_NAMED_ID_LENGTH)

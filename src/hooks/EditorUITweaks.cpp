@@ -2,9 +2,12 @@
 
 #include <NIDManager.hpp>
 
+#include "IDFormatParser.hpp"
+
 #include "GameObjectData.hpp"
 
 #include "utils.hpp"
+#include "globals.hpp"
 #include "constants.hpp"
 
 using namespace geode::prelude;
@@ -17,8 +20,8 @@ struct NIDEditorUITweaks : geode::Modify<NIDEditorUITweaks, EditorUI>
 {
 	void dynamicGroupUpdate(bool isRegroup)
 	{
-		const std::string nameFormatRaw = getNameFormatRaw();
-		const std::string nameFormat = getNameFormat();
+		std::vector<short> errorredIDs;
+
 		std::vector<ng::types::GameObjectData> origObjects;
 		origObjects.reserve(this->m_selectedObjects->count());
 		auto selectedObjects = CCArray::create();
@@ -50,8 +53,12 @@ struct NIDEditorUITweaks : geode::Modify<NIDEditorUITweaks, EditorUI>
 					short newID = newObj->m_groups->at(idx);
 
 					if (newID != oldID)
-						if (auto newName = autoNameObjectID(NID::GROUP, oldID, nameFormatRaw, nameFormat))
-							static_cast<void>(NIDManager::saveNamedID<NID::GROUP>(std::move(newName.unwrap()), newID));
+					{
+						if (auto newName = autoNameObjectID(NID::GROUP, oldID))
+							(void)NIDManager::saveNamedID<NID::GROUP>(std::move(newName.unwrap()), newID);
+						else if (!newName.unwrapErr().empty())
+							errorredIDs.push_back(newID);
+					}
 
 					idx++;
 				}
@@ -98,85 +105,58 @@ struct NIDEditorUITweaks : geode::Modify<NIDEditorUITweaks, EditorUI>
 						}
 					}
 
-					if (auto newName = autoNameObjectID(realNID, dataGetter(object), nameFormatRaw, nameFormat))
-						static_cast<void>(NIDManager::saveNamedID(realNID, std::move(newName.unwrap()), objGetter(newEffectObj)));
+					if (auto newName = autoNameObjectID(realNID, dataGetter(object)))
+						(void)NIDManager::saveNamedID(realNID, std::move(newName.unwrap()), objGetter(newEffectObj));
+					else if (!newName.unwrapErr().empty())
+						errorredIDs.push_back(objGetter(newEffectObj));
 				}
+
+				this->m_editorLayer->updateObjectLabel(newEffectObj);
 			}
 
 			idx++;
 		}
-		
-		ng::utils::editor::refreshObjectLabels();
+
+		if (!errorredIDs.empty())
+			ng::utils::cocos::createNotificationToast(
+				this,
+				fmt::format("Couldn't auto-name IDs: {}", fmt::join(errorredIDs, ", ")),
+				1.f, 110.f
+			);
 	}
 
 
-	std::string getNameFormatRaw()
-	{
-		return Mod::get()->getSettingValue<std::string>("auto-name-format");
-	}
-
-	std::string getNameFormat()
-	{
-		std::string nameFormatRaw = Mod::get()->getSettingValue<std::string>("auto-name-format");
-
-		std::string nameFormat;
-		nameFormat = nameFormatRaw.replace(nameFormatRaw.find("{name}"), 6, "{}");
-		nameFormat = nameFormat.replace(nameFormat.find("{id}"), 4, "{}");
-
-		return nameFormat;
-	}
-
-	geode::Result<std::string> autoNameObjectID(NID nid, short id, const std::string& nameFormatRaw, const std::string& nameFormat)
+	geode::Result<std::string> autoNameObjectID(NID nid, short id)
 	{
 		auto nameRes = NIDManager::getNameForID(nid, id);
 		if (nameRes.isErr()) return geode::Err("");
 		auto name = nameRes.unwrap();
 
-		std::string newName{};
+		auto tokensRes = ng::parser::parseFormat(ng::globals::g_buildHelperRawNameFormat);
+		if (tokensRes.isErr()) return geode::Err(tokensRes.unwrapErr());
+		auto& tokens = tokensRes.unwrap();
 
-		// id is last
-		if (nameFormatRaw.find("{id}") == nameFormatRaw.size() - 4 && ng::utils::endsWithNumbers(name))
+		auto fmtPairRes = ng::parser::extract(name, tokens);
+		if (fmtPairRes.isErr())
 		{
-			auto numRes = ng::utils::numberFromEnd(name);
-			if (numRes.isErr()) return geode::Err("");
-			auto num = numRes.unwrap();
-
-			auto parsedRes = ng::utils::parseNamedIDString(nameFormatRaw, name);
-			if (parsedRes.isErr()) return geode::Err("");
-			auto [rawName, idStr] = parsedRes.unwrap();
-
-			while (NIDManager::getIDForName(nid, fmt::format(fmt::runtime(nameFormat), rawName, num)).isOk())
-				num++;
-
-			newName = fmt::format(fmt::runtime(nameFormat), rawName, num);
+			fmtPairRes = ng::parser::extract(
+				ng::parser::format(tokens, { name, "1" }).unwrap(),
+				tokens
+			);
 		}
-		// id is first
-		else if (nameFormatRaw.find("{id}") == 0 && ng::utils::startsWithNumbers(name))
-		{
-			auto numRes = ng::utils::numberFromStart(name);
-			if (numRes.isErr()) return geode::Err("");
-			auto num = numRes.unwrap();
+		auto& fmtPair = fmtPairRes.unwrap();
 
-			auto parsedRes = ng::utils::parseNamedIDString(nameFormatRaw, name);
-			if (parsedRes.isErr()) {log::debug("ERR {}", parsedRes.unwrapErr()); return geode::Err("");}
-			auto [rawName, idStr] = parsedRes.unwrap();
+		auto numRes = geode::utils::numFromString<int>(fmtPair.id);
+		if (numRes.isErr()) return geode::Err("Invalid number in name");
+		fmtPair.id = fmt::format("{}", numRes.unwrap() + 1);
 
-			while (NIDManager::getIDForName(nid, fmt::format(fmt::runtime(nameFormat), num, rawName)).isOk())
-				num++;
+		auto fmtRes = ng::parser::format(tokens, fmtPair);
+		if (fmtRes.isErr()) return geode::Err(fmtRes.unwrapErr());
+		auto& fmt = fmtRes.unwrap();
 
-			newName = fmt::format(fmt::runtime(nameFormat), num, rawName);
-		}
-		else if (name.size() <= ng::constants::MAX_NAMED_ID_LENGTH - 2)
-		{
-			if (nameFormatRaw.find("{id}") == 0)
-				newName = fmt::format(fmt::runtime(nameFormat), 2, name);
-			else
-				newName = fmt::format(fmt::runtime(nameFormat), name, 2);
-		}
+		if (fmt.size() > ng::constants::MAX_NAMED_ID_LENGTH)
+			return geode::Err("Auto-nammed ID is too long ({})", fmt.size());
 
-		if (newName.size() > ng::constants::MAX_NAMED_ID_LENGTH)
-			return geode::Err("");
-
-		return geode::Ok(newName);
+		return geode::Ok(fmt);
 	}
 };

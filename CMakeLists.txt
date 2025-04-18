@@ -19,9 +19,11 @@ file(GLOB_RECURSE SRC_MAIN
 add_library(${PROJECT_NAME} SHARED "${SRC_MAIN}")
 # allow easy inclusion of stuff
 target_include_directories(${PROJECT_NAME}
+    PRIVATE ${SRC_DIR}/base64
     PRIVATE ${SRC_DIR}/data
-    PRIVATE ${SRC_DIR}/utils
+    PRIVATE ${SRC_DIR}/parser
     PRIVATE ${SRC_DIR}/types
+    PRIVATE ${SRC_DIR}/utils
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC api/)

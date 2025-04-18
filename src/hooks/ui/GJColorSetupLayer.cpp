@@ -104,7 +104,7 @@ struct NIDGJColorSetupLayer : geode::Modify<NIDGJColorSetupLayer, GJColorSetupLa
 			auto otherNamedID = NIDManager::getIDForName<NID::COLOR>(str);
 			otherNamedID.isOkAnd([&](short otherID) { return otherID != id; })
 		) {
-			static_cast<void>(NIDManager::removeNamedID<NID::COLOR>(id));
+			(void)NIDManager::removeNamedID<NID::COLOR>(id);
 			static_cast<CCLabelBMFont*>(self->m_colorLabels->objectAtIndex(btnID))->setVisible(false);
 
 			return ng::utils::cocos::createNotificationToast(
@@ -115,7 +115,7 @@ struct NIDGJColorSetupLayer : geode::Modify<NIDGJColorSetupLayer, GJColorSetupLa
 		}
 	
 		if (str.empty())
-			static_cast<void>(NIDManager::removeNamedID<NID::COLOR>(id));
+			(void)NIDManager::removeNamedID<NID::COLOR>(id);
 		else if (auto res = NIDManager::saveNamedID<NID::COLOR>(std::move(str.data()), id); res.isErr())
 		{
 			input->setString("");

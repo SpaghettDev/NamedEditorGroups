@@ -11,6 +11,7 @@ namespace ng
 	}
 
 	namespace base64 {}
+	namespace parser {}
 	namespace constants {}
 	namespace globals {}
 	namespace types {}

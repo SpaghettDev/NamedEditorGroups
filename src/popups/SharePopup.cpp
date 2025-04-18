@@ -7,7 +7,7 @@
 #include <NIDManager.hpp>
 #include <NIDEnum.hpp>
 
-#include "../base64/base64.hpp"
+#include "base64.hpp"
 #include "utils.hpp"
 
 using namespace geode::prelude;

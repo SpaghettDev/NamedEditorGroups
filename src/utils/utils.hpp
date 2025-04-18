@@ -103,7 +103,6 @@ namespace ng::utils
 		return result;
 	}
 
-	geode::Result<std::pair<std::string, std::string>> parseNamedIDString(const std::string_view, const std::string_view);
 	geode::Result<> sanitizeName(const std::string_view);
 	bool startsWithNumbers(const std::string_view);
 	bool endsWithNumbers(const std::string_view);

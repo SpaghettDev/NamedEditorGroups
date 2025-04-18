@@ -13,7 +13,7 @@
 
 #include <cvolton.level-id-api/include/EditorIDs.hpp>
 
-#include "../base64/base64.hpp"
+#include "base64.hpp"
 #include "globals.hpp"
 #include "constants.hpp"
 

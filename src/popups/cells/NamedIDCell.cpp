@@ -250,7 +250,7 @@ void NamedIDCell::onEditButton(CCObject* sender)
 	}
 	else
 	{
-		static_cast<void>(NIDManager::removeNamedID(m_id_type, m_id));
+		(void)NIDManager::removeNamedID(m_id_type, m_id);
 		m_name = "";
 	}
 
@@ -288,8 +288,8 @@ void NamedIDCell::onPreviewButton(CCObject*)
 	m_preview_button->getNormalImage()->setVisible(m_preview_toggled);
 	m_preview_button->getChildByID("toggled-sprite")->setVisible(!m_preview_toggled);
 
-	static_cast<void>(
-		NIDExtrasManager::setNamedIDIsPreviewed(m_id_type, m_id, m_preview_toggled)
+	(void)NIDExtrasManager::setNamedIDIsPreviewed(
+		m_id_type, m_id, m_preview_toggled
 	);
 
 	m_name_label->setColor(m_preview_toggled ? ccColor3B{ 255, 255, 255 } : ccColor3B{ 125, 125, 125 });

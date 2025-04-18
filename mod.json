@@ -41,7 +41,7 @@
 		"auto-name-format": {
 			"type": "string",
 			"name": "Auto Name Format",
-			"description": "The format to use when auto naming groups (Build helper, Re-Group). Use {id} for the ID and {name} for the name.",
+			"description": "The format to use when auto naming groups (Build helper, Re-Group). Use {id} for the ID and {name} for the name.\n<cr>Changes to this setting are NOT retroactive! That means changing this value while making a level will not re-apply the new format to the old IDs, which can and will break subsequent auto-nammed IDs!</c>",
 			"default": "{name}-{id}",
 			"match": "^(?=.*\\{name\\})(?=.*\\{id\\})(?!.*\\{\\}).*",
 			"filter": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@_-,.!$^&*()+=/<>?\\01234567890{}[]|~`%:;\"'"

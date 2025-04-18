@@ -118,8 +118,8 @@ void EditDescriptionPopup::onSaveButton(CCObject*)
 	if (m_input->getString().size() > ng::constants::MAX_DESCRIPTION_LENGTH)
 		return ng::utils::cocos::createNotificationToast(this, "Description is too long!", .5f, 60.f);
 
-	static_cast<void>(
-		NIDExtrasManager::setNamedIDDescription(m_id_type, m_id, std::move(m_input->getString()))
+	(void)NIDExtrasManager::setNamedIDDescription(
+		m_id_type, m_id, std::move(m_input->getString())
 	);
 
 	this->removeFromParent();

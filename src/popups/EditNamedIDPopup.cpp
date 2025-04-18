@@ -209,7 +209,7 @@ void EditNamedIDPopup<nid>::onSaveButton(CCObject*)
 		);
 
 	if (namedIDStr.empty())
-		static_cast<void>(NIDManager::removeNamedID<nid>(id.unwrap()));
+		(void)NIDManager::removeNamedID<nid>(id.unwrap());
 	else if (auto res = NIDManager::saveNamedID<nid>(std::move(namedIDStr), id.unwrap()); res.isErr())
 		return ng::utils::cocos::createNotificationToast(this, res.unwrapErr(), 1.f, 45.f);
 
