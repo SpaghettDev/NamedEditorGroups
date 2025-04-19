@@ -18,7 +18,7 @@ struct NIDEffectGameObject : geode::Modify<NIDEffectGameObject, EffectGameObject
 {
 	struct Fields
 	{
-		CCLabelBMFont* m_id_name_label;
+		Ref<CCLabelBMFont> m_id_name_label = CCLabelBMFont::create("", "bigFont.fnt");
 		bool m_has_id_name_label = false;
 	};
 
@@ -37,10 +37,8 @@ struct NIDEffectGameObject : geode::Modify<NIDEffectGameObject, EffectGameObject
 		// lol why does the game not do this
 		this->setCascadeOpacityEnabled(true);
 
-		auto idNameLabel = CCLabelBMFont::create("", "bigFont.fnt");
 		// 28.5f is content width of move trigger, which works well for all other triggers
-		idNameLabel->limitLabelWidth(28.5f + 10.f, .6f, .1f);
-		m_fields->m_id_name_label = idNameLabel;
+		m_fields->m_id_name_label->limitLabelWidth(28.5f + 10.f, .6f, .1f);
 		// can't add the label here
 	}
 };
@@ -104,7 +102,7 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 				break;
 		}
 
-		// counter object
+		// Counter Trigger
 		if (object->m_objectID == 1615u)
 		{
 			auto labelNode = static_cast<LabelGameObject*>(object);
@@ -129,8 +127,13 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 				idNameStr = NIDManager::getNameForID<NID::GROUP>(
 					effectGameObj->m_targetGroupID
 				).unwrapOr("");
+			else
+				idNameStr = NIDManager::getNameForID<NID::COLOR>(
+					effectGameObj->m_targetGroupID
+				).unwrapOr("");
+				
 		}
-		// random trigger
+		// Random Trigger
 		else if (effectGameObj->m_objectID == 1912u)
 		{
 			auto id1 = NIDManager::getNameForID<NID::GROUP>(
