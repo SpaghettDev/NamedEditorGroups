@@ -302,6 +302,8 @@ void NamedIDCell::onDescriptionButton(CCObject*)
 
 void NamedIDCell::showAdvancedOptions(bool state)
 {
+	if (!ng::globals::g_isEditorIDAPILoaded) return;
+
 	m_preview_button->setVisible(state);
 	m_description_button->setVisible(
 		state || NIDExtrasManager::getNamedIDDescription(m_id_type, m_id).isOkAnd(

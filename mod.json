@@ -8,7 +8,7 @@
 	},
 	"id": "spaghettdev.named-editor-groups",
 	"name": "Named Editor Groups",
-	"version": "v2.0.1",
+	"version": "v2.0.2",
 	"developer": "SpaghettDev",
 	"description": "Abstract away IDs by giving them a name!",
 	"links": {

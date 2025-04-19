@@ -12,6 +12,11 @@ struct NIDGJColorSetupLayer : geode::Modify<NIDGJColorSetupLayer, GJColorSetupLa
 	struct Fields
 	{
 		std::array<geode::TextInput*, 24> m_inputs;
+
+		Fields()
+		{
+			m_inputs.fill(nullptr);
+		}
 	};
 
 	bool init(LevelSettingsObject* p0)
@@ -78,21 +83,6 @@ struct NIDGJColorSetupLayer : geode::Modify<NIDGJColorSetupLayer, GJColorSetupLa
 				this->m_colorLabels->objectAtIndex(input->getTag() - 1000 - 1)
 			)->setVisible(name.isOk());
 		}
-	}
-
-	void colorSelectClosed(CCNode* p0)
-	{
-		GJColorSetupLayer::colorSelectClosed(p0);
-
-		auto colorPopup = static_cast<ColorSelectPopup*>(p0);
-		short colorID = colorPopup->m_colorAction->m_colorID;
-		short colorPosID = colorID - this->m_page * this->m_colorsPerPage - 1;
-		auto newName = NIDManager::getNameForID<NID::COLOR>(colorID).unwrapOr("");
-
-		m_fields->m_inputs[colorPosID]->setString(newName);
-		static_cast<CCLabelBMFont*>(
-			this->m_colorLabels->objectAtIndex(colorPosID)
-		)->setVisible(!newName.empty());
 	}
 
 

@@ -59,7 +59,7 @@ bool SharePopup::setup()
 
 	auto importTooltipLabel = TextArea::create(
 		"Importing will try to parse what's\ncurrently in your clipboard",
-		"chatFont.fnt", .6f, 125.f, { .45f, .5f }, 10.f, true
+		"chatFont.fnt", GEODE_DESKTOP(.6f) GEODE_MOBILE(.5f), 125.f, { .45f, .5f }, 10.f, true
 	);
 	importTooltipLabel->colorAllCharactersTo({ 0, 0, 0, });
 	importTooltipLabel->setOpacity(125);
