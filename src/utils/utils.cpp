@@ -95,7 +95,7 @@ void ng::utils::editor::refreshObjectLabels()
 		for (auto trigger : lel->m_unk3278)
 		{
 			// ???
-			if (!trigger) continue;
+			if (!trigger || trigger->m_objectID == 1816u) continue;
 			lel->updateObjectLabel(trigger);
 		}
 	}
