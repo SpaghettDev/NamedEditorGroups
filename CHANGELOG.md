@@ -5,12 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.0.3] - 2025-04-19
+## [2.0.3] - 2025-04-21
+
+## Added
+
+- Copy channel ID Named ID input for color triggers
 
 ## Fixed
 
 - Player objects having an ID stuck to them
 - Better Color Picker receiving inputs when Edit Named ID popup is active
+- Old color triggers crashing the game
 
 ## [2.0.2] - 2025-04-19
 
