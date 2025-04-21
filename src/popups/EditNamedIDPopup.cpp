@@ -10,9 +10,11 @@
 using namespace geode::prelude;
 
 template <NID nid>
-EditNamedIDPopup<nid>* EditNamedIDPopup<nid>::create(short id, std::function<void(short)>&& changedIDCallback, std::function<void()>&& savedCallback)
+EditNamedIDPopup<nid>* EditNamedIDPopup<nid>::create(short id, std::function<void(short)>&& changedIDCallback, std::function<void()>&& savedCallback, bool addTargetedDelegate)
 {
 	auto ret = new EditNamedIDPopup<nid>();
+
+	ret->m_apply_touch_prio_fix = addTargetedDelegate;
 
 	if (ret && ret->initAnchored(240.f, 150.f, id, std::move(changedIDCallback), std::move(savedCallback)))
 		ret->autorelease();
@@ -33,6 +35,8 @@ bool EditNamedIDPopup<nid>::setup(short id, std::function<void(short)>&& changed
 
 	this->setID("EditNamedIDPopup");
 	this->setTitle(fmt::format("Edit {} Name", ng::utils::getNamedIDIndentifier<nid>()));
+	this->setTouchEnabled(true);
+	this->setKeypadEnabled(true);
 
 	auto infoButton = CCMenuItemSpriteExtra::create(
 		CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png"),
@@ -225,6 +229,13 @@ template <NID nid>
 void EditNamedIDPopup<nid>::onClearIDNameButton(CCObject*)
 {
 	m_named_id_input->setString("");
+}
+
+template <NID nid>
+void EditNamedIDPopup<nid>::registerWithTouchDispatcher()
+{
+	if (m_apply_touch_prio_fix)
+		CCTouchDispatcher::get()->addTargetedDelegate(this, -511, true);
 }
 
 

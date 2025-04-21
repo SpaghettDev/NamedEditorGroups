@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## Fixed
 
 - Player objects having an ID stuck to them
+- Better Color Picker receiving inputs when Edit Named ID popup is active
 
 ## [2.0.2] - 2025-04-19
 

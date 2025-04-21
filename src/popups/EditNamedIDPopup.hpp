@@ -10,7 +10,7 @@ template <NID nid>
 class EditNamedIDPopup : public geode::Popup<short, std::function<void(short)>&&, std::function<void()>&&>
 {
 public:
-	static EditNamedIDPopup* create(short, std::function<void(short)>&&, std::function<void()>&&);
+	static EditNamedIDPopup* create(short, std::function<void(short)>&&, std::function<void()>&&, bool = false);
 
 protected:
 	bool setup(short, std::function<void(short)>&&, std::function<void()>&&) override;
@@ -25,6 +25,8 @@ public:
 	void onClearIDNameButton(cocos2d::CCObject*);
 	virtual void onSaveButton(cocos2d::CCObject*);
 
+	virtual void registerWithTouchDispatcher() override;
+
 	geode::TextInput* getIDInput() { return m_id_input; }
 	geode::TextInput* getNamedIDInput() { return m_named_id_input; }
 	CCMenuItemSpriteExtra* getLeftArrowButton() { return m_left_arrow_button; }
@@ -38,6 +40,8 @@ protected:
 	geode::TextInput* m_named_id_input;
 	CCMenuItemSpriteExtra* m_left_arrow_button;
 	CCMenuItemSpriteExtra* m_right_arrow_button;
+
+	bool m_apply_touch_prio_fix = false;
 
 	std::function<void(short)> m_changed_id_callback;
 	std::function<void()> m_saved_callback;

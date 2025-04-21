@@ -6,6 +6,7 @@
 #include "../popups/EditNamedIDPopup.hpp"
 
 #include "utils.hpp"
+#include "globals.hpp"
 #include "constants.hpp"
 
 using namespace geode::prelude;
@@ -148,7 +149,8 @@ struct NIDColorSelectPopup : geode::Modify<NIDColorSelectPopup, ColorSelectPopup
 				static_cast<geode::TextInput*>(
 					this->m_buttonMenu->getChildByID("color-name-input"_spr)
 				)->setString(newName);
-			}
+			},
+			ng::globals::g_isBetterColorPickerLoaded
 		);
 		popup->getLeftArrowButton()->setVisible(false);
 		popup->getRightArrowButton()->setVisible(false);
