@@ -10,6 +10,7 @@
 
 #include "utils.hpp"
 #include "globals.hpp"
+#include "constants.hpp"
 
 using namespace geode::prelude;
 
@@ -156,6 +157,7 @@ bool NamedIDCell::init(NID idType, short id, std::string&& name, bool advMode, f
 	m_button_menu->addChild(m_edit_button);
 
 	m_name_input = geode::TextInput::create(width / 2.f, "");
+	m_name_input->setFilter(ng::constants::VALID_NAMED_ID_CHARACTERS);
 	m_name_input->setString(m_name.data());
 	m_name_input->setEnabled(false);
 	m_button_menu->addChild(m_name_input);
