@@ -47,28 +47,22 @@ protected:
 	std::function<void()> m_saved_callback;
 };
 
-static inline void ShowEditNamedIDPopup(const NID nid, short id, std::function<void(short)>&& changedIDCallback, std::function<void()>&& savedCallback)
+static inline void ShowEditNamedIDPopup(const NID nid, short id, std::function<void(short)>&& changedIDCallback, std::function<void()>&& savedCallback, bool applyTouchPrioFix = false)
 {
 	switch (nid)
 	{
 		case NID::GROUP:
-			EditNamedIDPopup<NID::GROUP>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show();
-			break;
+			EditNamedIDPopup<NID::GROUP>::create(id, std::move(changedIDCallback), std::move(savedCallback), applyTouchPrioFix)->show(); break;
 		case NID::COLLISION:
-			EditNamedIDPopup<NID::COLLISION>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show();
-			break;
+			EditNamedIDPopup<NID::COLLISION>::create(id, std::move(changedIDCallback), std::move(savedCallback), applyTouchPrioFix)->show(); break;
 		case NID::COUNTER:
-			EditNamedIDPopup<NID::COUNTER>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show();
-			break;
+			EditNamedIDPopup<NID::COUNTER>::create(id, std::move(changedIDCallback), std::move(savedCallback), applyTouchPrioFix)->show(); break;
 		case NID::TIMER:
-			EditNamedIDPopup<NID::TIMER>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show();
-			break;
+			EditNamedIDPopup<NID::TIMER>::create(id, std::move(changedIDCallback), std::move(savedCallback), applyTouchPrioFix)->show(); break;
 		case NID::EFFECT:
-			EditNamedIDPopup<NID::EFFECT>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show();
-			break;
+			EditNamedIDPopup<NID::EFFECT>::create(id, std::move(changedIDCallback), std::move(savedCallback), applyTouchPrioFix)->show(); break;
 		case NID::COLOR:
-			EditNamedIDPopup<NID::COLOR>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show();
-			break;
+			EditNamedIDPopup<NID::COLOR>::create(id, std::move(changedIDCallback), std::move(savedCallback), applyTouchPrioFix)->show(); break;
 
 		default:
 			throw "Invalid NID enum value";

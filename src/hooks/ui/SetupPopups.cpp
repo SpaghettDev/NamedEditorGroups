@@ -10,6 +10,7 @@
 
 #include <NIDManager.hpp>
 
+#include "globals.hpp"
 #include "constants.hpp"
 #include "DynamicPropertyTypes.hpp"
 
@@ -168,7 +169,15 @@ void NIDSetupTriggerPopup::onEditIDNameButton(CCObject* sender)
 		},
 		[&] {
 			this->textChanged(idInputInfo.idInput);
-		}
+		},
+		// color triggers
+		(
+			m_fields->m_objectID == 900 ||
+			m_fields->m_objectID == 899 ||
+			m_fields->m_objectID == 105 ||
+			m_fields->m_objectID == 29 ||
+			m_fields->m_objectID == 30
+		) && ng::globals::g_isBetterColorPickerLoaded
 	);
 }
 
