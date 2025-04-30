@@ -91,10 +91,10 @@ namespace ng::constants
 		{ 1268, fmap<std::uint16_t, NID, 7>({
 			// Group ID
 			{ 51, NID::GROUP },
-			// Original ID
-			// { ?, NID::GROUP },
-			// New ID
-			// { -2, NID::GROUP },
+			// // Original ID
+			// { -1, NID::GROUP },
+			// // New ID
+			// { -2, NID::GROUP }
 		}) },
 		// Rotate Trigger
 		{ 1346, fmap<std::uint16_t, NID, 7>({
@@ -111,7 +111,7 @@ namespace ng::constants
 			// MinY ID
 			{ 517, NID::GROUP },
 			// MaxY ID
-			{ 519, NID::GROUP },
+			{ 519, NID::GROUP }
 		}) },
 		// Scale Trigger
 		{ 2067, fmap<std::uint16_t, NID, 7>({
@@ -309,7 +309,8 @@ namespace ng::constants
 		}) },
 		// Sequence Trigger
 		// { 3607, fmap<std::uint16_t, NID, 7>({
-		// 	// no tags, thanks robert
+			// // GroupID
+			// { 51, NID::GROUP }
 		// }) },
 		// Spawn Particle Trigger
 		{ 3608, fmap<std::uint16_t, NID, 7>({
@@ -1578,24 +1579,24 @@ namespace ng::constants
 			// Item ID 2
 			{ 95, { 477, 1 } },
 			// Target Item ID
-			{ 51, { 478, 1 } },
+			{ 51, { 478, 1 } }
 		}) },
 		// Item Compare Trigger
 		{ 3620, fmap<std::uint16_t, ng::types::DynamicPropertyToggleType, 3>({
 			// Item ID 1
 			{ 80, { 476, 1 } },
 			// Item ID 2
-			{ 95, { 477, 1 } },
+			{ 95, { 477, 1 } }
 		}) },
 		// Persistent Item Trigger
 		{ 3641, fmap<std::uint16_t, ng::types::DynamicPropertyToggleType, 3>({
 			// Item ID
-			{ 80, { 494, 0 } },
+			{ 80, { 494, 0 } }
 		}) },
 		// Counter Label
 		{ 1615, fmap<std::uint16_t, ng::types::DynamicPropertyToggleType, 3>({
 			// Item ID
-			{ 80, { 466, 0 } },
+			{ 80, { 466, 0 } }
 		}) },
 	});
 	static_assert(DYNAMIC_PROPERTIES_TOGGLES.unique());
@@ -1608,14 +1609,14 @@ namespace ng::constants
 			// Item ID 2
 			{ 477, { 95, 1, 2 } },
 			// Target Item ID
-			{ 478, { 51, 1, 2 } },
+			{ 478, { 51, 1, 2 } }
 		}) },
 		// Item Compare Trigger
 		{ 3620, fmap<std::uint16_t, ng::types::DynamicPropertyChoiceType, 3>({
 			// Item ID 1
 			{ 476, { 80, 1, 2 } },
 			// Item ID 2
-			{ 477, { 95, 1, 2 } },
+			{ 477, { 95, 1, 2 } }
 		}) },
 	});
 	static_assert(DYNAMIC_PROPERTIES_CHOICES.unique());
@@ -1876,7 +1877,7 @@ namespace ng::constants
 		}) },
 		// Teleport Trigger
 		{ 3622, FMAP_GETTER_PAIR({
-			{ NID::GROUP, MAKE_GETTER_PAIR(m_targetGroupID) },
+			{ NID::GROUP, MAKE_GETTER_PAIR(m_targetGroupID) }
 		}) }
 	});
 	static_assert(EFFECTGAMEOBJECT_TO_ID_TYPE.unique());

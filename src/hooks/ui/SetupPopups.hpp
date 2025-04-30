@@ -40,7 +40,7 @@ struct NIDSetupTriggerPopup : geode::Modify<NIDSetupTriggerPopup, SetupTriggerPo
 	void valueChanged(int, float);
 	void updateValue(int, float);
 
-	
+
 	void triggerArrowWasClicked(int, bool);
 	void textWasChanged(CCTextInputNode*);
 	void onEditIDNameButton(CCObject*);

@@ -143,7 +143,7 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 		std::set<short> commonIDs;
 		std::set<short> groupParentIDs;
 		std::vector<std::set<short>> groupIDs;
-		
+
 		if (!isOnlyObject)
 		{
 			groupIDs.reserve(this->m_targetObjects->count());

@@ -103,7 +103,7 @@ struct NIDGJColorSetupLayer : geode::Modify<NIDGJColorSetupLayer, GJColorSetupLa
 				1.f, 45.f
 			);
 		}
-	
+
 		if (str.empty())
 			(void)NIDManager::removeNamedID<NID::COLOR>(id);
 		else if (auto res = NIDManager::saveNamedID<NID::COLOR>(std::move(str.data()), id); res.isErr())

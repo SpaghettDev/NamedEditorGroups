@@ -29,7 +29,7 @@ struct NIDColorSelectPopup : geode::Modify<NIDColorSelectPopup, ColorSelectPopup
 			{
 				std::vector<CCNode*> colorIDNodes;
 				colorIDNodes.reserve(5);
-	
+
 				// :broken_heart:
 				colorIDNodes.emplace_back(ng::utils::cocos::getChildByPredicate(
 					this->m_mainLayer,
@@ -66,7 +66,7 @@ struct NIDColorSelectPopup : geode::Modify<NIDColorSelectPopup, ColorSelectPopup
 						return c->getTag() == 1 && c->getPositionY() == inputPosY;
 					}
 				));
-	
+
 				auto colorInputInfo = STP->commonInputSetup(
 					this,
 					NID::COLOR,

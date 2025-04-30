@@ -17,11 +17,22 @@
 using namespace geode::prelude;
 
 
-cocos2d::CCArray* NIDSetupTriggerPopup::createValueControlAdvanced(int property, gd::string label, CCPoint position, float scale, bool unk1, InputValueType valueType, int unk2, bool unk3, float sliderMin, float sliderMax, int page, int group, GJInputStyle inputStyle, int decimalPlaces, bool unk4)
-{
+cocos2d::CCArray* NIDSetupTriggerPopup::createValueControlAdvanced(
+	int property, gd::string label, CCPoint position,
+	float scale, bool unk1, InputValueType valueType,
+	int unk2, bool unk3, float sliderMin,
+	float sliderMax, int page, int group,
+	GJInputStyle inputStyle, int decimalPlaces, bool unk4
+) {
 	// it seems like the game does nothing with the returned array, but we should add our stuff either way
 	// in case it ever does
-	auto nodes = SetupTriggerPopup::createValueControlAdvanced(property, label, position, scale, unk1, valueType, unk2, unk3, sliderMin, sliderMax, page, group, inputStyle, decimalPlaces, unk4);
+	auto nodes = SetupTriggerPopup::createValueControlAdvanced(
+		property, label, position,
+		scale, unk1, valueType,
+		unk2, unk3, sliderMin,
+		sliderMax, page, group,
+		inputStyle, decimalPlaces, unk4
+	);
 
 	// this is -1 even if m_gameObjects has different objects since this method is never called if
 	// the game objects are different
@@ -38,12 +49,8 @@ cocos2d::CCArray* NIDSetupTriggerPopup::createValueControlAdvanced(int property,
 		if (
 			m_fields->m_objectID == -1 ||
 			!ng::constants::OBJECT_ID_TO_PROPERTIES_INFO.contains(m_fields->m_objectID) ||
-			!ng::constants::OBJECT_ID_TO_PROPERTIES_INFO.at(m_fields->m_objectID).contains(property)
-		)
-			return nodes;
-
-		// see OBJECT_ID_TO_PROPERTIES_INFO comment
-		if (
+			!ng::constants::OBJECT_ID_TO_PROPERTIES_INFO.at(m_fields->m_objectID).contains(property) ||
+			// see OBJECT_ID_TO_PROPERTIES_INFO comment
 			ng::constants::OBJECT_ID_TO_PROPERTIES_INFO.at(m_fields->m_objectID).at(property) == NID::_UNKNOWN
 		)
 			return nodes;

@@ -28,7 +28,7 @@ namespace ng::utils
 			return "Effect ID";
 		else if constexpr (nid == NID::COLOR)
 			return "Color ID";
-	
+
 		throw "Invalid Named ID enum value";
 	}
 
@@ -46,7 +46,7 @@ namespace ng::utils
 			return getNamedIDIndentifier<NID::EFFECT>();
 		else if (nid == NID::COLOR)
 			return getNamedIDIndentifier<NID::COLOR>();
-	
+
 		throw "Invalid Named ID enum value";
 	}
 
@@ -56,18 +56,18 @@ namespace ng::utils
 		const auto it = std::find_if(container.cbegin(), container.cend(), [&](const T& value) {
 			return value == toFind;
 		});
-	
+
 		return it != container.cend() ? (it - container.cbegin()) : -1;
 	}
-	
+
 	template <typename C, typename T>
 	inline std::ptrdiff_t getIndexOf(const C& container, std::function<bool(const T&)>&& predicate)
 	{
 		const auto it = std::find_if(container.cbegin(), container.cend(), predicate);
-	
+
 		return it != container.cend() ? (it - container.cbegin()) : -1;
 	}
-	
+
 	template <typename T>
 	inline std::ptrdiff_t getIndexOf(const cocos2d::CCArray* array, std::function<bool(const T)>&& predicate)
 	{
@@ -75,10 +75,10 @@ namespace ng::utils
 		{
 			if (predicate(elem))
 				return idx;
-	
+
 			idx++;
 		}
-	
+
 		return -1;
 	}
 

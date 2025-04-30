@@ -247,9 +247,9 @@ struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup
 			auto button = static_cast<ButtonSprite*>(static_cast<CCMenuItemSpriteExtra*>(
 				m_fields->m_groups_list_menu->getChildByTag(this->m_selectedButton->getTag())
 			)->getNormalImage());
-			
+
 			button->updateBGImage("GJ_button_04.png");
-			
+
 			if (auto nameLabel = button->getChildByID("name-label"_spr))
 			{
 				button->m_label->setPositionY(button->m_label->getPositionY() + 4.f);
@@ -265,9 +265,9 @@ struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup
 				m_fields->m_groups_list_menu->getChildByTag(sender->getTag())
 			);
 			auto button = static_cast<ButtonSprite*>(static_cast<CCMenuItemSpriteExtra*>(sender)->getNormalImage());
-			
+
 			button->updateBGImage("GJ_button_03.png");
-			
+
 			if (auto nameLabel = button->getChildByID("name-label"_spr))
 			{
 				button->m_label->setPositionY(button->m_label->getPositionY() + 4.f);

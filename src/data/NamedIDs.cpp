@@ -41,18 +41,18 @@ geode::Result<NamedIDs> NamedIDs::from(std::string_view str)
 	NamedIDs res{};
 	auto parseStr = [](std::string_view str, std::size_t posStart, std::size_t posEnd, bool isEnd = false) -> geode::Result<std::pair<std::string, short>> {
 		auto ngSeparatorIdx = str.find(':', posStart);
-	
+
 		if (ngSeparatorIdx == std::string_view::npos || ngSeparatorIdx > posEnd)
 			return geode::Err("Invalid NamedIDs: Missing or misplaced ':' separator near position {}", posStart);
-	
+
 		auto name = std::string{ str.substr(posStart, ngSeparatorIdx - posStart) };
 		auto id = str.substr(ngSeparatorIdx + 1, isEnd ? std::string_view::npos : posEnd - ngSeparatorIdx - 1);
-	
+
 		if (auto sanitizeRes = ng::utils::sanitizeName(name); sanitizeRes.isErr())
 			return geode::Err("Failed to parse name '{}': {}", name, sanitizeRes.unwrapErr());
-	
+
 		auto idNumRes = geode::utils::numFromString<short>(id);
-	
+
 		if (idNumRes.isErr())
 			return geode::Err("Failed to parse number '{}': {}", id, idNumRes.unwrapErr());
 

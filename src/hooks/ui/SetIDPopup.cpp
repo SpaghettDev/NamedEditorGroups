@@ -85,7 +85,7 @@ struct NIDSetIDPopup : geode::Modify<NIDSetIDPopup, SetIDPopup>
 	void onItemIDArrow(CCObject* sender)
 	{
 		SetIDPopup::onItemIDArrow(sender);
-		
+
 		auto& idInputInfo = m_fields->m_id_input;
 		if (!idInputInfo) return;
 

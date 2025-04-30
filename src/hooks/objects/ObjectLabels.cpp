@@ -131,7 +131,7 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 				idNameStr = NIDManager::getNameForID<NID::COLOR>(
 					effectGameObj->m_targetGroupID
 				).unwrapOr("");
-				
+
 		}
 		// Random Trigger
 		else if (effectGameObj->m_objectID == 1912u)

@@ -94,7 +94,7 @@ struct NIDEditorUITweaks : geode::Modify<NIDEditorUITweaks, EditorUI>
 								toggleInfo.togglePropID,
 								newEffectObj
 							);
-	
+
 							if (propVal == toggleInfo.counterState)
 							{
 								realNID = NID::COUNTER;
