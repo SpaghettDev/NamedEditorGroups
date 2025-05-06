@@ -30,7 +30,7 @@ struct NIDModifiedSequenceInputDelegate : public TextInputDelegate
 		if (auto parsedNum = numFromString<short>(idInputInfo.idInput->getString()); parsedNum.isOk())
 		{
 			idInputInfo.namedIDInput->setString(
-				NIDManager::getNameForID(idInputInfo.idType, parsedNum.unwrap()).unwrapOr("")
+				NIDManager::getNameForID<NID::GROUP>(parsedNum.unwrap()).unwrapOr("")
 			);
 
 			// garbage.
@@ -282,8 +282,7 @@ struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup
 
 		auto& idInputInfo = STP->m_fields->m_id_inputs.at(GROUP_ID_PROPERTY);
 
-		ShowEditNamedIDPopup(
-			idInputInfo.idType,
+		EditNamedIDPopup<NID::GROUP>::create(
 			geode::utils::numFromString<short>(idInputInfo.idInput->getString()).unwrapOr(0),
 			[&](short id) {
 				idInputInfo.idInput->setString(fmt::format("{}", id));
@@ -292,7 +291,7 @@ struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup
 				this->textChanged(idInputInfo.idInput);
 				this->updateGroupIDButtons();
 			}
-		);
+		)->show();
 	}
 
 	static void onEditInput(NIDSetupSequenceTriggerPopup* self, const std::string& str)

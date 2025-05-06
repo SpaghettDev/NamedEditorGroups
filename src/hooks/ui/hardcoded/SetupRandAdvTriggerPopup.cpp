@@ -217,8 +217,7 @@ struct NIDSetupRandAdvTriggerPopup : geode::Modify<NIDSetupRandAdvTriggerPopup, 
 
 		auto& idInputInfo = STP->m_fields->m_id_inputs.at(GROUP_ID_PROPERTY);
 
-		ShowEditNamedIDPopup(
-			idInputInfo.idType,
+		EditNamedIDPopup<NID::GROUP>::create(
 			geode::utils::numFromString<short>(idInputInfo.idInput->getString()).unwrapOr(0),
 			[&](short id) {
 				idInputInfo.idInput->setString(fmt::format("{}", id));
@@ -227,6 +226,6 @@ struct NIDSetupRandAdvTriggerPopup : geode::Modify<NIDSetupRandAdvTriggerPopup, 
 				this->m_fields->m_modified_delegate.textChanged(idInputInfo.idInput);
 				this->updateGroupIDButtons();
 			}
-		);
+		)->show();
 	}
 };

@@ -140,6 +140,7 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 
 		const auto LEL = LevelEditorLayer::get();
 		bool isOnlyObject = static_cast<bool>(this->m_targetObject);
+		// TODO: use std::span
 		std::set<short> commonIDs;
 		std::set<short> groupParentIDs;
 		std::vector<std::set<short>> groupIDs;

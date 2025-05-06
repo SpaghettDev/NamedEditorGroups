@@ -83,15 +83,11 @@ struct NIDCollisionBlockPopup : geode::Modify<NIDCollisionBlockPopup, CollisionB
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
-		m_fields->m_id_inputs[BLOCK_ID_PROPERTY] = std::move(blockIDInputInfo);
-
-
-		m_fields->m_id_inputs[BLOCK_ID_PROPERTY].namedIDInput->setCallback([&](const std::string& str) {
+		blockIDInputInfo.namedIDInput->setCallback([&](const std::string& str) {
 			NIDCollisionBlockPopup::onEditInput(this, BLOCK_ID_PROPERTY, str);
 		});
-		static_cast<CCMenuItemSpriteExtra*>(
-			this->m_buttonMenu->getChildByID("edit-group-name-button-0"_spr)
-		)->m_pfnSelector = menu_selector(NIDCollisionBlockPopup::onEditIDNameButton);
+		blockIDInputInfo.editInputButton->m_pfnSelector = menu_selector(NIDCollisionBlockPopup::onEditIDNameButton);
+		m_fields->m_id_inputs[BLOCK_ID_PROPERTY] = std::move(blockIDInputInfo);
 
 		return true;
 	}
@@ -110,7 +106,7 @@ struct NIDCollisionBlockPopup : geode::Modify<NIDCollisionBlockPopup, CollisionB
 
 		idInputInfo.namedIDInput->getInputNode()->onClickTrackNode(false);
 		idInputInfo.namedIDInput->setString(
-			NIDManager::getNameForID(idInputInfo.idType, idInputValue).unwrapOr("")
+			NIDManager::getNameForID<NID::COLLISION>(idInputValue).unwrapOr("")
 		);
 	}
 
@@ -124,7 +120,7 @@ struct NIDCollisionBlockPopup : geode::Modify<NIDCollisionBlockPopup, CollisionB
 
 		if (auto parsedNum = numFromString<short>(idInputInfo.idInput->getString()); parsedNum.isOk())
 			idInputInfo.namedIDInput->setString(
-				NIDManager::getNameForID(idInputInfo.idType, parsedNum.unwrap()).unwrapOr("")
+				NIDManager::getNameForID<NID::COLLISION>(parsedNum.unwrap()).unwrapOr("")
 			);
 	}
 
@@ -133,7 +129,7 @@ struct NIDCollisionBlockPopup : geode::Modify<NIDCollisionBlockPopup, CollisionB
 	{
 		auto& idInputInfo = self->m_fields->m_id_inputs.at(property);
 
-		if (auto name = NIDManager::getIDForName(idInputInfo.idType, str); name.isOk())
+		if (auto name = NIDManager::getIDForName<NID::COLLISION>(str); name.isOk())
 			idInputInfo.idInput->setString(fmt::format("{}", name.unwrap()));
 	}
 
@@ -141,8 +137,7 @@ struct NIDCollisionBlockPopup : geode::Modify<NIDCollisionBlockPopup, CollisionB
 	{
 		auto& idInputInfo = m_fields->m_id_inputs.at(BLOCK_ID_PROPERTY);
 
-		ShowEditNamedIDPopup(
-			idInputInfo.idType,
+		EditNamedIDPopup<NID::COLLISION>::create(
 			geode::utils::numFromString<short>(idInputInfo.idInput->getString()).unwrapOr(0),
 			[&](short id) {
 				idInputInfo.idInput->setString(fmt::format("{}", id));
@@ -150,6 +145,6 @@ struct NIDCollisionBlockPopup : geode::Modify<NIDCollisionBlockPopup, CollisionB
 			[&] {
 				this->textChanged(idInputInfo.idInput);
 			}
-		);
+		)->show();
 	}
 };
