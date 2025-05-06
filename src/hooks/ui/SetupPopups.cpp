@@ -297,8 +297,7 @@ NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonInputSetup(
 	if (auto name = NIDManager::getNameForID(currentNid, inputIDNum); name.isOk())
 		groupNameInput->setString(name.unwrap());
 
-	if (finishedCallback)
-		finishedCallback({ groupNameInput, editInputButton });
+	finishedCallback({ groupNameInput, editInputButton });
 
 	return std::move(inputInfo);
 }
@@ -371,7 +370,7 @@ void NIDSetupTriggerPopup::valueChanged(int property, float value)
 		);
 		break;
 	}
-};
+}
 
 void NIDSetupTriggerPopup::updateValue(int property, float value)
 {
@@ -406,7 +405,14 @@ void NIDSetupTriggerPopup::updateValue(int property, float value)
 			? ""
 			: NIDManager::getNameForID(type, idInputValue).unwrapOr("")
 	);
-};
+}
+
+void NIDSetupTriggerPopup::goToPage(int page, bool hideAll)
+{
+	SetupTriggerPopup::goToPage(page, hideAll);
+
+	m_fields->m_page_change_cb(page);
+}
 
 
 // SetupAreaAnimTriggerPopups are special

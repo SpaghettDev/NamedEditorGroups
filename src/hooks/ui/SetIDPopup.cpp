@@ -72,9 +72,7 @@ struct NIDSetIDPopup : geode::Modify<NIDSetIDPopup, SetIDPopup>
 			inputInfo.namedIDInput->setCallback([&](const std::string& str) {
 				NIDSetIDPopup::onEditInput(this, std::move(str));
 			});
-			static_cast<CCMenuItemSpriteExtra*>(
-				this->m_buttonMenu->getChildByID("edit-group-name-button-0"_spr)
-			)->m_pfnSelector = menu_selector(NIDSetIDPopup::onEditIDNameButton);
+			inputInfo.editInputButton->m_pfnSelector = menu_selector(NIDSetIDPopup::onEditIDNameButton);
 
 			m_fields->m_id_input = std::move(inputInfo);
 		}

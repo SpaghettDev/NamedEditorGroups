@@ -145,9 +145,7 @@ struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup
 		inputInfo.namedIDInput->setCallback([&](const std::string& str) {
 			NIDSetupSequenceTriggerPopup::onEditInput(this, str);
 		});
-		static_cast<CCMenuItemSpriteExtra*>(
-			this->m_buttonMenu->getChildByID("edit-group-name-button-51"_spr)
-		)->m_pfnSelector = menu_selector(NIDSetupSequenceTriggerPopup::onEditIDNameButton);
+		inputInfo.editInputButton->m_pfnSelector = menu_selector(NIDSetupSequenceTriggerPopup::onEditIDNameButton);
 		STP->m_fields->m_id_inputs[GROUP_ID_PROPERTY] = std::move(inputInfo);
 
 

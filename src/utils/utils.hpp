@@ -6,6 +6,7 @@
 #include <vector>
 #include <set>
 #include <algorithm>
+#include <type_traits>
 
 #include <Geode/cocos/base_nodes/CCNode.h>
 
@@ -13,6 +14,28 @@
 
 namespace ng::utils
 {
+	namespace impl
+	{
+		template <typename T>
+		struct PtrRefComparator
+		{
+			bool operator()(const T* lhs, const T& rhs) const
+			{
+				return *lhs < rhs;
+			}
+
+			bool operator()(const T& lhs, const T* rhs) const
+			{
+				return lhs < *rhs;
+			}
+
+			bool operator()(const T* lhs, const T* rhs) const
+			{
+				return *lhs < *rhs;
+			}
+		};
+	}
+
 	template <NID nid>
 	static inline consteval std::string_view getNamedIDIndentifier()
 	{
@@ -82,7 +105,7 @@ namespace ng::utils
 		return -1;
 	}
 
-	template<typename T>
+	template<typename T> requires(!std::is_pointer_v<T>)
 	std::set<T> multiSetIntersection(std::vector<std::set<T>>&& sets)
 	{
 		if (sets.empty()) return {};
@@ -96,6 +119,34 @@ namespace ng::utils
 				result.begin(), result.end(),
 				sets[i].begin(), sets[i].end(),
 				std::inserter(temp, temp.begin())
+			);
+			result = std::move(temp);
+		}
+
+		return result;
+	}
+
+	template<typename T> requires(std::is_pointer_v<T>)
+	std::set<T, impl::PtrRefComparator<std::remove_pointer_t<T>>> multiSetIntersection(
+		std::vector<std::span<std::remove_pointer_t<T>>>&& sets
+	) {
+		if (sets.empty()) return {};
+
+		std::set<T, impl::PtrRefComparator<std::remove_pointer_t<T>>> result;
+		std::ranges::transform(
+			sets[0],
+			std::inserter(result, result.end()),
+			[](auto& obj) { return &obj; }
+		);
+
+		for (std::size_t i = 1; i < sets.size() && !result.empty(); ++i)
+		{
+			std::set<T, impl::PtrRefComparator<std::remove_pointer_t<T>>> temp;
+			std::set_intersection(
+				result.begin(), result.end(),
+				sets[i].begin(), sets[i].end(),
+				std::inserter(temp, temp.begin()),
+				impl::PtrRefComparator<std::remove_pointer_t<T>>{}
 			);
 			result = std::move(temp);
 		}

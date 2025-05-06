@@ -27,6 +27,7 @@ struct NIDSetupTriggerPopup : geode::Modify<NIDSetupTriggerPopup, SetupTriggerPo
 	struct Fields
 	{
 		std::unordered_map<std::uint16_t, IDInputInfo> m_id_inputs;
+		std::function<void(bool)> m_page_change_cb = [](...) {};
 		short m_objectID;
 	};
 
@@ -39,6 +40,7 @@ struct NIDSetupTriggerPopup : geode::Modify<NIDSetupTriggerPopup, SetupTriggerPo
 
 	void valueChanged(int, float);
 	void updateValue(int, float);
+	void goToPage(int, bool);
 
 
 	void triggerArrowWasClicked(int, bool);
@@ -48,7 +50,7 @@ struct NIDSetupTriggerPopup : geode::Modify<NIDSetupTriggerPopup, SetupTriggerPo
 	void handleSpecialCases(int, std::uint16_t, cocos2d::CCArray*);
 
 	static NID evaluateDynamicType(SetupTriggerPopup*, NID, short);
-	static IDInputInfo commonInputSetup(cocos2d::CCLayer*, NID, std::uint16_t, std::vector<CCNode*>&&, CCNode*, CCNode*, std::function<void(std::vector<CCNode*>&&)>&& = nullptr);
+	static IDInputInfo commonInputSetup(cocos2d::CCLayer*, NID, std::uint16_t, std::vector<CCNode*>&&, CCNode*, CCNode*, std::function<void(std::vector<CCNode*>&&)>&& = [](...) {});
 
 	static void onEditInput(NIDSetupTriggerPopup*, std::uint16_t, const std::string&);
 };

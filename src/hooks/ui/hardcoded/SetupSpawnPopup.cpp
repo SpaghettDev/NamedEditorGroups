@@ -145,9 +145,7 @@ struct NIDSetupSpawnPopup : geode::Modify<NIDSetupSpawnPopup, SetupSpawnPopup>
 		originalIDInputInfo.namedIDInput->setCallback([&](const std::string& str) {
 			NIDSetupSpawnPopup::onEditInput(this, -1, str);
 		});
-		static_cast<CCMenuItemSpriteExtra*>(
-			this->m_buttonMenu->getChildByID("edit-group-name-button--1"_spr)
-		)->m_pfnSelector = menu_selector(NIDSetupSpawnPopup::onEditIDNameButton);
+		originalIDInputInfo.editInputButton->m_pfnSelector = menu_selector(NIDSetupSpawnPopup::onEditIDNameButton);
 		STP->m_fields->m_id_inputs[ORIGINAL_ID_PROPERTY] = std::move(originalIDInputInfo);
 
 		auto newIDInputInfo = STP->commonInputSetup(
@@ -169,9 +167,7 @@ struct NIDSetupSpawnPopup : geode::Modify<NIDSetupSpawnPopup, SetupSpawnPopup>
 		newIDInputInfo.namedIDInput->setCallback([&](const std::string& str) {
 			NIDSetupSpawnPopup::onEditInput(this, -2, str);
 		});
-		static_cast<CCMenuItemSpriteExtra*>(
-			this->m_buttonMenu->getChildByID("edit-group-name-button--2"_spr)
-		)->m_pfnSelector = menu_selector(NIDSetupSpawnPopup::onEditIDNameButton);
+		newIDInputInfo.editInputButton->m_pfnSelector = menu_selector(NIDSetupSpawnPopup::onEditIDNameButton);
 		STP->m_fields->m_id_inputs[NEW_ID_PROPERTY] = std::move(newIDInputInfo);
 
 
