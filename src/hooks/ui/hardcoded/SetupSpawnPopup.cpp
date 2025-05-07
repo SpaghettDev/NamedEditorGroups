@@ -207,10 +207,14 @@ struct NIDSetupSpawnPopup : geode::Modify<NIDSetupSpawnPopup, SetupSpawnPopup>
 			remapVecViews.reserve(this->m_gameObjects->count());
 
 			for (auto obj : CCArrayExt<SpawnTriggerGameObject*>(this->m_gameObjects))
-				remapVecViews.emplace_back(obj->m_remapObjects);
+				remapVecViews.emplace_back(std::span<ChanceObject>{ &obj->m_remapObjects[0], obj->m_remapObjects.size() });
 		}
 		else
-			remapVecViews.emplace_back(static_cast<SpawnTriggerGameObject*>(this->m_gameObject)->m_remapObjects);
+		{
+			auto& remapObjects = static_cast<SpawnTriggerGameObject*>(this->m_gameObject)->m_remapObjects;
+
+			remapVecViews.emplace_back(std::span<ChanceObject>{ &remapObjects[0], remapObjects.size() });
+		}
 
 		auto remapObjects = std::views::join(remapVecViews);
 		auto commonRemapObjects = ng::utils::multiSetIntersection<ChanceObject*>(std::move(remapVecViews));
