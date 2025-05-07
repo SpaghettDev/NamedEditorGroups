@@ -10,6 +10,9 @@
 
 #include "utils.hpp"
 #include "operators.hpp" // IWYU pragma: keep
+#ifdef __APPLE__
+#include "joined_spans.hpp"
+#endif
 
 using namespace geode::prelude;
 
@@ -207,16 +210,21 @@ struct NIDSetupSpawnPopup : geode::Modify<NIDSetupSpawnPopup, SetupSpawnPopup>
 			remapVecViews.reserve(this->m_gameObjects->count());
 
 			for (auto obj : CCArrayExt<SpawnTriggerGameObject*>(this->m_gameObjects))
-				remapVecViews.emplace_back(std::span<ChanceObject>{ &obj->m_remapObjects[0], obj->m_remapObjects.size() });
+				remapVecViews.emplace_back(&obj->m_remapObjects[0], obj->m_remapObjects.size());
 		}
 		else
 		{
 			auto& remapObjects = static_cast<SpawnTriggerGameObject*>(this->m_gameObject)->m_remapObjects;
 
-			remapVecViews.emplace_back(std::span<ChanceObject>{ &remapObjects[0], remapObjects.size() });
+			remapVecViews.emplace_back(&remapObjects[0], remapObjects.size());
 		}
 
+#ifdef __APPLE__
+		// workaround appleclang having jack shit
+		auto remapObjects = join_spans(remapVecViews);
+#else
 		auto remapObjects = std::views::join(remapVecViews);
+#endif
 		auto commonRemapObjects = ng::utils::multiSetIntersection<ChanceObject*>(std::move(remapVecViews));
 		std::set<ChanceObject*, ng::utils::impl::PtrRefComparator<ChanceObject>> uniqueRemapObjects;
 		std::ranges::transform(
