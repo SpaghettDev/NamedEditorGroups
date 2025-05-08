@@ -221,7 +221,7 @@ struct NIDSetupSpawnPopup : geode::Modify<NIDSetupSpawnPopup, SetupSpawnPopup>
 
 #ifdef __APPLE__
 		// workaround appleclang having jack shit
-		auto remapObjects = join_spans(remapVecViews);
+		auto remapObjects = ng::utils::ranges::join_spans(remapVecViews);
 #else
 		auto remapObjects = std::views::join(remapVecViews);
 #endif

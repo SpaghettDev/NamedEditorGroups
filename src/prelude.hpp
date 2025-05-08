@@ -8,6 +8,7 @@ namespace ng
 	{
 		namespace cocos {}
 		namespace editor {}
+		namespace ranges {}
 	}
 
 	namespace base64 {}
