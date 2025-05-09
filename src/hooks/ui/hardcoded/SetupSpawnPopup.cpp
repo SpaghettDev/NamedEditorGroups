@@ -280,6 +280,7 @@ struct NIDSetupSpawnPopup : geode::Modify<NIDSetupSpawnPopup, SetupSpawnPopup>
 					"bigFont.fnt"
 				);
 				newNameLabel->limitLabelWidth(48.f, .35f, .1f);
+				newButtonSprite->m_label->limitLabelWidth(48.f, .35f, .1f);
 				newButtonSprite->m_label->setPositionY(buttonLabelPos.y + 4.f);
 				newNameLabel->setPosition({ buttonLabelPos.x, buttonLabelPos.y - 6.f });
 				newButtonSprite->addChild(newNameLabel);
