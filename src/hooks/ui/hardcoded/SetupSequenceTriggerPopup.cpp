@@ -142,7 +142,7 @@ struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup
 		);
 		m_fields->m_modified_delegate = NIDModifiedSequenceInputDelegate{ this };
 		inputInfo.idInput->setDelegate(&m_fields->m_modified_delegate);
-		inputInfo.namedIDInput->setCallback([&](const std::string& str) {
+		inputInfo.namedIDInput.setEditInputCallback([&](const std::string& str) {
 			NIDSetupSequenceTriggerPopup::onEditInput(this, str);
 		});
 		inputInfo.editInputButton->m_pfnSelector = menu_selector(NIDSetupSequenceTriggerPopup::onEditIDNameButton);

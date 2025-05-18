@@ -83,7 +83,7 @@ struct NIDCollisionBlockPopup : geode::Modify<NIDCollisionBlockPopup, CollisionB
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
-		blockIDInputInfo.namedIDInput->setCallback([&](const std::string& str) {
+		blockIDInputInfo.namedIDInput.setEditInputCallback([&](const std::string& str) {
 			NIDCollisionBlockPopup::onEditInput(this, BLOCK_ID_PROPERTY, str);
 		});
 		blockIDInputInfo.editInputButton->m_pfnSelector = menu_selector(NIDCollisionBlockPopup::onEditIDNameButton);

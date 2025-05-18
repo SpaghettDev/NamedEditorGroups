@@ -27,6 +27,6 @@ struct NIDLevelSettingsLayer : geode::Modify<NIDLevelSettingsLayer, LevelSetting
 
 	void onNIDSettingsButton(CCObject*)
 	{
-		NamedIDsPopup::create()->show();
+		NamedIDsPopup::create(false)->show();
 	}
 };

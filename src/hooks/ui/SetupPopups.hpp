@@ -10,11 +10,13 @@
 
 #include <NIDEnum.hpp>
 
+#include "AutofillInput.hpp"
+
 struct NIDSetupTriggerPopup : geode::Modify<NIDSetupTriggerPopup, SetupTriggerPopup>
 {
 	struct IDInputInfo
 	{
-		geode::TextInput* namedIDInput;
+		AutofillInput namedIDInput;
 		CCMenuItemSpriteExtra* editInputButton;
 		NID idType;
 

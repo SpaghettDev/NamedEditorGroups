@@ -145,8 +145,8 @@ struct NIDSetupSpawnPopup : geode::Modify<NIDSetupSpawnPopup, SetupSpawnPopup>
 				}
 			}
 		);
-		originalIDInputInfo.namedIDInput->setCallback([&](const std::string& str) {
-			NIDSetupSpawnPopup::onEditInput(this, -1, str);
+		originalIDInputInfo.namedIDInput.setEditInputCallback([&](const std::string& str) {
+			NIDSetupSpawnPopup::onEditInput(this, ORIGINAL_ID_PROPERTY, str);
 		});
 		originalIDInputInfo.editInputButton->m_pfnSelector = menu_selector(NIDSetupSpawnPopup::onEditIDNameButton);
 		STP->m_fields->m_id_inputs[ORIGINAL_ID_PROPERTY] = std::move(originalIDInputInfo);
@@ -167,8 +167,8 @@ struct NIDSetupSpawnPopup : geode::Modify<NIDSetupSpawnPopup, SetupSpawnPopup>
 				}
 			}
 		);
-		newIDInputInfo.namedIDInput->setCallback([&](const std::string& str) {
-			NIDSetupSpawnPopup::onEditInput(this, -2, str);
+		newIDInputInfo.namedIDInput.setEditInputCallback([&](const std::string& str) {
+			NIDSetupSpawnPopup::onEditInput(this, NEW_ID_PROPERTY, str);
 		});
 		newIDInputInfo.editInputButton->m_pfnSelector = menu_selector(NIDSetupSpawnPopup::onEditIDNameButton);
 		STP->m_fields->m_id_inputs[NEW_ID_PROPERTY] = std::move(newIDInputInfo);

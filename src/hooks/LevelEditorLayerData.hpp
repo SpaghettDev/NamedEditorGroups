@@ -1,7 +1,13 @@
+#pragma once
+
+#include <string>
+
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include <Geode/modify/EditorPauseLayer.hpp>
 
 #include <Geode/binding/TextGameObject.hpp>
+
+#include <Geode/Result.hpp>
 
 using namespace geode::prelude;
 
@@ -9,14 +15,20 @@ struct LevelEditorLayerData : geode::Modify<LevelEditorLayerData, LevelEditorLay
 {
 	struct Fields
 	{
-		bool m_had_error;
+		geode::Result<void, std::pair<std::string, std::string>> m_parse_result = geode::Ok();
 	};
 
 	void createObjectsFromSetup(gd::string&);
 
 
+#ifdef GEODE_IS_ANDROID
+	static geode::Result<void, std::pair<std::string, std::string>> parseDataString(const std::string&);
+#else
+	static geode::Result<void, std::pair<std::string, std::string>> parseDataString(const gd::string&);
+#endif
+
 	// transition
-	void updateSaveObject(gd::string&);
+	static void updateSaveObject(gd::string&);
 
 	TextGameObject* getSaveObject();
 	void createSaveObject();

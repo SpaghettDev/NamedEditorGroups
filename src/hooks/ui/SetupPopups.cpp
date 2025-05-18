@@ -129,15 +129,13 @@ void NIDSetupTriggerPopup::textChanged(CCTextInputNode* input)
 
 void NIDSetupTriggerPopup::triggerArrowWasClicked(int senderTag, bool isRight)
 {
-	auto inputNode = static_cast<CCTextInputNode*>(this->m_mainLayer->getChildByTag(senderTag));
-
 	if (!m_fields->m_id_inputs.contains(senderTag)) return;
 
-	auto parsedIdInputValue = geode::utils::numFromString<short>(inputNode->getString());
+	auto& idInputInfo = m_fields->m_id_inputs.at(senderTag);
+
+	auto parsedIdInputValue = geode::utils::numFromString<short>(idInputInfo.idInput->getString());
 	if (parsedIdInputValue.isErr()) return;
 	short idInputValue = parsedIdInputValue.unwrap();
-
-	auto& idInputInfo = m_fields->m_id_inputs.at(senderTag);
 
 	idInputInfo.namedIDInput->getInputNode()->onClickTrackNode(false);
 	idInputInfo.namedIDInput->setString(
@@ -182,8 +180,8 @@ void NIDSetupTriggerPopup::onEditIDNameButton(CCObject* sender)
 			m_fields->m_objectID == 900 ||
 			m_fields->m_objectID == 899 ||
 			m_fields->m_objectID == 105 ||
-			m_fields->m_objectID == 29 ||
-			m_fields->m_objectID == 30
+			m_fields->m_objectID == 30 ||
+			m_fields->m_objectID == 29
 		) && ng::globals::g_isBetterColorPickerLoaded
 	);
 }
@@ -262,15 +260,11 @@ NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonInputSetup(
 	auto groupNameInput = geode::TextInput::create(110.f, "Search...");
 	groupNameInput->setContentHeight(20.f);
 	groupNameInput->setFilter(ng::constants::VALID_NAMED_ID_CHARACTERS);
-	groupNameInput->setCallback([self, property](const std::string& str) {
-		NIDSetupTriggerPopup::onEditInput(static_cast<NIDSetupTriggerPopup*>(self), property, str);
-	});
 	groupNameInput->setPosition({ inputNodePos.x, inputNodePos.y - 30.f * scale });
 	groupNameInput->setID(fmt::format("group-name-input-{}"_spr, property));
 	groupNameInput->getBGSprite()->setContentSize({ 220.f, 55.f });
 	groupNameInput->setScale(std::clamp(scale - .1f, .1f, .8f));
 	mainLayer->addChild(groupNameInput);
-	inputInfo.namedIDInput = groupNameInput;
 
 	auto editInputButtonSprite = CCSprite::create("pencil.png"_spr);
 	editInputButtonSprite->setScale(std::clamp((scale - .1f) - .2f, .1f, .4f));
@@ -299,7 +293,17 @@ NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonInputSetup(
 
 	finishedCallback({ groupNameInput, editInputButton });
 
-	return std::move(inputInfo);
+	inputInfo.namedIDInput = AutofillInput{
+		nid, groupNameInput,
+		[self, property](const std::string& str) {
+			NIDSetupTriggerPopup::onEditInput(static_cast<NIDSetupTriggerPopup*>(self), property, str);
+		},
+		[idInput = inputInfo.idInput](NID nid, short id) {
+			idInput->setString(fmt::format("{}", id));
+		}
+	};
+
+	return inputInfo;
 }
 
 void NIDSetupTriggerPopup::handleSpecialCases(int gameObjectID, std::uint16_t property, CCArray* nodes)
@@ -354,15 +358,13 @@ void NIDSetupTriggerPopup::valueChanged(int property, float value)
 
 		NID type = val.counterState == value ? NID::COUNTER : NID::TIMER;
 
-		auto inputNode = static_cast<CCTextInputNode*>(this->m_mainLayer->getChildByTag(key));
-
 		if (!m_fields->m_id_inputs.contains(key)) return;
 
-		auto parsedIdInputValue = geode::utils::numFromString<short>(inputNode->getString());
+		auto& idInputInfo = m_fields->m_id_inputs.at(key);
+
+		auto parsedIdInputValue = geode::utils::numFromString<short>(idInputInfo.idInput->getString());
 		if (parsedIdInputValue.isErr()) return;
 		short idInputValue = parsedIdInputValue.unwrap();
-
-		auto& idInputInfo = m_fields->m_id_inputs.at(key);
 
 		idInputInfo.namedIDInput->getInputNode()->onClickTrackNode(false);
 		idInputInfo.namedIDInput->setString(
@@ -389,15 +391,13 @@ void NIDSetupTriggerPopup::updateValue(int property, float value)
 			? NID::COUNTER
 			: NID::DYNAMIC_COUNTER_TIMER;
 
-	auto inputNode = static_cast<CCTextInputNode*>(this->m_mainLayer->getChildByTag(targetTag));
-
 	if (!m_fields->m_id_inputs.contains(targetTag)) return;
 
-	auto parsedIdInputValue = geode::utils::numFromString<short>(inputNode->getString());
+	auto& idInputInfo = m_fields->m_id_inputs.at(targetTag);
+
+	auto parsedIdInputValue = geode::utils::numFromString<short>(idInputInfo.idInput->getString());
 	if (parsedIdInputValue.isErr()) return;
 	short idInputValue = parsedIdInputValue.unwrap();
-
-	auto& idInputInfo = m_fields->m_id_inputs.at(targetTag);
 
 	idInputInfo.namedIDInput->getInputNode()->onClickTrackNode(false);
 	idInputInfo.namedIDInput->setString(

@@ -35,10 +35,24 @@ void LevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
 		NIDExtrasManager::init(id);
 	}
 
+	NIDManager::reset();
+
 	if (levelStr.find(ng::constants::old::SAVE_OBJECT_STRING_START) != std::string_view::npos)
 		updateSaveObject(levelString);
 
-	std::string_view lvlStr = levelString;
+	m_fields->m_parse_result = parseDataString(levelStr);
+
+	LevelEditorLayer::createObjectsFromSetup(levelString);
+}
+
+
+#ifdef GEODE_IS_ANDROID
+geode::Result<void, std::pair<std::string, std::string>> LevelEditorLayerData::parseDataString(const std::string& str)
+#else
+geode::Result<void, std::pair<std::string, std::string>> LevelEditorLayerData::parseDataString(const gd::string& str)
+#endif
+{
+	std::string_view lvlStr = str;
 
 	if (
 		std::size_t saveObjStrOffset = lvlStr.find(ng::constants::SAVE_OBJECT_STRING_START);
@@ -57,56 +71,27 @@ void LevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
 		{
 			if (auto importRes = NIDManager::importNamedIDs(data.unwrap()); importRes.isErr())
 			{
-				m_fields->m_had_error = true;
 				NIDManager::reset();
 
-				auto errorPopup = FLAlertLayer::create(
-					nullptr,
-					"Error parsing save object",
-					fmt::format(
-						"<cr>{}</c>\n"
-						"Save string has been copied to clipboard "
-						"and the save object has been deleted.",
-						importRes.unwrapErr()
-					),
-					"OK",
-					nullptr,
-					350.f
-				);
-				errorPopup->m_scene = this;
-				errorPopup->show();
-
-				geode::utils::clipboard::write(std::string{ saveObjStr });
+				return geode::Err(std::pair{
+					fmt::format("<cr>{}</c>", importRes.unwrapErr()),
+					std::string{ saveObjStr }
+				});
 			}
 		}
 		else
 		{
-			m_fields->m_had_error = true;
 			NIDManager::reset();
 
-			auto errorPopup = FLAlertLayer::create(
-				nullptr,
-				"Error parsing save object",
-				fmt::format(
-					"Unable to decode base64 in NamedIDS: <cr>{}</c>\n"
-					"Save string has been copied to clipboard "
-					"and the save object has been deleted.",
-					data.unwrapErr()
-				),
-				"OK",
-				nullptr,
-				350.f
-			);
-			errorPopup->m_scene = this;
-			errorPopup->show();
-
-			geode::utils::clipboard::write(std::string{ saveObjStr });
+			return geode::Err(std::pair{
+				fmt::format("Unable to decode base64 in NamedIDS: <cr>{}</c>", data.unwrapErr()),
+				std::string{ saveObjStr }
+			});
 		}
 	}
 
-	LevelEditorLayer::createObjectsFromSetup(levelString);
+	return geode::Ok();
 }
-
 
 void LevelEditorLayerData::updateSaveObject(gd::string& levelString)
 {
@@ -138,11 +123,32 @@ TextGameObject* LevelEditorLayerData::getSaveObject()
 	auto object = static_cast<TextGameObject*>(this->objectAtPosition(ng::constants::SAVE_DATA_OBJECT_POS));
 	this->m_currentLayer = currentLayer;
 
-	if (m_fields->m_had_error)
+	if (m_fields->m_parse_result.isErr())
 	{
 		this->removeObject(object, true);
 		object = nullptr;
-		m_fields->m_had_error = false;
+
+		const auto& [err, saveObjStr] = m_fields->m_parse_result.unwrapErr();
+
+		auto errorPopup = FLAlertLayer::create(
+			nullptr,
+			"Error parsing save object",
+			fmt::format(
+				"{}\n"
+				"Save string has been copied to clipboard "
+				"and the save object has been deleted.",
+				err
+			),
+			"OK",
+			nullptr,
+			350.f
+		);
+		errorPopup->m_scene = this;
+		errorPopup->show();
+
+		geode::utils::clipboard::write(saveObjStr);
+
+		m_fields->m_parse_result = geode::Ok();
 	}
 
 	return object;

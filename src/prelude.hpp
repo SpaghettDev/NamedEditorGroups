@@ -9,6 +9,7 @@ namespace ng
 		namespace cocos {}
 		namespace editor {}
 		namespace ranges {}
+		namespace fuzzy_match {}
 	}
 
 	namespace base64 {}

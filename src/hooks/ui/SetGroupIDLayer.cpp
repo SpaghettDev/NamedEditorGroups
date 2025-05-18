@@ -5,6 +5,7 @@
 #include "../LevelEditorLayerData.hpp"
 #include "../popups/EditNamedIDPopup.hpp"
 #include "../popups/NamedIDsPopup.hpp"
+#include "AutofillInput.hpp"
 
 #include "utils.hpp"
 #include "constants.hpp"
@@ -17,7 +18,7 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 
 	struct Fields
 	{
-		geode::TextInput* m_input;
+		AutofillInput m_autofill_input;
 		CCMenuItemSpriteExtra* m_input_button;
 	};
 
@@ -47,12 +48,10 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 		auto groupNameInput = geode::TextInput::create(100.f, "Unnamed");
 		groupNameInput->setContentHeight(20.f);
 		groupNameInput->setFilter(ng::constants::VALID_NAMED_ID_CHARACTERS);
-		groupNameInput->setCallback([&](const std::string& str) { NIDSetGroupIDLayer::onEditInput(this, str); });
 		groupNameInput->setPosition({ 60.f, -13.f });
 		groupNameInput->setID("group-name-input"_spr);
 		groupNameInput->getBGSprite()->setContentSize({ 220.f, 55.f });
 		groupIDMenu->addChild(groupNameInput);
-		m_fields->m_input = groupNameInput;
 
 		if (auto name = NIDManager::getNameForID<NID::GROUP>(this->m_groupIDValue); name.isOk())
 			groupNameInput->setString(name.unwrap());
@@ -101,6 +100,17 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 			actionsMenu->updateLayout();
 		}
 
+		m_fields->m_autofill_input = AutofillInput{
+			NID::GROUP, groupNameInput,
+			[&](const std::string& str) {
+				if (auto name = NIDManager::getIDForName<NID::GROUP>(str); name.isOk())
+					this->m_groupIDInput->setString(fmt::format("{}", name.unwrap()));
+			},
+			[&](NID nid, short id) {
+				this->m_groupIDInput->setString(fmt::format("{}", id));
+			}
+		};
+
 		return true;
 	}
 
@@ -108,9 +118,9 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 	{
 		SetGroupIDLayer::onArrow(tag, increment);
 
-		m_fields->m_input->getInputNode()->onClickTrackNode(false);
+		m_fields->m_autofill_input->getInputNode()->onClickTrackNode(false);
 
-		m_fields->m_input->setString(
+		m_fields->m_autofill_input->setString(
 			NIDManager::getNameForID<NID::GROUP>(this->m_groupIDValue).unwrapOr("")
 		);
 	}
@@ -119,6 +129,9 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 	{
 		ng::utils::editor::refreshObjectLabels();
 
+		if (m_fields->m_autofill_input)
+			m_fields->m_autofill_input.getAutofillPreview()->removeFromParent();
+
 		SetGroupIDLayer::onClose(sender);
 	}
 
@@ -126,10 +139,10 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 	{
 		SetGroupIDLayer::textChanged(input);
 
-		if (!m_fields->m_input) return;
+		if (!m_fields->m_autofill_input.getInputNode()) return;
 
-		if (input == m_groupIDInput)
-			m_fields->m_input->setString(
+		if (input == this->m_groupIDInput)
+			m_fields->m_autofill_input->setString(
 				NIDManager::getNameForID<NID::GROUP>(this->m_groupIDValue).unwrapOr("")
 			);
 	}
@@ -233,7 +246,7 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 				{
 					const float idLabelWidth = idLabel->getScaledContentWidth();
 					const float nameLabelWidth = nameLabel->getScaledContentWidth();
-					const auto parentSize = labelsContainer->getContentSize();
+					const CCSize parentSize = labelsContainer->getContentSize();
 
 					// add 2.f to Y pos because the exact middle makes the label overlap with the shadow of the background
 					idLabel->setPosition({
@@ -297,12 +310,6 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 
 	void onNIDSettingsButton(CCObject*)
 	{
-		NamedIDsPopup::create()->show();
-	}
-
-	static void onEditInput(NIDSetGroupIDLayer* self, const std::string& str)
-	{
-		if (auto name = NIDManager::getIDForName<NID::GROUP>(str); name.isOk())
-			self->m_groupIDInput->setString(fmt::format("{}", name.unwrap()));
+		NamedIDsPopup::create(false)->show();
 	}
 };

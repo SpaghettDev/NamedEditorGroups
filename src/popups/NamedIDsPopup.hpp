@@ -4,13 +4,13 @@
 
 #include <NIDEnum.hpp>
 
-class NamedIDsPopup : public geode::Popup<>
+class NamedIDsPopup : public geode::Popup<bool>
 {
 public:
-	static NamedIDsPopup* create();
+	static NamedIDsPopup* create(bool);
 
 protected:
-	bool setup() override;
+	bool setup(bool) override;
 
 public:
 	virtual void onClose(cocos2d::CCObject*) override;
@@ -30,6 +30,7 @@ private:
 	NID m_ids_type = NID::GROUP;
 
 	bool m_adv_mode = false;
+	bool m_read_only = false;
 
 	cocos2d::CCLayerColor* m_layer_bg;
 	cocos2d::CCMenu* m_search_container;

@@ -130,6 +130,18 @@ const std::unordered_map<std::string, short>& NIDManager::getNamedIDs(NID nid)
 
 bool NIDManager::isDirty() { return g_isDirty; }
 
+bool NIDManager::isEmpty()
+{
+	return (
+		g_namedGroups.namedIDs.empty() &&
+		g_namedCollisions.namedIDs.empty() &&
+		g_namedCounters.namedIDs.empty() &&
+		g_namedTimers.namedIDs.empty() &&
+		g_namedEffects.namedIDs.empty() &&
+		g_namedColors.namedIDs.empty()
+	);
+}
+
 std::string NIDManager::dumpNamedIDs()
 {
 	return fmt::format(

@@ -3,9 +3,6 @@
 #include <vector>
 #include <algorithm>
 
-#define FTS_FUZZY_MATCH_IMPLEMENTATION
-#include <Geode/external/fts/fts_fuzzy_match.h>
-
 #include "AddNamedIDPopup.hpp"
 #include "SelectIDFilterPopup.hpp"
 #include "SharePopup.hpp"
@@ -15,44 +12,15 @@
 
 #include "utils.hpp"
 #include "globals.hpp"
+#include "fuzzy_match.hpp"
 
 using namespace geode::prelude;
 
-namespace
-{
-	bool weightedFuzzyMatch(const std::string& str, const std::string& kw, double weight, double& out)
-	{
-		int score;
-
-		if (fts::fuzzy_match(kw.c_str(), str.c_str(), score))
-		{
-			out = std::max(out, score * weight);
-			return true;
-		}
-
-		return false;
-	}
-
-	static bool matchesSearch(const std::string& query, NamedIDCell* item)
-	{
-		bool doesMatch = false;
-		double weighted = 0;
-
-		doesMatch |= weightedFuzzyMatch(item->getName(), query, .5, weighted);
-		doesMatch |= weightedFuzzyMatch(fmt::format("{}", item->getID()), query, 1.0, weighted);
-
-		if (weighted < 50 + 5 * query.size())
-			doesMatch = false;
-
-		return doesMatch;
-	}
-}
-
-NamedIDsPopup* NamedIDsPopup::create()
+NamedIDsPopup* NamedIDsPopup::create(bool readOnly)
 {
 	auto ret = new NamedIDsPopup();
 
-	if (ret && ret->initAnchored(300.f, 260.f))
+	if (ret && ret->initAnchored(300.f, 260.f, readOnly))
 		ret->autorelease();
 	else
 	{
@@ -63,10 +31,22 @@ NamedIDsPopup* NamedIDsPopup::create()
 	return ret;
 }
 
-bool NamedIDsPopup::setup()
+bool NamedIDsPopup::setup(bool readOnly)
 {
 	this->setID("NamedIDsPopup");
 	this->setTitle("Edit Named IDs");
+
+	m_read_only = readOnly;
+
+	if (m_read_only)
+	{
+		this->m_title->setPositionY(this->m_title->getPositionY() + 7.f);
+
+		auto readOnlyLabel = CCLabelBMFont::create("(Read-Only)", "goldFont.fnt");
+		readOnlyLabel->setScale(.5f);
+		readOnlyLabel->setPosition(this->m_title->getPosition() - CCPoint{ .0f, 15.f });
+		this->m_mainLayer->addChild(readOnlyLabel, 2);
+	}
 
 	if (ng::globals::g_isEditorIDAPILoaded)
 	{
@@ -77,6 +57,8 @@ bool NamedIDsPopup::setup()
 			this,
 			menu_selector(NamedIDsPopup::onSettingsButton)
 		);
+		settingsButton->setEnabled(!readOnly);
+		settingsButton->setColor(readOnly ? ccColor3B{ 125, 125, 125 } : ccColor3B{ 255, 255, 255 });
 		this->m_buttonMenu->addChildAtPosition(settingsButton, Anchor::TopLeft, { 65.f, -20.f });
 	}
 
@@ -99,6 +81,8 @@ bool NamedIDsPopup::setup()
 		this,
 		menu_selector(NamedIDsPopup::onAddButton)
 	);
+	addButton->setEnabled(!readOnly);
+	addButton->setColor(readOnly ? ccColor3B{ 125, 125, 125 } : ccColor3B{ 255, 255, 255 });
 	this->m_buttonMenu->addChildAtPosition(addButton, Anchor::TopRight, { -49.f, -20.f });
 
 	auto shareButtonSpr = CCSprite::createWithSpriteFrameName("GJ_shareBtn_001.png");
@@ -108,6 +92,8 @@ bool NamedIDsPopup::setup()
 		this,
 		menu_selector(NamedIDsPopup::onShareButton)
 	);
+	shareButton->setEnabled(!readOnly);
+	shareButton->setColor(readOnly ? ccColor3B{ 125, 125, 125 } : ccColor3B{ 255, 255, 255 });
 	this->m_buttonMenu->addChildAtPosition(shareButton, Anchor::BottomLeft, { 3.f, 3.f });
 
 	m_layer_bg = CCLayerColor::create({ 0, 0, 0, 75 });
@@ -125,7 +111,7 @@ bool NamedIDsPopup::setup()
 	m_search_input->setScale(.7f);
 	m_search_input->setCallback([this](const std::string& str) {
 		this->updateState();
-		m_list->moveToTop();
+		this->m_list->moveToTop();
 	});
 	m_search_container->addChildAtPosition(m_search_input, Anchor::Left, { 7.5f, .0f }, { .0f, .5f });
 
@@ -189,7 +175,7 @@ void NamedIDsPopup::onClearSearchButton(CCObject*)
 void NamedIDsPopup::onFilterButton(CCObject*)
 {
 	SelectIDFilterPopup::create(m_ids_type, [&](NID nid) {
-		m_ids_type = nid;
+		this->m_ids_type = nid;
 
 		this->m_search_input->setPlaceholder(fmt::format("Search {}s...", ng::utils::getNamedIDIndentifier(nid)));
 		this->m_search_input->setString("");
@@ -210,7 +196,7 @@ void NamedIDsPopup::onSettingsButton(CCObject*)
 {
 	m_adv_mode = !m_adv_mode;
 
-	for (auto& item : CCArrayExt<NamedIDCell*>(m_list->m_contentLayer->getChildren()))
+	for (auto& item : CCArrayExt<NamedIDCell<false>*>(m_list->m_contentLayer->getChildren()))
 		item->showAdvancedOptions(m_adv_mode);
 }
 
@@ -233,7 +219,7 @@ void NamedIDsPopup::updateList(NID nid)
 
 		for (auto& [name, id] : elements)
 		{
-			auto item = NamedIDCell::create(m_ids_type, id, std::move(name), m_adv_mode, SCROLL_LAYER_SIZE.width);
+			auto item = NamedIDCell<false>::create(m_ids_type, id, std::move(name), m_adv_mode, m_read_only, SCROLL_LAYER_SIZE.width);
 			item->setDefaultBGColor({ 0, 0, 0, static_cast<GLubyte>(bg ? 60 : 20) });
 			m_list->m_contentLayer->addChild(item);
 
@@ -253,11 +239,11 @@ void NamedIDsPopup::updateState()
 	{
 		bool bg = false;
 
-		for (auto& item : CCArrayExt<NamedIDCell*>(m_list->m_contentLayer->getChildren()->shallowCopy()))
+		for (auto& item : CCArrayExt<NamedIDCell<false>*>(m_list->m_contentLayer->getChildren()->shallowCopy()))
 		{
 			item->setDefaultBGColor({ 0, 0, 0, static_cast<GLubyte>(bg ? 60 : 20) });
 
-			if (!matchesSearch(query, item))
+			if (!ng::utils::fuzzy_match::matchesQuery(query, { item->getName(), item->getID() }))
 				item->removeFromParent();
 			else
 				bg = !bg;

@@ -27,7 +27,7 @@ struct NIDSetIDPopup : geode::Modify<NIDSetIDPopup, SetIDPopup>
 	struct Fields
 	{
 		NIDSetupTriggerPopup::IDInputInfo m_id_input{
-			nullptr, nullptr, NID::GROUP, nullptr, { nullptr, nullptr }
+			{}, nullptr, NID::GROUP, nullptr, { nullptr, nullptr }
 		};
 	};
 
@@ -68,8 +68,7 @@ struct NIDSetIDPopup : geode::Modify<NIDSetIDPopup, SetIDPopup>
 				this->m_mainLayer,
 				this->m_buttonMenu
 			);
-
-			inputInfo.namedIDInput->setCallback([&](const std::string& str) {
+			inputInfo.namedIDInput.setEditInputCallback([&](const std::string& str) {
 				NIDSetIDPopup::onEditInput(this, std::move(str));
 			});
 			inputInfo.editInputButton->m_pfnSelector = menu_selector(NIDSetIDPopup::onEditIDNameButton);
