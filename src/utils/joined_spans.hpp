@@ -107,5 +107,5 @@ namespace ng::utils::ranges
 namespace std::ranges
 {
 	template <template <typename ...> typename C, typename... Args>
-	inline constexpr bool enable_view<JoinedSpans<C, Args...>> = true;
+	inline constexpr bool enable_view<ng::utils::ranges::JoinedSpans<C, Args...>> = true;
 }
