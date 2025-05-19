@@ -2,6 +2,8 @@
 
 #include <NIDManager.hpp>
 
+#include "AutofillInput.hpp"
+
 #include "constants.hpp"
 #include "globals.hpp"
 
@@ -11,7 +13,7 @@ struct NIDCustomizeObjectLayer : geode::Modify<NIDCustomizeObjectLayer, Customiz
 {
 	struct Fields
 	{
-		geode::TextInput* m_input;
+		AutofillInput m_autofill_input;
 	};
 
 	bool init(GameObject* p0, CCArray* p1)
@@ -33,19 +35,37 @@ struct NIDCustomizeObjectLayer : geode::Modify<NIDCustomizeObjectLayer, Customiz
 		auto colorNameInput = geode::TextInput::create(110.f, "Search...");
 		colorNameInput->setContentHeight(20.f);
 		colorNameInput->setFilter(ng::constants::VALID_NAMED_ID_CHARACTERS);
-		colorNameInput->setCallback([&](const std::string& str) {
-			this->onEditInput(str);
-		});
 		colorNameInput->setPosition({ idLabelPos.x + 10.f, idLabelPos.y - 29.f });
 		colorNameInput->setID("color-name-input"_spr);
 		colorNameInput->getBGSprite()->setContentSize({ 220.f, 55.f });
 		colorNameInput->setScale(.6f);
 		channelMenu->addChild(colorNameInput);
-		m_fields->m_input = colorNameInput;
 
 		colorNameInput->setString(
 			NIDManager::getNameForID<NID::COLOR>(getColorID()).unwrapOr("")
 		);
+
+		m_fields->m_autofill_input = AutofillInput{
+			NID::COLOR, colorNameInput,
+			[&](const std::string& str) {
+				if (auto idRes = NIDManager::getIDForName<NID::COLOR>(str))
+				{
+					short id = idRes.unwrap();
+
+					this->colorSetupClosed(id);
+					this->m_customColorInput->setString(fmt::format("{}", id));
+
+					// this->updateSelected(id);
+					// // this->highlightSelected(button);
+					// this->updateColorSprite();
+					// this->updateChannelLabel(this->getActiveMode(true));
+				}
+			},
+			[&](NID, short id) {
+				this->colorSetupClosed(id);
+				this->m_customColorInput->setString(fmt::format("{}", id));
+			}
+		};
 
 		return true;
 	}
@@ -54,7 +74,7 @@ struct NIDCustomizeObjectLayer : geode::Modify<NIDCustomizeObjectLayer, Customiz
 	{
 		CustomizeObjectLayer::colorSetupClosed(p0);
 
-		m_fields->m_input->setString(
+		m_fields->m_autofill_input->setString(
 			NIDManager::getNameForID<NID::COLOR>(getColorID()).unwrapOr("").c_str()
 		);
 	}
@@ -63,9 +83,9 @@ struct NIDCustomizeObjectLayer : geode::Modify<NIDCustomizeObjectLayer, Customiz
 	{
 		CustomizeObjectLayer::updateColorSprite();
 
-		if (!m_fields->m_input) return;
+		if (!m_fields->m_autofill_input) return;
 
-		m_fields->m_input->setString(
+		m_fields->m_autofill_input->setString(
 			NIDManager::getNameForID<NID::COLOR>(getColorID()).unwrapOr("").c_str()
 		);
 	}
@@ -76,21 +96,5 @@ struct NIDCustomizeObjectLayer : geode::Modify<NIDCustomizeObjectLayer, Customiz
 		return LevelEditorLayer::get()->m_levelSettings->m_effectManager->getColorAction(
 			this->getActiveMode(true)
 		)->m_colorID;
-	}
-
-	void onEditInput(const std::string& str)
-	{
-		if (auto idRes = NIDManager::getIDForName<NID::COLOR>(str))
-		{
-			short id = idRes.unwrap();
-
-			this->colorSetupClosed(id);
-			this->m_customColorInput->setString(fmt::format("{}", id));
-
-			// this->updateSelected(id);
-			// // this->highlightSelected(button);
-			// this->updateColorSprite();
-			// this->updateChannelLabel(this->getActiveMode(true));
-		}
 	}
 };

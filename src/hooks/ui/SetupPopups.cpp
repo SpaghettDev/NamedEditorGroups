@@ -65,7 +65,7 @@ cocos2d::CCArray* NIDSetupTriggerPopup::createValueControlAdvanced(
 	CCArray* pageContainer = static_cast<CCArray*>(this->m_pageContainers->objectAtIndex(page));
 	CCArray* groupContainer = static_cast<CCArray*>(this->m_groupContainers->objectAtIndex(group));
 
-	handleSpecialCases(m_fields->m_objectID, property, nodes);
+	handleSpecialCasesPre(property, nodes);
 
 	auto inputInfo = commonInputSetup(
 		this,
@@ -84,6 +84,8 @@ cocos2d::CCArray* NIDSetupTriggerPopup::createValueControlAdvanced(
 		}
 	);
 	m_fields->m_id_inputs[property] = std::move(inputInfo);
+
+	handleSpecialCasesPost(property, nodes);
 
 	return nodes;
 }
@@ -116,6 +118,7 @@ void NIDSetupTriggerPopup::onToggleTriggerValue(CCObject* sender)
 		inputNodeInfo.namedIDInput->setEnabled(this->getValue(535) == .0f);
 		inputNodeInfo.editInputButton->setEnabled(this->getValue(535) == .0f);
 		inputNodeInfo.namedIDInput->getInputNode()->setDelegate(nullptr);
+		inputNodeInfo.namedIDInput->setString("");
 	}
 }
 
@@ -306,9 +309,9 @@ NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonInputSetup(
 	return inputInfo;
 }
 
-void NIDSetupTriggerPopup::handleSpecialCases(int gameObjectID, std::uint16_t property, CCArray* nodes)
+void NIDSetupTriggerPopup::handleSpecialCasesPre(std::uint16_t property, CCArray* nodes)
 {
-	switch (gameObjectID)
+	switch (m_fields->m_objectID)
 	{
 		// Edit Area Move Trigger
 		case 3011u: {
@@ -325,6 +328,36 @@ void NIDSetupTriggerPopup::handleSpecialCases(int gameObjectID, std::uint16_t pr
 					node->setPositionY(node->getPositionY() - 2.f);
 		}
 		break;
+
+		// Grayscale Trigger
+		case 2919u: {
+			for (auto node : CCArrayExt<CCNode*>(nodes))
+				if (auto label = typeinfo_cast<CCLabelBMFont*>(node))
+				{
+					label->setPositionX(label->getPositionX() - 30.f);
+					break;
+				}
+		}
+		break;
+
+		default:
+			break;
+	}
+}
+
+void NIDSetupTriggerPopup::handleSpecialCasesPost(std::uint16_t property, CCArray* nodes)
+{
+	switch (m_fields->m_objectID)
+	{
+		// Grayscale Trigger
+		case 2919u: {
+			for (auto node : CCArrayExt<CCNode*>(nodes))
+				if (auto button = typeinfo_cast<CCMenuItemSpriteExtra*>(node))
+				{
+					button->setPositionX(button->getPositionX() - 90.f);
+					break;
+				}
+		}
 
 		default:
 			break;

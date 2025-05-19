@@ -2,13 +2,14 @@
 
 #include <NIDManager.hpp>
 
-#include "../LevelEditorLayerData.hpp"
 #include "../popups/EditNamedIDPopup.hpp"
 #include "../popups/NamedIDsPopup.hpp"
 #include "AutofillInput.hpp"
 
 #include "utils.hpp"
 #include "constants.hpp"
+
+using namespace geode::prelude;
 
 struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 {

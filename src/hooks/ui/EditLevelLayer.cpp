@@ -15,13 +15,13 @@ struct NIDEditLevelLayer : geode::Modify<NIDEditLevelLayer, EditLevelLayer>
 		NIDManager::reset();
 
 #ifdef GEODE_IS_ANDROID
-	auto decompressedString = std::string{
-		cocos2d::ZipUtils::decompressString(this->m_level->m_levelString, false, 11)
-	};
+		auto decompressedString = std::string{
+			cocos2d::ZipUtils::decompressString(this->m_level->m_levelString, false, 11)
+		};
 #else
-	auto decompressedString = cocos2d::ZipUtils::decompressString(
-		this->m_level->m_levelString, false, 11
-	);
+		auto decompressedString = cocos2d::ZipUtils::decompressString(
+			this->m_level->m_levelString, false, 11
+		);
 #endif
 
 		if (auto res = LevelEditorLayerData::parseDataString(decompressedString); res.isErr())
@@ -49,7 +49,7 @@ struct NIDEditLevelLayer : geode::Modify<NIDEditLevelLayer, EditLevelLayer>
 
 		if (!NIDManager::isEmpty())
 		{
-			auto nidSettingsSpr = CCSprite::createWithSpriteFrameName("GJ_menuBtn_001.png");
+			auto nidSettingsSpr = cocos2d::CCSprite::createWithSpriteFrameName("GJ_menuBtn_001.png");
 			nidSettingsSpr->setScale(.85f);
 			auto nidSettingsButton = CCMenuItemSpriteExtra::create(
 				nidSettingsSpr,

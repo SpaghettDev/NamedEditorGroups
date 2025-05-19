@@ -423,6 +423,16 @@ namespace ng::constants
 		// Grayscale Trigger
 		{ 2919, fmap<std::uint16_t, NID, 7>({
 			// Target
+			{ 51, NID::COLOR }
+		}) },
+		// Bulge Trigger
+		{ 2916, fmap<std::uint16_t, NID, 7>({
+			// CenterID
+			{ 51, NID::GROUP }
+		}) },
+		// Pinch Trigger
+		{ 2917, fmap<std::uint16_t, NID, 7>({
+			// CenterID
 			{ 51, NID::GROUP }
 		}) },
 		// Toggle Block Trigger

@@ -9,8 +9,6 @@
 
 #include <Geode/Result.hpp>
 
-using namespace geode::prelude;
-
 struct LevelEditorLayerData : geode::Modify<LevelEditorLayerData, LevelEditorLayer>
 {
 	struct Fields

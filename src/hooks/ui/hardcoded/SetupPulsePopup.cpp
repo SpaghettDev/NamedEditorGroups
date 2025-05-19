@@ -148,7 +148,8 @@ struct NIDSetupPulsePopup : geode::Modify<NIDSetupPulsePopup, SetupPulsePopup>
 
 		auto& idInputInfo = inputs.at(GROUP_OR_CHANNEL_ID_PROPERTY);
 
-		idInputInfo.idType = this->m_pulseTargetType == 1 ? NID::GROUP : NID::COLOR;
+		idInputInfo.idType = idInputInfo.namedIDInput.nid = this->m_pulseTargetType == 1 ? NID::GROUP : NID::COLOR;
+		this->textChanged(idInputInfo.idInput);
 	}
 
 	void onSelectPulseMode(CCObject* sender)
