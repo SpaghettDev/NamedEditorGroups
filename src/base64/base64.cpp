@@ -75,7 +75,7 @@ bool ng::base64::isBase64URLLike(const std::string_view input)
 		return false;
 
 	for (char c : input)
-		if (impl::BASE64_CHARS.find(c) == std::string::npos)
+		if (c != '=' && impl::BASE64_CHARS.find(c) == std::string::npos)
 			return false;
 
 	std::size_t padPos = input.find('=');
