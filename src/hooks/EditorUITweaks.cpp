@@ -68,6 +68,9 @@ struct NIDEditorUITweaks : geode::Modify<NIDEditorUITweaks, EditorUI>
 			{
 				auto newEffectObj = static_cast<EffectGameObject*>(newObj);
 
+				// idk
+				if (!newEffectObj) continue;
+
 				for (const auto& [nid, getters] : ng::constants::EFFECTGAMEOBJECT_TO_ID_TYPE.at(newEffectObj->m_objectID))
 				{
 					NID realNID = nid;

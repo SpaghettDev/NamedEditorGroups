@@ -117,7 +117,7 @@ void SharePopup::onImportButton(CCObject*)
 				nullptr,
 				"Error importing NamedIDs",
 				fmt::format(
-					"Unable to decode base64 in NamedIDs: <cr>{}</c>\n",
+					"Unable to decode base64 in NamedIDs: <cr>{}</c>",
 					b64decoded.unwrapErr()
 				),
 				"OK",
@@ -140,7 +140,7 @@ void SharePopup::onImportButton(CCObject*)
 		auto errorPopup = FLAlertLayer::create(
 			nullptr,
 			"Error importing NamedIDs",
-			fmt::format("<cr>{}</c>\n", res.unwrapErr()),
+			fmt::format("<cr>{}</c>", res.unwrapErr()),
 			"OK",
 			nullptr,
 			350.f
