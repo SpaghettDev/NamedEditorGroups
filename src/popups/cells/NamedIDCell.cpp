@@ -527,7 +527,7 @@ void NamedIDCell<true>::highlightQuery(const std::string_view query, const std::
 void NamedIDCell<true>::onEnter()
 {
 	registerWithTouchDispatcher();
-	
+
 	CCNode::onEnter();
 }
 

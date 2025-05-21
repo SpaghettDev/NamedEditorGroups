@@ -14,8 +14,9 @@ This mod exposes 2 types of APIs:
 
 - Dynamically Linked API:
   - You `#include <spaghettdev.named-editor-groups/api/NIDManager.hpp>` and use the methods in the NIDManager namespace
+  - You `#include <spaghettdev.named-editor-groups/api/NIDExtrasManager.hpp>` and use the methods in the NIDExtrasManager namespace (only work if cvolton.level-id-api is loaded)
 - Events API:
-  - Similar to TextureLoader's API, you can dispatch events to "spaghettdev.named-editor-groups/v1/[API-ID]" to request information
+  - Similar to TextureLoader's API, you can dispatch events to "spaghettdev.named-editor-groups/v2/[API-ID]" to request information
   - You must `#define NAMED_EDITOR_GROUPS_USE_EVENTS_API` before including the api header
 
 ## How to install (from Geode)

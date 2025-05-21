@@ -74,11 +74,7 @@ bool AutofillNamedIDsPreview::init(NID nid, const std::string_view query)
 
 void AutofillNamedIDsPreview::attachToInput(geode::TextInput* input)
 {
-	CCNode* parent = input->getParent();
-	CCPoint inputWorldPos = parent->convertToWorldSpace(input->getPosition());
-	while (parent && (parent = parent->getParent()) != CCScene::get())
-		;
-	m_parent_layer = static_cast<CCLayer*>(parent);
+	CCPoint inputWorldPos = input->getParent()->convertToWorldSpace(input->getPosition());
 
 	const CCSize& screenSize = CCDirector::sharedDirector()->getWinSize();
 	const CCPoint& anchor = this->getAnchorPoint();
@@ -194,9 +190,6 @@ void AutofillNamedIDsPreview::onExit()
 
 bool AutofillNamedIDsPreview::ccTouchBegan(CCTouch* touch, CCEvent* event)
 {
-	const CCPoint& anchor = this->getAnchorPoint();
-	const CCPoint& pos = this->getPosition();
-
 	if (
 		this->isVisible() &&
 		this->boundingBox().containsPoint(this->getParent()->convertTouchToNodeSpace(touch))

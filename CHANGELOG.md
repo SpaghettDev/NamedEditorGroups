@@ -5,11 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.0.4] - 2025-04-22
+## [2.2.0] - 2025-05-21
+
+## Added
+
+- Autofill preview when typing a group's name
+- Support for spawn remaps
+- Named IDs popup in Edit Level Layer
+- Missing Named IDs input for some triggers
 
 ## Fixed
 
 - Better Color Picker support
+- Importing base64 string error
+- Various crashes
+- Being able to unselect the selected filter
 
 ## [2.0.3] - 2025-04-21
 

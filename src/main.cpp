@@ -9,7 +9,6 @@ $execute
 		ng::globals::g_isBetterEditLoaded = geode::Loader::get()->isModLoaded("hjfod.betteredit");
 		ng::globals::g_isBetterColorPickerLoaded = geode::Loader::get()->isModLoaded("anatom3000.bettercolorpicker");
 
-
 		ng::globals::g_buildHelperRawNameFormat = geode::Mod::get()->getSettingValue<std::string>("auto-name-format");
 
 		{

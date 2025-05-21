@@ -48,6 +48,4 @@ private:
 	cocos2d::CCLayerColor* m_layer_bg;
 	geode::ScrollLayer* m_list;
 	geode::Scrollbar* m_scroll_bar;
-
-	cocos2d::CCLayer* m_parent_layer;
 };
