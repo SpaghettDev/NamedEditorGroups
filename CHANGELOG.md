@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.2.1] - 2025-08-12
+
+## Added
+
+- JIT-Less support for iOS
+
 ## [2.2.0] - 2025-05-21
 
 ## Added
