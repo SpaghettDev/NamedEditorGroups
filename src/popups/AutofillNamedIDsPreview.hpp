@@ -1,7 +1,6 @@
 #pragma once
 
 #include "cells/NamedIDCell.hpp"
-#include <chrono>
 #include <string_view>
 
 #include <NIDEnum.hpp>
@@ -36,7 +35,7 @@ public:
 
 private:
 	void selectCallback(NID, short);
-	
+
 private:
 	static constexpr cocos2d::CCSize PREVIEW_SIZE{ 190.f, 110.f };
 	static constexpr cocos2d::CCSize SCROLL_LAYER_SIZE{ 168.f, 92.f };
