@@ -1,5 +1,7 @@
 #pragma once
 
+#include "cells/NamedIDCell.hpp"
+#include <chrono>
 #include <string_view>
 
 #include <NIDEnum.hpp>
@@ -34,7 +36,7 @@ public:
 
 private:
 	void selectCallback(NID, short);
-
+	
 private:
 	static constexpr cocos2d::CCSize PREVIEW_SIZE{ 190.f, 110.f };
 	static constexpr cocos2d::CCSize SCROLL_LAYER_SIZE{ 168.f, 92.f };
@@ -42,10 +44,14 @@ private:
 	NID m_ids_type;
 	std::string m_query;
 
+
 	std::function<void(NID, short)> m_select_callback;
+	std::unordered_map<short, geode::Ref<NamedIDCell<true>>> m_cells;
+
 
 	cocos2d::extension::CCScale9Sprite* m_bg_sprite;
-	cocos2d::CCLayerColor* m_layer_bg;
-	geode::ScrollLayer* m_list;
-	geode::Scrollbar* m_scroll_bar;
+	std::unique_ptr<geode::TextInput::TextInputDelegate> m_textInputDelegate;
+	geode::Ref<cocos2d::CCLayerColor> m_layer_bg;
+	geode::Ref<geode::ScrollLayer> m_list;
+	geode::Ref<geode::Scrollbar> m_scroll_bar;
 };

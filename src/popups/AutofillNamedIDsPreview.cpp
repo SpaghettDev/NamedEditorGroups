@@ -1,9 +1,6 @@
 #include "AutofillNamedIDsPreview.hpp"
-
 #include <NIDManager.hpp>
-
 #include "cells/NamedIDCell.hpp"
-
 #include "fuzzy_match.hpp"
 
 using namespace geode::prelude;
@@ -121,7 +118,6 @@ void AutofillNamedIDsPreview::updateList(const std::string_view query)
 	m_query = query;
 
 	m_list->m_contentLayer->removeAllChildren();
-
 	{
 		const std::unordered_map<std::string, short>& namedIDs = NIDManager::getNamedIDs(m_ids_type);
 
@@ -139,7 +135,14 @@ void AutofillNamedIDsPreview::updateList(const std::string_view query)
 			if (!queryEmpty && !ng::utils::fuzzy_match::matchesQuery(m_query, { name, id }, indices))
 				continue;
 
-			auto item = NamedIDCell<true>::create(m_ids_type, id, std::move(name), PREVIEW_SIZE.width);
+			
+			auto item = [&](){
+				if(auto cell = m_cells.find(id); cell != m_cells.end()) return cell->second.data();
+				auto cell = NamedIDCell<true>::create(m_ids_type, id, std::move(name), PREVIEW_SIZE.width);
+				m_cells.insert({id, cell});
+				return cell;
+			}();
+
 			item->setDefaultBGColor({ 0, 0, 0, static_cast<GLubyte>(bg ? 60 : 20) });
 			item->setSelectCallback([&](NID nid, short id) {
 				this->selectCallback(nid, id);

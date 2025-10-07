@@ -92,7 +92,7 @@ void ng::utils::editor::refreshObjectLabels()
 {
 	if (const auto lel = LevelEditorLayer::get())
 	{
-		for (auto trigger : lel->m_unk3278)
+		for (auto trigger : lel->m_activeObjects)
 		{
 			// ???
 			if (!trigger || trigger->m_objectID == 1816u) continue;
