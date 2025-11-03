@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cells/NamedIDCell.hpp"
 #include <string_view>
 
 #include <NIDEnum.hpp>
@@ -42,10 +43,14 @@ private:
 	NID m_ids_type;
 	std::string m_query;
 
+
 	std::function<void(NID, short)> m_select_callback;
+	std::unordered_map<short, geode::Ref<NamedIDCell<true>>> m_cells;
+
 
 	cocos2d::extension::CCScale9Sprite* m_bg_sprite;
-	cocos2d::CCLayerColor* m_layer_bg;
-	geode::ScrollLayer* m_list;
-	geode::Scrollbar* m_scroll_bar;
+	std::unique_ptr<geode::TextInput::TextInputDelegate> m_textInputDelegate;
+	geode::Ref<cocos2d::CCLayerColor> m_layer_bg;
+	geode::Ref<geode::ScrollLayer> m_list;
+	geode::Ref<geode::Scrollbar> m_scroll_bar;
 };
