@@ -357,10 +357,6 @@ void NamedIDCell<false>::colorSelectClosed(CCNode*)
 	}
 }
 
-NamedIDCell<false>::~NamedIDCell()
-{
-	g_currentEditingItem = nullptr;
-}
 
 
 NamedIDCell<true>* NamedIDCell<true>::create(NID idType, short id, std::string&& name, float width)

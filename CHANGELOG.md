@@ -5,11 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.2.1] - 2025-08-12
+## [2.2.2] - 2025-11-03
 
 ## Added
 
 - JIT-Less support for iOS
+
+## [2.2.1] - 2025-11-02
+
+## Fixed
+
+- Fixed massive memory leak from autofill input nodes creating and leaking named cells on each textbox.
+- Fixed autocomplete cell ID recreation on every input change, eliminating typing lag.
 
 ## [2.2.0] - 2025-05-21
 

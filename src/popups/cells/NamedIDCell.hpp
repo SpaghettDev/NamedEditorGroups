@@ -23,9 +23,6 @@ public:
 
 protected:
 	bool init(NID, short, std::string&&, bool, bool, float);
-
-	virtual ~NamedIDCell();
-
 public:
 	void setDefaultBGColor(const cocos2d::ccColor4B& color);
 

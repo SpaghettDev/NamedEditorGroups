@@ -8,13 +8,10 @@ AutofillInput::AutofillInput(
 	std::function<void(const std::string&)>&& editCb,
 	std::function<void(NID, short)>&& selectCb
 )
-	: nid(nid), autofillPreview(AutofillNamedIDsPreview::create(nid, "")),
+	: nid(nid), autofillPreview(nullptr),
 		textInput(input), editInputCallback(std::move(editCb)),
 		selectCallback(std::move(selectCb))
 {
-	autofillPreview->attachToInput(textInput);
-	autofillPreview->setSelectCallback(std::move(selectCallback));
-
 	input->setCallback([&](const std::string& str) {
 		this->onEditInput(str);
 	});
@@ -29,6 +26,11 @@ AutofillInput::AutofillInput(const AutofillInput& other)
 	this->selectCallback = std::move(other.selectCallback);
 
 	this->textInput->setCallback([&](const std::string& str) {
+		if(!autofillPreview) {
+			autofillPreview = AutofillNamedIDsPreview::create(nid, "");
+			autofillPreview->attachToInput(textInput);
+			autofillPreview->setSelectCallback(std::move(selectCallback));
+		}
 		this->onEditInput(str);
 	});
 }
@@ -51,8 +53,12 @@ AutofillInput& AutofillInput::operator=(const AutofillInput& other) noexcept
 	this->editInputCallback = std::move(other.editInputCallback);
 	this->selectCallback = std::move(other.selectCallback);
 
-	// capturing by reference uses other's this pointer
 	this->textInput->setCallback([&](const std::string& str) {
+		if(!autofillPreview) {
+			autofillPreview = AutofillNamedIDsPreview::create(nid, "");
+			autofillPreview->attachToInput(textInput);
+			autofillPreview->setSelectCallback(std::move(selectCallback));
+		}
 		this->onEditInput(str);
 	});
 
@@ -67,8 +73,12 @@ AutofillInput& AutofillInput::operator=(AutofillInput&& other) noexcept
 	this->editInputCallback = std::move(other.editInputCallback);
 	this->selectCallback = std::move(other.selectCallback);
 
-	// capturing by reference uses other's this pointer
 	this->textInput->setCallback([&](const std::string& str) {
+		if(!autofillPreview) {
+			autofillPreview = AutofillNamedIDsPreview::create(nid, "");
+			autofillPreview->attachToInput(textInput);
+			autofillPreview->setSelectCallback(std::move(selectCallback));
+		}
 		this->onEditInput(str);
 	});
 
