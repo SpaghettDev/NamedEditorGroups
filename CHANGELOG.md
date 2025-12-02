@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.3.0] - 2025-12-01
+
+## Added
+
+- Show Preview Button setting
+- Ability to Esc from Edit Named ID popups
+- Color Trigger label support
+
+## Changed
+
+- Target Geode version (v4.10.0)
+- No longer detect Better Color Picker mod
+
+## Fixed
+
+- Touch priority issue in Set Group ID popup (thanks @Fryy55)
+- Crashes on Android (and hopefully Mac/iOS)
+- Unnecessary struct copies (speeds up level loading)
+- Area Anim Trigger Popup input bug
+
 ## [2.2.2] - 2025-11-03
 
 ## Added

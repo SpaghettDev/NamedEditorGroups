@@ -87,7 +87,7 @@ struct NGGJPFollowCommandLayer : geode::Modify<NGGJPFollowCommandLayer, GJPFollo
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
-		STP->m_fields->m_id_inputs[GROUP_ID_PROPERTY] = std::move(targetInputInfo);
+		STP->m_fields->m_id_inputs.insert({ GROUP_ID_PROPERTY, std::move(targetInputInfo) });
 
 		return true;
 	}

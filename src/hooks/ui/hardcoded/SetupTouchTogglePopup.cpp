@@ -56,7 +56,7 @@ struct NIDSetupTouchTogglePopup : geode::Modify<NIDSetupTouchTogglePopup, SetupT
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
-		STP->m_fields->m_id_inputs[GROUP_ID_PROPERTY] = std::move(inputInfo);
+		STP->m_fields->m_id_inputs.insert({ GROUP_ID_PROPERTY, std::move(inputInfo) });
 
 		return true;
 	}

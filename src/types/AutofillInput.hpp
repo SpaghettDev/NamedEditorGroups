@@ -35,11 +35,4 @@ struct AutofillInput
 	geode::Ref<AutofillNamedIDsPreview> autofillPreview;
 	std::function<void(const std::string&)> editInputCallback;
 	std::function<void(NID, short)> selectCallback;
-
-	struct TextInputDelegate : geode::TextInput::TextInputDelegate {
-		void textChanged(CCTextInputNode*) override;
-    	void textInputOpened(CCTextInputNode*) override;
-	};
-	std::unique_ptr<geode::TextInput::TextInputDelegate> m_textInputDelegate;
-
 };

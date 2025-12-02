@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if ("${CMAKE_SYSTEM_NAME}" STREQUAL "iOS" OR IOS)
     set(CMAKE_OSX_ARCHITECTURES "arm64")
@@ -7,6 +7,10 @@ else()
     set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
 endif()
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+
+if (DEFINED ENV{GITHUB_ACTIONS})
+    set(CMAKE_CONFIGURATION_TYPES "Release" CACHE STRING "" FORCE)
+endif()
 
 project(Named-Editor-Groups VERSION 1.0.0)
 
@@ -45,7 +49,7 @@ add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 setup_geode_mod(${PROJECT_NAME})
 
 # Debug macro
-if (NOT DEFINED ENV{GITHUB_ACTIONS} AND (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo"))
+if (NOT DEFINED ENV{GITHUB_ACTIONS})
     target_compile_definitions(
         ${PROJECT_NAME} PRIVATE
             $<$<CONFIG:Debug>:NID_DEBUG_BUILD>

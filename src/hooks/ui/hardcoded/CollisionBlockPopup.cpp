@@ -87,7 +87,7 @@ struct NIDCollisionBlockPopup : geode::Modify<NIDCollisionBlockPopup, CollisionB
 			NIDCollisionBlockPopup::onEditInput(this, BLOCK_ID_PROPERTY, str);
 		});
 		blockIDInputInfo.editInputButton->m_pfnSelector = menu_selector(NIDCollisionBlockPopup::onEditIDNameButton);
-		m_fields->m_id_inputs[BLOCK_ID_PROPERTY] = std::move(blockIDInputInfo);
+		m_fields->m_id_inputs.insert({ BLOCK_ID_PROPERTY, std::move(blockIDInputInfo) });
 
 		return true;
 	}

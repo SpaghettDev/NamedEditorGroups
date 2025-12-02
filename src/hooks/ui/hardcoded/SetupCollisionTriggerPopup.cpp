@@ -158,7 +158,7 @@ struct NIDSetupCollisionTriggerPopup : geode::Modify<NIDSetupCollisionTriggerPop
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
-		STP->m_fields->m_id_inputs[BLOCK_A_ID_PROPERTY] = std::move(blockAInputInfo);
+		STP->m_fields->m_id_inputs.insert({ BLOCK_A_ID_PROPERTY, std::move(blockAInputInfo) });
 
 		auto blockBInputInfo = STP->commonInputSetup(
 			this,
@@ -168,7 +168,7 @@ struct NIDSetupCollisionTriggerPopup : geode::Modify<NIDSetupCollisionTriggerPop
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
-		STP->m_fields->m_id_inputs[BLOCK_B_ID_PROPERTY] = std::move(blockBInputInfo);
+		STP->m_fields->m_id_inputs.insert({ BLOCK_B_ID_PROPERTY, std::move(blockBInputInfo) });
 
 		auto targetIDInputInfo = STP->commonInputSetup(
 			this,
@@ -178,7 +178,7 @@ struct NIDSetupCollisionTriggerPopup : geode::Modify<NIDSetupCollisionTriggerPop
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
-		STP->m_fields->m_id_inputs[GROUP_ID_PROPERTY] = std::move(targetIDInputInfo);
+		STP->m_fields->m_id_inputs.insert({ GROUP_ID_PROPERTY, std::move(targetIDInputInfo) });
 
 		return true;
 	}

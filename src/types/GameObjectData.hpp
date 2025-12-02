@@ -20,7 +20,7 @@ namespace ng::types
 			{
 				case GameObjectClassType::Effect: {
 					auto effectObj = static_cast<EffectGameObject*>(obj);
-					m_targetGroupID = effectObj->m_targetGroupID;
+					m_targetGroupID = effectObj->m_targetGrou
 					m_centerGroupID = effectObj->m_centerGroupID;
 					m_targetModCenterID = effectObj->m_targetModCenterID;
 					m_rotationTargetID = effectObj->m_rotationTargetID;

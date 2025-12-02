@@ -129,11 +129,11 @@ geode::Result<std::string> ng::parser::format(const Tokens& tokens, const Format
 			break;
 
 			case TokenType::NAME:
-				output += std::move(fmtPair.name);
+				output += fmtPair.name;
 			break;
 
 			case TokenType::ID:
-				output += std::move(fmtPair.id);
+				output += fmtPair.id;
 			break;
 		}
 	}
@@ -143,7 +143,7 @@ geode::Result<std::string> ng::parser::format(const Tokens& tokens, const Format
 
 geode::Result<std::string> ng::parser::format(const std::string_view format, const FormatPair& fmtPair)
 {
-	auto tokensRes = parseFormat(std::move(format));
+	auto tokensRes = parseFormat(format);
 	if (tokensRes.isErr())
 		return geode::Err(tokensRes.unwrapErr());
 

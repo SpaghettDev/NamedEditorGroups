@@ -1,4 +1,5 @@
 #define FTS_FUZZY_MATCH_IMPLEMENTATION
+#include <Geode/external/fts/fts_fuzzy_match.h>
 
 #include "fuzzy_match.hpp"
 

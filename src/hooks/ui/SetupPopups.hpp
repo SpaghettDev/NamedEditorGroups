@@ -24,13 +24,30 @@ struct NIDSetupTriggerPopup : geode::Modify<NIDSetupTriggerPopup, SetupTriggerPo
 		std::array<CCMenuItemSpriteExtra*, 2> arrowButtons{ nullptr, nullptr };
 
 		operator bool() { return static_cast<bool>(idInput); }
+
+		IDInputInfo(
+			AutofillInput&& namedIDInput,
+			CCMenuItemSpriteExtra* editInputButton,
+			NID idType, CCTextInputNode* idInput, std::array<CCMenuItemSpriteExtra*, 2>&& arrowButtons
+		) : namedIDInput(std::move(namedIDInput)),
+			editInputButton(editInputButton),
+			idType(idType), idInput(idInput), arrowButtons(std::move(arrowButtons)) {};
+		// default ctor without AutofillInput
+		IDInputInfo(
+			CCMenuItemSpriteExtra* editInputButton,
+			NID idType, CCTextInputNode* idInput, std::array<CCMenuItemSpriteExtra*, 2>&& arrowButtons
+		) : editInputButton(editInputButton),
+			idType(idType), idInput(idInput), arrowButtons(std::move(arrowButtons)) {};
+		IDInputInfo(const IDInputInfo&) = delete;
+		IDInputInfo(IDInputInfo&&) noexcept = default;
+		IDInputInfo& operator=(IDInputInfo&&) noexcept = default;
 	};
 
 	struct Fields
 	{
 		std::unordered_map<std::uint16_t, IDInputInfo> m_id_inputs;
 		std::function<void(bool)> m_page_change_cb = [](...) {};
-		short m_objectID;
+		short m_object_id;
 	};
 
 	cocos2d::CCArray* createValueControlAdvanced(int, gd::string, cocos2d::CCPoint, float, bool, InputValueType, int, bool, float, float, int, int, GJInputStyle, int, bool);
@@ -49,11 +66,11 @@ struct NIDSetupTriggerPopup : geode::Modify<NIDSetupTriggerPopup, SetupTriggerPo
 	void textWasChanged(CCTextInputNode*);
 	void onEditIDNameButton(CCObject*);
 
-	void handleSpecialCasesPre(std::uint16_t, cocos2d::CCArray*);
-	void handleSpecialCasesPost(std::uint16_t, cocos2d::CCArray*);
+	void preHandleSpecialProperties(std::uint16_t, cocos2d::CCArray*);
+	void postHandleSpecialProperties(std::uint16_t, cocos2d::CCArray*);
 
 	static NID evaluateDynamicType(SetupTriggerPopup*, NID, short);
-	static IDInputInfo commonInputSetup(cocos2d::CCLayer*, NID, std::uint16_t, std::vector<CCNode*>&&, CCNode*, CCNode*, std::function<void(std::vector<CCNode*>&&)>&& = [](...) {});
+	static IDInputInfo commonInputSetup(cocos2d::CCLayer*, NID, std::uint16_t, std::vector<CCNode*>&&, CCNode*, CCNode*, std::function<void(std::vector<CCNode*>&&)> = nullptr);
 
 	static void onEditInput(NIDSetupTriggerPopup*, std::uint16_t, const std::string&);
 };

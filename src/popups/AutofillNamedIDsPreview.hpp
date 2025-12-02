@@ -49,7 +49,6 @@ private:
 
 
 	cocos2d::extension::CCScale9Sprite* m_bg_sprite;
-	std::unique_ptr<geode::TextInput::TextInputDelegate> m_textInputDelegate;
 	geode::Ref<cocos2d::CCLayerColor> m_layer_bg;
 	geode::Ref<geode::ScrollLayer> m_list;
 	geode::Ref<geode::Scrollbar> m_scroll_bar;

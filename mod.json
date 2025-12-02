@@ -1,5 +1,5 @@
 {
-	"geode": "4.8.0",
+	"geode": "4.10.0",
 	"gd": {
 		"win": "2.2074",
 		"android": "2.2074",
@@ -8,7 +8,7 @@
 	},
 	"id": "spaghettdev.named-editor-groups",
 	"name": "Named Editor Groups",
-	"version": "v2.2.1",
+	"version": "v2.3.0",
 	"developer": "SpaghettDev",
 	"description": "Abstract away IDs by giving them a name!",
 	"links": {
@@ -45,6 +45,12 @@
 			"default": "{name}-{id}",
 			"match": "^(?=.*\\{name\\})(?=.*\\{id\\})(?!.*\\{\\}).*",
 			"filter": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@_-,.!$^&*()+=/<>?\\01234567890{}[]|~`%:;\"'"
+		},
+		"show-edit-level-preview-button": {
+			"type": "bool",
+			"name": "Show Preview Button",
+			"description": "Show/hide a button to preview a read-only list of Named IDs in the level edit screen.",
+			"default": true
 		}
 	}
 }

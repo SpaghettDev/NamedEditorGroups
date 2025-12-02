@@ -10,11 +10,9 @@
 using namespace geode::prelude;
 
 template <NID nid>
-EditNamedIDPopup<nid>* EditNamedIDPopup<nid>::create(short id, std::function<void(short)>&& changedIDCallback, std::function<void()>&& savedCallback, bool addTargetedDelegate)
+EditNamedIDPopup<nid>* EditNamedIDPopup<nid>::create(short id, std::function<void(short)>&& changedIDCallback, std::function<void()>&& savedCallback)
 {
 	auto ret = new EditNamedIDPopup<nid>();
-
-	ret->m_apply_touch_prio_fix = addTargetedDelegate;
 
 	if (ret && ret->initAnchored(240.f, 150.f, id, std::move(changedIDCallback), std::move(savedCallback)))
 		ret->autorelease();
@@ -109,6 +107,21 @@ bool EditNamedIDPopup<nid>::setup(short id, std::function<void(short)>&& changed
 }
 
 template <NID nid>
+void EditNamedIDPopup<nid>::keyDown(cocos2d::enumKeyCodes key)
+{
+	if (key == cocos2d::enumKeyCodes::KEY_Escape)
+		this->removeFromParent();
+}
+
+template <NID nid>
+void EditNamedIDPopup<nid>::onExit()
+{
+	CCTouchDispatcher::get()->unregisterForcePrio(this);
+
+	Popup::onExit();
+}
+
+template <NID nid>
 void EditNamedIDPopup<nid>::onInfoIcon(CCObject*)
 {
 	FLAlertLayer::create(
@@ -120,7 +133,7 @@ void EditNamedIDPopup<nid>::onInfoIcon(CCObject*)
 			"<cg>(it's recommended to keep them shorter than 14 characters)</c>. "
 			"It is also recommended that the ID's name <cy>shouldn't</c> only contain <cy>numbers</c> or <cy>only symbols</c>.\n"
 			"And finally each ID <cr>must</c> have its own <cy>unique name</c>.\n"
-			"Valid character are: <cg>{}</c>",
+			"Valid characters are: <cg>{}</c>",
 			ng::constants::MAX_NAMED_ID_LENGTH,
 			ng::constants::VALID_NAMED_ID_CHARACTERS
 		),
@@ -139,7 +152,7 @@ void EditNamedIDPopup<nid>::onLeftArrow(CCObject*)
 
 		m_id_input->setString(fmt::format("{}", namedID));
 
-		if (namedID <= 0)
+		if (NID_DEBUG(false ||) namedID <= 0)
 		{
 			m_id_input->setString("1");
 			namedID = 1;
@@ -171,7 +184,7 @@ void EditNamedIDPopup<nid>::onRightArrow(CCObject*)
 
 		m_id_input->setString(fmt::format("{}", namedID));
 
-		if (namedID > 9999)
+		if (NID_DEBUG(false ||) namedID > 9999)
 		{
 			m_id_input->setString("9999");
 			namedID = 9999;
@@ -234,8 +247,10 @@ void EditNamedIDPopup<nid>::onClearIDNameButton(CCObject*)
 template <NID nid>
 void EditNamedIDPopup<nid>::registerWithTouchDispatcher()
 {
-	if (m_apply_touch_prio_fix)
-		CCTouchDispatcher::get()->addTargetedDelegate(this, -511, true);
+	auto TD = CCTouchDispatcher::get();
+
+	TD->registerForcePrio(this, 6);
+	TD->addTargetedDelegate(this, TD->getTargetPrio(), true);
 }
 
 

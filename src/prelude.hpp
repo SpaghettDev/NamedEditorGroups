@@ -1,5 +1,11 @@
 #pragma once
 
+#ifdef NID_DEBUG_BUILD
+	#define NID_DEBUG(...) __VA_ARGS__
+#else
+	#define NID_DEBUG(...)
+#endif
+
 // ts pmo...
 
 namespace ng

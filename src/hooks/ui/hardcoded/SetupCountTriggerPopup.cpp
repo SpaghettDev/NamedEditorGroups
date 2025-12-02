@@ -114,7 +114,7 @@ struct NIDSetupCountTriggerPopup : geode::Modify<NIDSetupCountTriggerPopup, Setu
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
-		STP->m_fields->m_id_inputs[ITEM_ID_PROPERTY] = std::move(itemIDInputInfo);
+		STP->m_fields->m_id_inputs.insert({ ITEM_ID_PROPERTY, std::move(itemIDInputInfo) });
 
 		auto targetIDInputInfo = STP->commonInputSetup(
 			this,
@@ -124,7 +124,7 @@ struct NIDSetupCountTriggerPopup : geode::Modify<NIDSetupCountTriggerPopup, Setu
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
-		STP->m_fields->m_id_inputs[TARGET_GROUP_ID_PROPERTY] = std::move(targetIDInputInfo);
+		STP->m_fields->m_id_inputs.insert({ TARGET_GROUP_ID_PROPERTY, std::move(targetIDInputInfo) });
 
 		return true;
 	}

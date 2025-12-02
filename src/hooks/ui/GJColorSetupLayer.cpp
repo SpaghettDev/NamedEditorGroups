@@ -106,7 +106,7 @@ struct NIDGJColorSetupLayer : geode::Modify<NIDGJColorSetupLayer, GJColorSetupLa
 
 		if (str.empty())
 			(void)NIDManager::removeNamedID<NID::COLOR>(id);
-		else if (auto res = NIDManager::saveNamedID<NID::COLOR>(std::move(str.data()), id); res.isErr())
+		else if (auto res = NIDManager::saveNamedID<NID::COLOR>(std::string{ str }, id); res.isErr())
 		{
 			input->setString("");
 			input->getInputNode()->onClickTrackNode(false);

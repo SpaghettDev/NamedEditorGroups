@@ -14,9 +14,7 @@ NID nidForPopup(SetIDPopup* popup)
 	// order is important here
 	if (typeinfo_cast<SetColorIDPopup*>(popup))
 		return NID::COLOR;
-	else if (typeinfo_cast<FindObjectPopup*>(popup))
-		return NID::GROUP;
-	else if (typeinfo_cast<SetIDPopup*>(popup))
+	else if (typeinfo_cast<FindObjectPopup*>(popup) || typeinfo_cast<SetIDPopup*>(popup))
 		return NID::GROUP;
 
 	throw "Invalid SetIDPopup type!";
@@ -27,13 +25,13 @@ struct NIDSetIDPopup : geode::Modify<NIDSetIDPopup, SetIDPopup>
 	struct Fields
 	{
 		NIDSetupTriggerPopup::IDInputInfo m_id_input{
-			{}, nullptr, NID::GROUP, nullptr, { nullptr, nullptr }
+			nullptr, NID::GROUP, nullptr, { nullptr, nullptr }
 		};
 	};
 
 	bool init(int current, int begin, int end, gd::string title, gd::string button, bool hasResetButton, int defaultValue, float yOffset, bool isNumberInput, bool isVerticalArrows)
 	{
-		if (!SetIDPopup::init(current, begin, end, title, button, hasResetButton, defaultValue, yOffset, isNumberInput, isVerticalArrows)) return false;
+		if (!SetIDPopup::init(current, begin, end, std::move(title), std::move(button), hasResetButton, defaultValue, yOffset, isNumberInput, isVerticalArrows)) return false;
 
 		if (
 			typeinfo_cast<FindObjectPopup*>(this) ||
@@ -69,7 +67,7 @@ struct NIDSetIDPopup : geode::Modify<NIDSetIDPopup, SetIDPopup>
 				this->m_buttonMenu
 			);
 			inputInfo.namedIDInput.setEditInputCallback([&](const std::string& str) {
-				NIDSetIDPopup::onEditInput(this, std::move(str));
+				NIDSetIDPopup::onEditInput(this, str);
 			});
 			inputInfo.editInputButton->m_pfnSelector = menu_selector(NIDSetIDPopup::onEditIDNameButton);
 

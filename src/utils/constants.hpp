@@ -35,7 +35,7 @@ namespace ng::constants
 		3033u, 1814u, 3016u, 3660u,
 		1595u, 1912u, 2062u, 1815u,
 		1812u, 1611u, 2062u, 3609u,
-		1585u, 1006u, 3662u
+		1585u, 1006u, 3662u, 899u
 	};
 
 	inline constexpr std::array COLLISION_OBJECT_IDS_WITH_LABEL{
@@ -215,7 +215,7 @@ namespace ng::constants
 		}) },
 		// Edit Area Move Trigger
 		{ 3011, fmap<std::uint16_t, NID, 7>({
-			// Target Group ID
+			// Target Group ID/Effect ID
 			{ 51, NID::GROUP }
 		}) },
 		// Edit Area Rotate Trigger
@@ -1737,22 +1737,27 @@ namespace ng::constants
 		}) },
 		// Edit Area Move Trigger
 		{ 3011, FMAP_GETTER_PAIR({
+			// can also be Effect ID
 			{ NID::GROUP, MAKE_GETTER_PAIR(m_targetGroupID) }
 		}) },
 		// Edit Area Rotate Trigger
 		{ 3012, FMAP_GETTER_PAIR({
+			// can also be Effect ID
 			{ NID::GROUP, MAKE_GETTER_PAIR(m_targetGroupID) }
 		}) },
 		// Edit Area Scale Trigger
 		{ 3013, FMAP_GETTER_PAIR({
+			// can also be Effect ID
 			{ NID::GROUP, MAKE_GETTER_PAIR(m_targetGroupID) }
 		}) },
 		// Edit Area Fade Trigger
 		{ 3014, FMAP_GETTER_PAIR({
+			// can also be Effect ID
 			{ NID::GROUP, MAKE_GETTER_PAIR(m_targetGroupID) }
 		}) },
 		// Edit Area Tint Trigger
 		{ 3015, FMAP_GETTER_PAIR({
+			// can also be Effect ID
 			{ NID::GROUP, MAKE_GETTER_PAIR(m_targetGroupID) }
 		}) },
 		// Touch Trigger

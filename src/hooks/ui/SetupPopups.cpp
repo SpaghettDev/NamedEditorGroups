@@ -8,35 +8,34 @@
 
 #include "../popups/EditNamedIDPopup.hpp"
 
-#include <NIDManager.hpp>
+#include <NIDManager.hpp>	
 
-#include "globals.hpp"
 #include "constants.hpp"
 #include "DynamicPropertyTypes.hpp"
 
 using namespace geode::prelude;
 
 
-cocos2d::CCArray* NIDSetupTriggerPopup::createValueControlAdvanced(
+CCArray* NIDSetupTriggerPopup::createValueControlAdvanced(
 	int property, gd::string label, CCPoint position,
-	float scale, bool unk1, InputValueType valueType,
-	int unk2, bool unk3, float sliderMin,
+	float scale, bool noSlider, InputValueType valueType,
+	int length, bool arrows, float sliderMin,
 	float sliderMax, int page, int group,
-	GJInputStyle inputStyle, int decimalPlaces, bool unk4
+	GJInputStyle inputStyle, int decimalPlaces, bool allowDisable
 ) {
 	// it seems like the game does nothing with the returned array, but we should add our stuff either way
 	// in case it ever does
 	auto nodes = SetupTriggerPopup::createValueControlAdvanced(
-		property, label, position,
-		scale, unk1, valueType,
-		unk2, unk3, sliderMin,
+		property, std::move(label), position,
+		scale, noSlider, valueType,
+		length, arrows, sliderMin,
 		sliderMax, page, group,
-		inputStyle, decimalPlaces, unk4
+		inputStyle, decimalPlaces, allowDisable
 	);
 
-	// this is -1 even if m_gameObjects has different objects since this method is never called if
+	// this is -1 even if m_gameObjects has different objects since this method is never called when
 	// the game objects are different
-	m_fields->m_objectID = this->m_gameObject
+	m_fields->m_object_id = this->m_gameObject
 		? this->m_gameObject->m_objectID
 		: this->m_gameObjects
 			? this->m_gameObjects->count()
@@ -47,11 +46,11 @@ cocos2d::CCArray* NIDSetupTriggerPopup::createValueControlAdvanced(
 	if (this->m_gameObject || this->m_gameObjects)
 	{
 		if (
-			m_fields->m_objectID == -1 ||
-			!ng::constants::OBJECT_ID_TO_PROPERTIES_INFO.contains(m_fields->m_objectID) ||
-			!ng::constants::OBJECT_ID_TO_PROPERTIES_INFO.at(m_fields->m_objectID).contains(property) ||
+			m_fields->m_object_id == -1 ||
+			!ng::constants::OBJECT_ID_TO_PROPERTIES_INFO.contains(m_fields->m_object_id) ||
+			!ng::constants::OBJECT_ID_TO_PROPERTIES_INFO.at(m_fields->m_object_id).contains(property) ||
 			// see OBJECT_ID_TO_PROPERTIES_INFO comment
-			ng::constants::OBJECT_ID_TO_PROPERTIES_INFO.at(m_fields->m_objectID).at(property) == NID::_UNKNOWN
+			ng::constants::OBJECT_ID_TO_PROPERTIES_INFO.at(m_fields->m_object_id).at(property) == NID::_UNKNOWN
 		)
 			return nodes;
 	}
@@ -65,11 +64,11 @@ cocos2d::CCArray* NIDSetupTriggerPopup::createValueControlAdvanced(
 	CCArray* pageContainer = static_cast<CCArray*>(this->m_pageContainers->objectAtIndex(page));
 	CCArray* groupContainer = static_cast<CCArray*>(this->m_groupContainers->objectAtIndex(group));
 
-	handleSpecialCasesPre(property, nodes);
+	preHandleSpecialProperties(property, nodes);
 
 	auto inputInfo = commonInputSetup(
 		this,
-		ng::constants::OBJECT_ID_TO_PROPERTIES_INFO.at(m_fields->m_objectID).at(property),
+		ng::constants::OBJECT_ID_TO_PROPERTIES_INFO.at(m_fields->m_object_id).at(property),
 		property,
 		std::move(geode::cocos::ccArrayToVector<CCNode*>(nodes)),
 		this->m_mainLayer,
@@ -83,9 +82,9 @@ cocos2d::CCArray* NIDSetupTriggerPopup::createValueControlAdvanced(
 			}
 		}
 	);
-	m_fields->m_id_inputs[property] = std::move(inputInfo);
+	m_fields->m_id_inputs.insert({ property, std::move(inputInfo) });
 
-	handleSpecialCasesPost(property, nodes);
+	postHandleSpecialProperties(property, nodes);
 
 	return nodes;
 }
@@ -177,15 +176,7 @@ void NIDSetupTriggerPopup::onEditIDNameButton(CCObject* sender)
 		},
 		[&] {
 			this->textChanged(idInputInfo.idInput);
-		},
-		// color triggers
-		(
-			m_fields->m_objectID == 900 ||
-			m_fields->m_objectID == 899 ||
-			m_fields->m_objectID == 105 ||
-			m_fields->m_objectID == 30 ||
-			m_fields->m_objectID == 29
-		) && ng::globals::g_isBetterColorPickerLoaded
+		}
 	);
 }
 
@@ -203,18 +194,13 @@ void NIDSetupTriggerPopup::onEditInput(NIDSetupTriggerPopup* self, std::uint16_t
 NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonInputSetup(
 	CCLayer* self, NID nid, std::uint16_t property,
 	std::vector<CCNode*>&& nodes, CCNode* mainLayer, CCNode* buttonMenu,
-	std::function<void(std::vector<CCNode*>&&)>&& finishedCallback
+	std::function<void(std::vector<CCNode*>&&)> finishedCallback
 ) {
-	NIDSetupTriggerPopup::IDInputInfo inputInfo;
+	CCMenuItemSpriteExtra* editInputButton = nullptr;
+	CCTextInputNode* idInput = nullptr;
+	std::array<CCMenuItemSpriteExtra*, 2> arrowButtons{ nullptr, nullptr };
 	CCPoint inputNodePos;
 	float scale = 1.f;
-
-	inputInfo.idType = nid;
-	NID currentNid = evaluateDynamicType(
-		static_cast<SetupTriggerPopup*>(self),
-		nid,
-		property
-	);
 
 	for (auto node : nodes)
 		if (auto bg = typeinfo_cast<cocos2d::extension::CCScale9Sprite*>(node))
@@ -241,22 +227,22 @@ NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonInputSetup(
 
 		if (auto castedNode = typeinfo_cast<CCTextInputNode*>(node))
 		{
-			inputInfo.idInput = castedNode;
+			idInput = castedNode;
 			inputNodePos = castedNode->getPosition();
 
 			castedNode->setPositionY(castedNode->getPositionY() + 1.f);
 			castedNode->setScale(castedNode->getScale() + .1f);
 		}
 		else if (auto castedNode = typeinfo_cast<CCMenuItemSpriteExtra*>(node))
-			inputInfo.arrowButtons[!inputInfo.arrowButtons[0] ? 0 : 1] = castedNode;
+			arrowButtons[!arrowButtons[0] ? 0 : 1] = castedNode;
 	}
 
-	for (auto arrowBtn : inputInfo.arrowButtons)
+	for (auto arrowBtn : arrowButtons)
 	{
 		if (!arrowBtn) break;
 
-		CCPoint pos = buttonMenu->convertToNodeSpace(inputInfo.idInput->getPosition());
-		arrowBtn->setPosition({ pos.x + (arrowBtn == inputInfo.arrowButtons[0] ? -1 : 1) * 40.f * (scale - .1f), pos.y });
+		CCPoint pos = buttonMenu->convertToNodeSpace(idInput->getPosition());
+		arrowBtn->setPosition({ pos.x + (arrowBtn == arrowButtons[0] ? -1 : 1) * 40.f * (scale - .1f), pos.y });
 		arrowBtn->getNormalImage()->setScale(scale);
 	}
 
@@ -271,7 +257,7 @@ NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonInputSetup(
 
 	auto editInputButtonSprite = CCSprite::create("pencil.png"_spr);
 	editInputButtonSprite->setScale(std::clamp((scale - .1f) - .2f, .1f, .4f));
-	auto editInputButton = CCMenuItemSpriteExtra::create(
+	editInputButton = CCMenuItemSpriteExtra::create(
 		editInputButtonSprite,
 		self,
 		menu_selector(NIDSetupTriggerPopup::onEditIDNameButton)
@@ -287,31 +273,33 @@ NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonInputSetup(
 	);
 	editInputButton->setID(fmt::format("edit-group-name-button-{}"_spr, property));
 	buttonMenu->addChild(editInputButton);
-	inputInfo.editInputButton = editInputButton;
 
-	auto inputIDNum = numFromString<short>(inputInfo.idInput->getString()).unwrapOr(0);
+	auto inputIDNum = numFromString<short>(idInput->getString()).unwrapOr(0);
 
+	NID currentNid = evaluateDynamicType(static_cast<SetupTriggerPopup*>(self), nid, property);
 	if (auto name = NIDManager::getNameForID(currentNid, inputIDNum); name.isOk())
 		groupNameInput->setString(name.unwrap());
 
-	finishedCallback({ groupNameInput, editInputButton });
+	finishedCallback ? finishedCallback({ groupNameInput, editInputButton }) : void();
 
-	inputInfo.namedIDInput = AutofillInput{
+	AutofillInput namedIDInput{
 		nid, groupNameInput,
 		[self, property](const std::string& str) {
 			NIDSetupTriggerPopup::onEditInput(static_cast<NIDSetupTriggerPopup*>(self), property, str);
 		},
-		[idInput = inputInfo.idInput](NID nid, short id) {
+		[idInput](NID nid, short id) {
 			idInput->setString(fmt::format("{}", id));
 		}
 	};
 
-	return inputInfo;
+	return {
+		std::move(namedIDInput), editInputButton, nid, idInput, std::move(arrowButtons)
+	};
 }
 
-void NIDSetupTriggerPopup::handleSpecialCasesPre(std::uint16_t property, CCArray* nodes)
+void NIDSetupTriggerPopup::preHandleSpecialProperties(std::uint16_t property, CCArray* nodes)
 {
-	switch (m_fields->m_objectID)
+	switch (m_fields->m_object_id)
 	{
 		// Edit Area Move Trigger
 		case 3011u: {
@@ -340,14 +328,22 @@ void NIDSetupTriggerPopup::handleSpecialCasesPre(std::uint16_t property, CCArray
 		}
 		break;
 
+		// Keyframe Trigger
+		case 3032u: {
+			if (property == 51)
+				for (auto node : CCArrayExt<CCNode*>(nodes))
+					node->setPositionY(node->getPositionY() - 8.f);
+		}
+		break;
+
 		default:
 			break;
 	}
 }
 
-void NIDSetupTriggerPopup::handleSpecialCasesPost(std::uint16_t property, CCArray* nodes)
+void NIDSetupTriggerPopup::postHandleSpecialProperties(std::uint16_t property, CCArray* nodes)
 {
-	switch (m_fields->m_objectID)
+	switch (m_fields->m_object_id)
 	{
 		// Grayscale Trigger
 		case 2919u: {
@@ -368,7 +364,7 @@ NID NIDSetupTriggerPopup::evaluateDynamicType(SetupTriggerPopup* self, NID nid, 
 {
 	if (nid != NID::DYNAMIC_COUNTER_TIMER) return nid;
 
-	GameObject* obj = self->m_gameObject
+	auto obj = self->m_gameObject
 		? self->m_gameObject
 		: static_cast<GameObject*>(self->m_gameObjects->objectAtIndex(0));
 
@@ -383,16 +379,14 @@ void NIDSetupTriggerPopup::valueChanged(int property, float value)
 {
 	SetupTriggerPopup::valueChanged(property, value);
 
-	if (!ng::constants::DYNAMIC_PROPERTIES_TOGGLES.contains(m_fields->m_objectID)) return;
+	if (!ng::constants::DYNAMIC_PROPERTIES_TOGGLES.contains(m_fields->m_object_id)) return;
 
-	for (auto const& [key, val] : ng::constants::DYNAMIC_PROPERTIES_TOGGLES.at(m_fields->m_objectID))
+	for (const auto& [key, val] : ng::constants::DYNAMIC_PROPERTIES_TOGGLES.at(m_fields->m_object_id))
 	{
+		if (!m_fields->m_id_inputs.contains(key)) return;
 		if (val.togglePropID != property) continue;
 
 		NID type = val.counterState == value ? NID::COUNTER : NID::TIMER;
-
-		if (!m_fields->m_id_inputs.contains(key)) return;
-
 		auto& idInputInfo = m_fields->m_id_inputs.at(key);
 
 		auto parsedIdInputValue = geode::utils::numFromString<short>(idInputInfo.idInput->getString());
@@ -411,8 +405,8 @@ void NIDSetupTriggerPopup::updateValue(int property, float value)
 {
 	SetupTriggerPopup::updateValue(property, value);
 
-	if (!ng::constants::DYNAMIC_PROPERTIES_CHOICES.contains(m_fields->m_objectID)) return;
-	auto& choiceProperties = ng::constants::DYNAMIC_PROPERTIES_CHOICES.at(m_fields->m_objectID);
+	if (!ng::constants::DYNAMIC_PROPERTIES_CHOICES.contains(m_fields->m_object_id)) return;
+	auto& choiceProperties = ng::constants::DYNAMIC_PROPERTIES_CHOICES.at(m_fields->m_object_id);
 
 	if (!choiceProperties.contains(property)) return;
 	auto& choiceInfo = choiceProperties.at(property);
@@ -446,24 +440,3 @@ void NIDSetupTriggerPopup::goToPage(int page, bool hideAll)
 
 	m_fields->m_page_change_cb(page);
 }
-
-
-// SetupAreaAnimTriggerPopups are special
-struct NIDSetupAreaAnimTriggerPopup : geode::Modify<NIDSetupAreaAnimTriggerPopup, SetupAreaAnimTriggerPopup>
-{
-	void updateTargetIDLabel()
-	{
-		SetupAreaAnimTriggerPopup::updateTargetIDLabel();
-
-		auto STP = reinterpret_cast<NIDSetupTriggerPopup*>(this);
-
-		if (STP->m_fields->m_id_inputs.contains(51))
-		{
-			auto& inputInfo = STP->m_fields->m_id_inputs.at(51);
-			bool isEffectID = this->getValue(355) != .0f;
-
-			inputInfo.idType = isEffectID ? NID::EFFECT : NID::GROUP;
-			this->textChanged(inputInfo.idInput);
-		}
-	}
-};

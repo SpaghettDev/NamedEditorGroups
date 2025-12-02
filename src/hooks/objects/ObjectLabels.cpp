@@ -10,7 +10,7 @@
 
 using namespace geode::prelude;
 
-auto objInArray = [](GameObject* object, const auto& container) {
+static auto objInArray = [](GameObject* object, const auto& container) {
 	return ng::utils::getIndexOf(container, object->m_objectID) != -1;
 };
 
@@ -19,7 +19,6 @@ struct NIDEffectGameObject : geode::Modify<NIDEffectGameObject, EffectGameObject
 	struct Fields
 	{
 		Ref<CCLabelBMFont> m_id_name_label = CCLabelBMFont::create("", "bigFont.fnt");
-		bool m_has_id_name_label = false;
 	};
 
 	void customSetup()
@@ -37,9 +36,12 @@ struct NIDEffectGameObject : geode::Modify<NIDEffectGameObject, EffectGameObject
 		// lol why does the game not do this
 		this->setCascadeOpacityEnabled(true);
 
-		// 28.5f is content width of move trigger, which works well for all other triggers
-		m_fields->m_id_name_label->limitLabelWidth(28.5f + 10.f, .6f, .1f);
-		// can't add the label here
+		geode::Loader::get()->queueInMainThread([this, idNameLabel = m_fields->m_id_name_label] {
+			idNameLabel->setID("id-name-label"_spr);
+			this->addChild(idNameLabel);
+			// 28.5f is content width of move trigger, which works well for all other triggers
+			idNameLabel->limitLabelWidth(28.5f + 10.f, .5f, .1f);
+		});
 	}
 };
 
@@ -59,7 +61,6 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 
 		auto effectGameObj = static_cast<NIDEffectGameObject*>(object);
 
-		bool& hasIDNameLabel = effectGameObj->m_fields->m_has_id_name_label;
 		CCLabelBMFont* idNameLabel = effectGameObj->m_fields->m_id_name_label;
 		std::string idNameStr = "";
 		CCPoint idLabelPos;
@@ -102,68 +103,85 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 				break;
 		}
 
-		// Counter Trigger
-		if (object->m_objectID == 1615u)
+		switch (object->m_objectID)
 		{
-			auto labelNode = static_cast<LabelGameObject*>(object);
+			// Counter Trigger
+			case 1615u: {
+				auto labelNode = static_cast<LabelGameObject*>(object);
+		
+				// Disable if counter should show MainTime/Points/Attempts
+				if (labelNode->m_shownSpecial != 0);
+				else if (labelNode->m_isTimeCounter)
+					idNameStr = NIDManager::getNameForID<NID::TIMER>(
+						effectGameObj->m_itemID
+					).unwrapOr("");
+				else
+					idNameStr = NIDManager::getNameForID<NID::COUNTER>(
+						effectGameObj->m_itemID
+					).unwrapOr("");
+			}
+			break;
 
-			// Disable if counter should show MainTime/Points/Attempts
-			if (labelNode->m_shownSpecial != 0);
-			else if (labelNode->m_isTimeCounter)
-				idNameStr = NIDManager::getNameForID<NID::TIMER>(
-					effectGameObj->m_itemID
-				).unwrapOr("");
-			else
-				idNameStr = NIDManager::getNameForID<NID::COUNTER>(
-					effectGameObj->m_itemID
-				).unwrapOr("");
-		}
-		// Pulse Trigger
-		else if (object->m_objectID == 1006u)
-		{
-			auto pulseTrigger = static_cast<EffectGameObject*>(object);
+			// Pulse Trigger
+			case 1006u: {
+				auto pulseTrigger = static_cast<EffectGameObject*>(object);
+		
+				if (pulseTrigger->m_pulseTargetType == 1)
+					idNameStr = NIDManager::getNameForID<NID::GROUP>(
+						effectGameObj->m_targetGroupID
+					).unwrapOr("");
+				else
+					idNameStr = NIDManager::getNameForID<NID::COLOR>(
+						effectGameObj->m_targetGroupID
+					).unwrapOr("");
+			}
+			break;
 
-			if (pulseTrigger->m_pulseTargetType == 1)
-				idNameStr = NIDManager::getNameForID<NID::GROUP>(
+			// Random Trigger
+			case 1912u: {
+				auto id1 = NIDManager::getNameForID<NID::GROUP>(
 					effectGameObj->m_targetGroupID
 				).unwrapOr("");
-			else
-				idNameStr = NIDManager::getNameForID<NID::COLOR>(
-					effectGameObj->m_targetGroupID
+				auto id2 = NIDManager::getNameForID<NID::GROUP>(
+					effectGameObj->m_centerGroupID
 				).unwrapOr("");
+		
+				if (!id1.empty() && !id2.empty())
+					idNameStr = fmt::format("{}/\n{}", id1, id2);
+		
+				idLabelPos = CCPoint{ idLabelPos.x + .75f, idLabelPos.y - 5.5f };
+			}
+			break;
 
+			// Color Trigger
+			case 899u: {
+				if (!(effectGameObj->m_usesPlayerColor1 || effectGameObj->m_usesPlayerColor2))
+					idNameStr = NIDManager::getNameForID<NID::COLOR>(
+						effectGameObj->m_targetColor
+					).unwrapOr("");
+			}
+			break;
+
+			default: {
+				if (isTrigger)
+					idNameStr = NIDManager::getNameForID<NID::GROUP>(
+						effectGameObj->m_targetGroupID
+					).unwrapOr("");
+				else if (isCollision)
+					idNameStr = NIDManager::getNameForID<NID::COLLISION>(
+						effectGameObj->m_itemID
+					).unwrapOr("");
+				else if (isCounter)
+					idNameStr = NIDManager::getNameForID<NID::COUNTER>(
+						effectGameObj->m_itemID
+					).unwrapOr("");
+				else if (isTimer)
+					idNameStr = NIDManager::getNameForID<NID::TIMER>(
+						effectGameObj->m_itemID
+					).unwrapOr("");
+			}
+			break;
 		}
-		// Random Trigger
-		else if (effectGameObj->m_objectID == 1912u)
-		{
-			auto id1 = NIDManager::getNameForID<NID::GROUP>(
-				effectGameObj->m_targetGroupID
-			).unwrapOr("");
-			auto id2 = NIDManager::getNameForID<NID::GROUP>(
-				effectGameObj->m_centerGroupID
-			).unwrapOr("");
-
-			if (!id1.empty() && !id2.empty())
-				idNameStr = fmt::format("{}/\n{}", id1, id2);
-
-			idLabelPos = CCPoint{ idLabelPos.x + .75f, idLabelPos.y - 5.5f };
-		}
-		else if (isTrigger)
-			idNameStr = NIDManager::getNameForID<NID::GROUP>(
-				effectGameObj->m_targetGroupID
-			).unwrapOr("");
-		else if (isCollision)
-			idNameStr = NIDManager::getNameForID<NID::COLLISION>(
-				effectGameObj->m_itemID
-			).unwrapOr("");
-		else if (isCounter)
-			idNameStr = NIDManager::getNameForID<NID::COUNTER>(
-				effectGameObj->m_itemID
-			).unwrapOr("");
-		else if (isTimer)
-			idNameStr = NIDManager::getNameForID<NID::TIMER>(
-				effectGameObj->m_itemID
-			).unwrapOr("");
 
 		if (ng::globals::g_isEditorIDAPILoaded)
 		{
@@ -195,16 +213,6 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 		}
 
 		idNameLabel->setString(idNameStr.c_str());
-		// 28.5f is content width of move trigger, which works well for all other triggers
-		idNameLabel->limitLabelWidth(28.5f + 10.f, .5f, .1f);
 		idNameLabel->setPosition({ idLabelPos.x, idLabelPos.y - 9.f });
-
-		if (!hasIDNameLabel)
-		{
-			hasIDNameLabel = true;
-
-			idNameLabel->setID("id-name-label"_spr);
-			object->addChild(idNameLabel);
-		}
 	}
 };

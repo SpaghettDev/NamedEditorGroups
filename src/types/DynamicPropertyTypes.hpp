@@ -7,7 +7,11 @@ namespace ng::types
 	struct DynamicPropertyToggleType
 	{
 		std::uint16_t togglePropID;
-		std::uint8_t counterState; // timer otherwise
+		union
+		{
+			std::uint8_t counterState;
+			std::uint8_t timerState;
+		};
 	};
 
 	struct DynamicPropertyChoiceType

@@ -70,7 +70,7 @@ struct NIDSetupAnimationPopup : geode::Modify<NIDSetupAnimationPopup, SetupAnima
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
-		STP->m_fields->m_id_inputs[GROUP_ID_PROPERTY] = std::move(groupIDInputInfo);
+		STP->m_fields->m_id_inputs.insert({ GROUP_ID_PROPERTY, std::move(groupIDInputInfo) });
 
 
 		return true;

@@ -10,12 +10,13 @@ template <NID nid>
 class EditNamedIDPopup : public geode::Popup<short, std::function<void(short)>&&, std::function<void()>&&>
 {
 public:
-	static EditNamedIDPopup* create(short, std::function<void(short)>&&, std::function<void()>&&, bool = false);
+	static EditNamedIDPopup* create(short, std::function<void(short)>&&, std::function<void()>&&);
 
 protected:
 	bool setup(short, std::function<void(short)>&&, std::function<void()>&&) override;
 	virtual void keyBackClicked() override {};
-	virtual void keyDown(cocos2d::enumKeyCodes) override {};
+	virtual void keyDown(cocos2d::enumKeyCodes) override;
+	virtual void onExit() override;
 
 public:
 	void onInfoIcon(cocos2d::CCObject*);
@@ -41,28 +42,26 @@ protected:
 	CCMenuItemSpriteExtra* m_left_arrow_button;
 	CCMenuItemSpriteExtra* m_right_arrow_button;
 
-	bool m_apply_touch_prio_fix = false;
-
 	std::function<void(short)> m_changed_id_callback;
 	std::function<void()> m_saved_callback;
 };
 
-static inline void ShowEditNamedIDPopup(const NID nid, short id, std::function<void(short)>&& changedIDCallback, std::function<void()>&& savedCallback, bool applyTouchPrioFix = false)
+static inline void ShowEditNamedIDPopup(const NID nid, short id, std::function<void(short)>&& changedIDCallback, std::function<void()>&& savedCallback)
 {
 	switch (nid)
 	{
 		case NID::GROUP:
-			EditNamedIDPopup<NID::GROUP>::create(id, std::move(changedIDCallback), std::move(savedCallback), applyTouchPrioFix)->show(); break;
+			EditNamedIDPopup<NID::GROUP>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show(); break;
 		case NID::COLLISION:
-			EditNamedIDPopup<NID::COLLISION>::create(id, std::move(changedIDCallback), std::move(savedCallback), applyTouchPrioFix)->show(); break;
+			EditNamedIDPopup<NID::COLLISION>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show(); break;
 		case NID::COUNTER:
-			EditNamedIDPopup<NID::COUNTER>::create(id, std::move(changedIDCallback), std::move(savedCallback), applyTouchPrioFix)->show(); break;
+			EditNamedIDPopup<NID::COUNTER>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show(); break;
 		case NID::TIMER:
-			EditNamedIDPopup<NID::TIMER>::create(id, std::move(changedIDCallback), std::move(savedCallback), applyTouchPrioFix)->show(); break;
+			EditNamedIDPopup<NID::TIMER>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show(); break;
 		case NID::EFFECT:
-			EditNamedIDPopup<NID::EFFECT>::create(id, std::move(changedIDCallback), std::move(savedCallback), applyTouchPrioFix)->show(); break;
+			EditNamedIDPopup<NID::EFFECT>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show(); break;
 		case NID::COLOR:
-			EditNamedIDPopup<NID::COLOR>::create(id, std::move(changedIDCallback), std::move(savedCallback), applyTouchPrioFix)->show(); break;
+			EditNamedIDPopup<NID::COLOR>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show(); break;
 
 		default:
 			throw "Invalid NID enum value";

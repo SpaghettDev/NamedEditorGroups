@@ -76,7 +76,7 @@ namespace ng::utils
 	template <typename C, typename T>
 	inline std::ptrdiff_t getIndexOf(const C& container, const T& toFind)
 	{
-		const auto it = std::find_if(container.cbegin(), container.cend(), [&](const T& value) {
+		const auto it = std::ranges::find_if(container.cbegin(), container.cend(), [&](const T& value) {
 			return value == toFind;
 		});
 
@@ -86,7 +86,7 @@ namespace ng::utils
 	template <typename C, typename T>
 	inline std::ptrdiff_t getIndexOf(const C& container, std::function<bool(const T&)>&& predicate)
 	{
-		const auto it = std::find_if(container.cbegin(), container.cend(), predicate);
+		const auto it = std::ranges::find_if(container.cbegin(), container.cend(), predicate);
 
 		return it != container.cend() ? (it - container.cbegin()) : -1;
 	}

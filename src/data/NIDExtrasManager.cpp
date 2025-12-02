@@ -69,7 +69,7 @@ geode::Result<bool> NIDExtrasManager::getIsNamedIDPreviewed(NID nid, std::string
 {
 	LEVEL_ID_API_CHECK();
 
-	auto res = NIDManager::getIDForName(nid, std::move(name));
+	auto res = NIDManager::getIDForName(nid, name);
 	if (res.isErr())
 		return geode::Err(res.unwrapErr());
 
@@ -92,7 +92,7 @@ geode::Result<std::string> NIDExtrasManager::getNamedIDDescription(NID nid, std:
 {
 	LEVEL_ID_API_CHECK();
 
-	auto res = NIDManager::getIDForName(nid, std::move(name));
+	auto res = NIDManager::getIDForName(nid, name);
 	if (res.isErr())
 		return geode::Err(res.unwrapErr());
 
@@ -120,7 +120,7 @@ geode::Result<> NIDExtrasManager::setNamedIDIsPreviewed(NID nid, std::string&& n
 {
 	LEVEL_ID_API_CHECK();
 
-	auto res = NIDManager::getIDForName(nid, std::move(name));
+	auto res = NIDManager::getIDForName(nid, name);
 	if (res.isErr())
 		return geode::Err(res.unwrapErr());
 
@@ -148,7 +148,7 @@ geode::Result<> NIDExtrasManager::setNamedIDDescription(NID nid, std::string&& n
 {
 	LEVEL_ID_API_CHECK();
 
-	auto res = NIDManager::getIDForName(nid, std::move(name));
+	auto res = NIDManager::getIDForName(nid, name);
 	if (res.isErr())
 		return geode::Err(res.unwrapErr());
 
@@ -193,7 +193,7 @@ geode::Result<> NIDExtrasManager::setNamedIDExtras(NID nid, std::string&& name, 
 {
 	LEVEL_ID_API_CHECK();
 
-	auto res = NIDManager::getIDForName(nid, std::move(name));
+	auto res = NIDManager::getIDForName(nid, name);
 	if (res.isErr())
 		return geode::Err(res.unwrapErr());
 
@@ -221,7 +221,7 @@ geode::Result<> NIDExtrasManager::removeNamedIDExtras(NID nid, std::string&& nam
 {
 	LEVEL_ID_API_CHECK();
 
-	auto res = NIDManager::getIDForName(nid, std::move(name));
+	auto res = NIDManager::getIDForName(nid, name);
 	if (res.isErr())
 		return geode::Err(res.unwrapErr());
 

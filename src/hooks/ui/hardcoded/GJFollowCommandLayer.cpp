@@ -132,7 +132,7 @@ struct NIDGJFollowCommandLayer : geode::Modify<NIDGJFollowCommandLayer, GJFollow
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
-		STP->m_fields->m_id_inputs[TARGET_GROUP_ID_PROPERTY] = std::move(targetInputInfo);
+		STP->m_fields->m_id_inputs.insert({ TARGET_GROUP_ID_PROPERTY, std::move(targetInputInfo) });
 		auto followInputInfo = STP->commonInputSetup(
 			this,
 			NID::GROUP,
@@ -141,7 +141,7 @@ struct NIDGJFollowCommandLayer : geode::Modify<NIDGJFollowCommandLayer, GJFollow
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
-		STP->m_fields->m_id_inputs[FOLLOW_GROUP_ID_PROPERTY] = std::move(followInputInfo);
+		STP->m_fields->m_id_inputs.insert({ FOLLOW_GROUP_ID_PROPERTY, std::move(followInputInfo) });
 
 		this->m_buttonMenu->getChildByID("edit-group-name-button-4"_spr)->setVisible(false);
 

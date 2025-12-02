@@ -215,8 +215,8 @@ void AutofillNamedIDsPreview::registerWithTouchDispatcher()
 	auto TD = CCTouchDispatcher::get();
 
 	TD->addTargetedDelegate(this, cocos2d::kCCMenuHandlerPriority, true);
-	TD->registerForcePrio(this, 2);
-	TD->setPriority(TD->findHandler(this)->getPriority() - 3, this);
+	TD->registerForcePrio(this, 8);
+	TD->setPriority(TD->findHandler(this)->getPriority() - 9, this);
 }
 
 void AutofillNamedIDsPreview::selectCallback(NID nid, short id)

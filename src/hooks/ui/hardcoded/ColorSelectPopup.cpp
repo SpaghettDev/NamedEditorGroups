@@ -75,7 +75,7 @@ struct NIDColorSelectPopup : geode::Modify<NIDColorSelectPopup, ColorSelectPopup
 					this->m_mainLayer,
 					this->m_buttonMenu
 				);
-				STP->m_fields->m_id_inputs[COLOR_ID_PROPERTY] = std::move(colorInputInfo);
+				STP->m_fields->m_id_inputs.insert({ COLOR_ID_PROPERTY, std::move(colorInputInfo) });
 			}
 
 			std::vector<CCNode*> channelIDNodes;
@@ -128,7 +128,7 @@ struct NIDColorSelectPopup : geode::Modify<NIDColorSelectPopup, ColorSelectPopup
 			);
 			channelInputInfo.namedIDInput->setVisible(this->m_showCopyObjects);
 			channelInputInfo.editInputButton->setVisible(this->m_showCopyObjects);
-			STP->m_fields->m_id_inputs[CHANNEL_ID_PROPERTY] = std::move(channelInputInfo);
+			STP->m_fields->m_id_inputs.insert({ CHANNEL_ID_PROPERTY, std::move(channelInputInfo) });
 
 			return true;
 		}
@@ -220,8 +220,7 @@ struct NIDColorSelectPopup : geode::Modify<NIDColorSelectPopup, ColorSelectPopup
 				static_cast<geode::TextInput*>(
 					this->m_buttonMenu->getChildByID("color-name-input"_spr)
 				)->setString(newName);
-			},
-			ng::globals::g_isBetterColorPickerLoaded
+			}
 		);
 		popup->getLeftArrowButton()->setVisible(false);
 		popup->getRightArrowButton()->setVisible(false);

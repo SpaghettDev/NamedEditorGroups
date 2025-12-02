@@ -149,7 +149,7 @@ struct NIDSetupSpawnPopup : geode::Modify<NIDSetupSpawnPopup, SetupSpawnPopup>
 			NIDSetupSpawnPopup::onEditInput(this, ORIGINAL_ID_PROPERTY, str);
 		});
 		originalIDInputInfo.editInputButton->m_pfnSelector = menu_selector(NIDSetupSpawnPopup::onEditIDNameButton);
-		STP->m_fields->m_id_inputs[ORIGINAL_ID_PROPERTY] = std::move(originalIDInputInfo);
+		STP->m_fields->m_id_inputs.insert({ ORIGINAL_ID_PROPERTY, std::move(originalIDInputInfo) });
 
 		auto newIDInputInfo = STP->commonInputSetup(
 			this,
@@ -171,7 +171,7 @@ struct NIDSetupSpawnPopup : geode::Modify<NIDSetupSpawnPopup, SetupSpawnPopup>
 			NIDSetupSpawnPopup::onEditInput(this, NEW_ID_PROPERTY, str);
 		});
 		newIDInputInfo.editInputButton->m_pfnSelector = menu_selector(NIDSetupSpawnPopup::onEditIDNameButton);
-		STP->m_fields->m_id_inputs[NEW_ID_PROPERTY] = std::move(newIDInputInfo);
+		STP->m_fields->m_id_inputs.insert({ NEW_ID_PROPERTY, std::move(newIDInputInfo) });
 
 
 		auto remapsListMenu = CCMenu::create();

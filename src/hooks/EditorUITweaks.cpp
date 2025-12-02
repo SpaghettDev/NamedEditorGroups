@@ -12,10 +12,6 @@
 
 using namespace geode::prelude;
 
-auto objInArray = [](GameObject* object, const auto& container) {
-	return ng::utils::getIndexOf(container, object->m_objectID) != -1;
-};
-
 struct NIDEditorUITweaks : geode::Modify<NIDEditorUITweaks, EditorUI>
 {
 	void dynamicGroupUpdate(bool isRegroup)
@@ -27,10 +23,10 @@ struct NIDEditorUITweaks : geode::Modify<NIDEditorUITweaks, EditorUI>
 		auto selectedObjects = CCArray::create();
 
 		if (this->m_selectedObject)
-			origObjects.push_back(this->m_selectedObject);
+			origObjects.emplace_back(this->m_selectedObject);
 		else
 			for (auto obj : CCArrayExt<GameObject*>(this->m_selectedObjects))
-				origObjects.push_back(obj);
+				origObjects.emplace_back(obj);
 
 		EditorUI::dynamicGroupUpdate(isRegroup);
 
@@ -158,7 +154,7 @@ struct NIDEditorUITweaks : geode::Modify<NIDEditorUITweaks, EditorUI>
 		auto& fmt = fmtRes.unwrap();
 
 		if (fmt.size() > ng::constants::MAX_NAMED_ID_LENGTH)
-			return geode::Err("Auto-nammed ID is too long ({})", fmt.size());
+			return geode::Err("Auto-named ID is too long ({})", fmt.size());
 
 		return geode::Ok(fmt);
 	}

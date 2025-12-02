@@ -22,11 +22,12 @@ AutofillInput::AutofillInput(const AutofillInput& other)
 	this->nid = other.nid;
 	this->textInput = other.textInput;
 	this->autofillPreview.swap(other.autofillPreview);
-	this->editInputCallback = std::move(other.editInputCallback);
-	this->selectCallback = std::move(other.selectCallback);
+	this->editInputCallback = other.editInputCallback;
+	this->selectCallback = other.selectCallback;
 
 	this->textInput->setCallback([&](const std::string& str) {
-		if(!autofillPreview) {
+		if (!autofillPreview)
+		{
 			autofillPreview = AutofillNamedIDsPreview::create(nid, "");
 			autofillPreview->attachToInput(textInput);
 			autofillPreview->setSelectCallback(std::move(selectCallback));
@@ -47,14 +48,18 @@ void AutofillInput::onEditInput(const std::string& str)
 
 AutofillInput& AutofillInput::operator=(const AutofillInput& other) noexcept
 {
+	if (this == &other)
+		return *this;
+
 	this->nid = other.nid;
 	this->textInput = other.textInput;
 	this->autofillPreview.swap(other.autofillPreview);
-	this->editInputCallback = std::move(other.editInputCallback);
-	this->selectCallback = std::move(other.selectCallback);
+	this->editInputCallback = other.editInputCallback;
+	this->selectCallback = other.selectCallback;
 
 	this->textInput->setCallback([&](const std::string& str) {
-		if(!autofillPreview) {
+		if (!autofillPreview)
+		{
 			autofillPreview = AutofillNamedIDsPreview::create(nid, "");
 			autofillPreview->attachToInput(textInput);
 			autofillPreview->setSelectCallback(std::move(selectCallback));
@@ -67,6 +72,9 @@ AutofillInput& AutofillInput::operator=(const AutofillInput& other) noexcept
 
 AutofillInput& AutofillInput::operator=(AutofillInput&& other) noexcept
 {
+	if (this == &other)
+		return *this;
+
 	this->nid = other.nid;
 	this->textInput = other.textInput;
 	this->autofillPreview.swap(other.autofillPreview);
@@ -74,7 +82,8 @@ AutofillInput& AutofillInput::operator=(AutofillInput&& other) noexcept
 	this->selectCallback = std::move(other.selectCallback);
 
 	this->textInput->setCallback([&](const std::string& str) {
-		if(!autofillPreview) {
+		if (!autofillPreview)
+		{
 			autofillPreview = AutofillNamedIDsPreview::create(nid, "");
 			autofillPreview->attachToInput(textInput);
 			autofillPreview->setSelectCallback(std::move(selectCallback));

@@ -10,6 +10,9 @@ struct NIDLevelSettingsLayer : geode::Modify<NIDLevelSettingsLayer, LevelSetting
 	{
 		if (!LevelSettingsLayer::init(p0, p1)) return false;
 
+		// startpos object uses this class :sob:
+		if (!p1) return true;
+
 		auto nidSettingsSpr = CCSprite::createWithSpriteFrameName("GJ_menuBtn_001.png");
 		nidSettingsSpr->setScale(.65f);
 		auto nidSettingsButton = CCMenuItemSpriteExtra::create(

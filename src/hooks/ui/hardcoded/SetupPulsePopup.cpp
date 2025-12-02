@@ -15,6 +15,9 @@ struct NIDSetupPulsePopup : geode::Modify<NIDSetupPulsePopup, SetupPulsePopup>
 	{
 		if (!SetupPulsePopup::init(p0, p1)) return false;
 
+		// yeah im not bothering with rob's half-assed code
+		if (p1->count() > 1) return true;
+
 		auto STP = reinterpret_cast<NIDSetupTriggerPopup*>(this);
 
 		std::vector<CCNode*> colorIDNodes;
@@ -124,7 +127,7 @@ struct NIDSetupPulsePopup : geode::Modify<NIDSetupPulsePopup, SetupPulsePopup>
 		);
 		colorIDInputInfo.editInputButton->setVisible(this->m_pulseMode == 1);
 		colorIDInputInfo.namedIDInput->setVisible(this->m_pulseMode == 1);
-		STP->m_fields->m_id_inputs[COLOR_ID_PROPERTY] = std::move(colorIDInputInfo);
+		STP->m_fields->m_id_inputs.insert({ COLOR_ID_PROPERTY, std::move(colorIDInputInfo) });
 
 		auto groupIDInputInfo = STP->commonInputSetup(
 			this,
@@ -134,7 +137,7 @@ struct NIDSetupPulsePopup : geode::Modify<NIDSetupPulsePopup, SetupPulsePopup>
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
-		STP->m_fields->m_id_inputs[GROUP_OR_CHANNEL_ID_PROPERTY] = std::move(groupIDInputInfo);
+		STP->m_fields->m_id_inputs.insert({ GROUP_OR_CHANNEL_ID_PROPERTY, std::move(groupIDInputInfo) });
 
 		return true;
 	}
