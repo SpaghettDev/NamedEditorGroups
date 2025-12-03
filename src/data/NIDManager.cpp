@@ -51,7 +51,7 @@ geode::Result<std::string> NIDManager::getNameForID(NID nid, short id)
 	auto it = std::ranges::find_if(
 		ids.namedIDs.begin(),
 		ids.namedIDs.end(),
-		[&](auto&& p) { return p.second == id; }
+		[id](const auto& p) { return p.second == id; }
 	);
 
 	if (it == ids.namedIDs.end())
