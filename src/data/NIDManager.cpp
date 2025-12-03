@@ -15,38 +15,38 @@ static NamedIDs g_namedTimers;
 static NamedIDs g_namedEffects;
 static NamedIDs g_namedColors;
 
-NamedIDs& containerForNID(NID id)
+geode::Result<NamedIDs&> containerForNID(NID id)
 {
 	switch (id)
 	{
 		case NID::GROUP:
-			return g_namedGroups;
+			return geode::Ok(g_namedGroups);
 
 		case NID::COLLISION:
-			return g_namedCollisions;
+			return geode::Ok(g_namedCollisions);
 
 		case NID::DYNAMIC_COUNTER_TIMER: [[fallthrough]];
 		case NID::COUNTER:
-			return g_namedCounters;
+			return geode::Ok(g_namedCounters);
 
 		case NID::TIMER:
-			return g_namedTimers;
+			return geode::Ok(g_namedTimers);
 
 		case NID::EFFECT:
-			return g_namedEffects;
+			return geode::Ok(g_namedEffects);
 
 		case NID::COLOR:
-			return g_namedColors;
+			return geode::Ok(g_namedColors);
 
 		default:
-			throw "Invalid NID enum value";
+			return geode::Err("Invalid NID enum value");
 	}
 }
 
 
 geode::Result<std::string> NIDManager::getNameForID(NID nid, short id)
 {
-	const auto& ids = containerForNID(nid);
+	const auto& ids = GEODE_UNWRAP(containerForNID(nid));
 
 	auto it = std::ranges::find_if(
 		ids.namedIDs.begin(),
@@ -62,7 +62,7 @@ geode::Result<std::string> NIDManager::getNameForID(NID nid, short id)
 
 geode::Result<short> NIDManager::getIDForName(NID nid, const std::string& name)
 {
-	const auto& ids = containerForNID(nid);
+	const auto& ids = GEODE_UNWRAP(containerForNID(nid));
 
 	if (!ids.namedIDs.contains(name))
 		return geode::Err("Name {} has no ID associated to it", name);
@@ -80,7 +80,10 @@ geode::Result<> NIDManager::saveNamedID(NID nid, std::string&& name, short id)
 	if (auto sanitizeRes = ng::utils::sanitizeName(name); sanitizeRes.isErr())
 		return sanitizeRes;
 
-	auto& ids = containerForNID(nid);
+	auto idsRes = containerForNID(nid);
+	if (idsRes.isErr())
+		return geode::Err(idsRes.unwrapErr());
+	auto& ids = idsRes.unwrap();
 
 	if (auto idName = getNameForID(nid, id); idName.isOk())
 		ids.namedIDs.erase(idName.unwrap());
@@ -95,7 +98,10 @@ geode::Result<> NIDManager::saveNamedID(NID nid, std::string&& name, short id)
 
 geode::Result<> NIDManager::removeNamedID(NID nid, std::string&& name)
 {
-	auto& ids = containerForNID(nid);
+	auto idsRes = containerForNID(nid);
+	if (idsRes.isErr())
+		return geode::Err(idsRes.unwrapErr());
+	auto& ids = idsRes.unwrap();
 
 	if (!ids.namedIDs.contains(name))
 		return geode::Err("No saved Named ID {}", name);
@@ -110,7 +116,10 @@ geode::Result<> NIDManager::removeNamedID(NID nid, std::string&& name)
 
 geode::Result<> NIDManager::removeNamedID(NID nid, short id)
 {
-	auto& ids = containerForNID(nid);
+	auto idsRes = containerForNID(nid);
+	if (idsRes.isErr())
+		return geode::Err(idsRes.unwrapErr());
+	auto& ids = idsRes.unwrap();
 	auto&& name = getNameForID(nid, id);
 
 	if (name.isErr())
@@ -126,7 +135,16 @@ geode::Result<> NIDManager::removeNamedID(NID nid, short id)
 
 const std::unordered_map<std::string, short>& NIDManager::getNamedIDs(NID nid)
 {
-	return containerForNID(nid).namedIDs;
+	// deal with it ur literally passing an invalid enum value :joy: :v:
+	// also to keep API backwards compatible
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreturn-stack-address"
+	auto idsRes = containerForNID(nid);
+	if (idsRes.isErr())
+		return {};
+#pragma clang diagnostic pop
+
+	return idsRes.unwrap().namedIDs;
 }
 
 

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## Fixed
 
 - NIDManager::getNameForID implementation
+- Made API noexcept
 
 ## [2.3.0] - 2025-12-01
 

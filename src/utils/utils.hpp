@@ -52,7 +52,7 @@ namespace ng::utils
 		else if constexpr (nid == NID::COLOR)
 			return "Color ID";
 
-		throw "Invalid Named ID enum value";
+		return "<invalid id type>";
 	}
 
 	static inline constexpr std::string_view getNamedIDIndentifier(NID nid)
@@ -70,7 +70,7 @@ namespace ng::utils
 		else if (nid == NID::COLOR)
 			return getNamedIDIndentifier<NID::COLOR>();
 
-		throw "Invalid Named ID enum value";
+		return "<invalid id type>";
 	}
 
 	template <typename C, typename T>

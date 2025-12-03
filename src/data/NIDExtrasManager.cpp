@@ -24,31 +24,31 @@ static NamedIDsExtras g_namedTimerIDsExtras;
 static NamedIDsExtras g_namedEffectIDsExtras;
 static NamedIDsExtras g_namedColorIDsExtras;
 
-NamedIDsExtras& extrasContainerForNID(NID id)
+geode::Result<NamedIDsExtras&> extrasContainerForNID(NID id)
 {
 	switch (id)
 	{
 		case NID::GROUP:
-			return g_namedGroupIDsExtras;
+			return geode::Ok(g_namedGroupIDsExtras);
 
 		case NID::COLLISION:
-			return g_namedCollisionIDsExtras;
+			return geode::Ok(g_namedCollisionIDsExtras);
 
 		case NID::DYNAMIC_COUNTER_TIMER: [[fallthrough]];
 		case NID::COUNTER:
-			return g_namedCounterIDsExtras;
+			return geode::Ok(g_namedCounterIDsExtras);
 
 		case NID::TIMER:
-			return g_namedTimerIDsExtras;
+			return geode::Ok(g_namedTimerIDsExtras);
 
 		case NID::EFFECT:
-			return g_namedEffectIDsExtras;
+			return geode::Ok(g_namedEffectIDsExtras);
 
 		case NID::COLOR:
-			return g_namedColorIDsExtras;
+			return geode::Ok(g_namedColorIDsExtras);
 
 		default:
-			throw "Invalid NID enum value";
+			return geode::Err("Invalid NID enum value");
 	}
 }
 
@@ -57,7 +57,7 @@ geode::Result<bool> NIDExtrasManager::getIsNamedIDPreviewed(NID nid, short id)
 {
 	LEVEL_ID_API_CHECK();
 
-	const auto& ids = extrasContainerForNID(nid);
+	const auto& ids = GEODE_UNWRAP(extrasContainerForNID(nid));
 
 	if (!ids.extras.contains(id))
 		return geode::Ok(true);
@@ -80,7 +80,7 @@ geode::Result<std::string> NIDExtrasManager::getNamedIDDescription(NID nid, shor
 {
 	LEVEL_ID_API_CHECK();
 
-	const auto& ids = extrasContainerForNID(nid);
+	const auto& ids = GEODE_UNWRAP(extrasContainerForNID(nid));
 
 	if (!ids.extras.contains(id))
 		return geode::Err("ID {} doesn't have a description", id);
@@ -103,7 +103,10 @@ geode::Result<> NIDExtrasManager::setNamedIDIsPreviewed(NID nid, short id, bool 
 {
 	LEVEL_ID_API_CHECK();
 
-	auto& ids = extrasContainerForNID(nid);
+	auto idsRes = extrasContainerForNID(nid);
+	if (idsRes.isErr())
+		return geode::Err(idsRes.unwrapErr());
+	auto& ids = idsRes.unwrap();
 
 	if (!ids.extras.contains(id))
 		ids.extras[id] = { "", state };
@@ -131,7 +134,10 @@ geode::Result<> NIDExtrasManager::setNamedIDDescription(NID nid, short id, std::
 {
 	LEVEL_ID_API_CHECK();
 
-	auto& ids = extrasContainerForNID(nid);
+	auto idsRes = extrasContainerForNID(nid);
+	if (idsRes.isErr())
+		return geode::Err(idsRes.unwrapErr());
+	auto& ids = idsRes.unwrap();
 
 	if (!ids.extras.contains(id))
 		ids.extras[id] = { std::move(description), true };
@@ -159,11 +165,11 @@ geode::Result<NamedIDExtra> NIDExtrasManager::getNamedIDExtras(NID nid, short id
 {
 	LEVEL_ID_API_CHECK();
 
-	auto& ids = extrasContainerForNID(nid);
+	const auto& ids = GEODE_UNWRAP(extrasContainerForNID(nid));
 	if (!ids.extras.contains(id))
 		return geode::Err("ID {} doesn't have extra data", id);
 
-	return geode::Ok(ids.extras[id]);
+	return geode::Ok(ids.extras.at(id));
 }
 
 geode::Result<NamedIDExtra> NIDExtrasManager::getNamedIDExtras(NID nid, const std::string& name)
@@ -181,9 +187,14 @@ geode::Result<> NIDExtrasManager::setNamedIDExtras(NID nid, short id, NamedIDExt
 {
 	LEVEL_ID_API_CHECK();
 
-	extrasContainerForNID(nid).extras[id] = std::move(extras);
+	auto idsRes = extrasContainerForNID(nid);
+	if (idsRes.isErr())
+		return geode::Err(idsRes.unwrapErr());
+	auto& ids = idsRes.unwrap();
 
-	NewNamedIDExtrasEvent(nid, id, extrasContainerForNID(nid).extras[id]).post();
+	ids.extras[id] = std::move(extras);
+
+	NewNamedIDExtrasEvent(nid, id, ids.extras[id]).post();
 	g_isDirty = true;
 
 	return geode::Ok();
@@ -204,7 +215,10 @@ geode::Result<> NIDExtrasManager::removeNamedIDExtras(NID nid, short id)
 {
 	LEVEL_ID_API_CHECK();
 
-	auto& ids = extrasContainerForNID(nid);
+	auto idsRes = extrasContainerForNID(nid);
+	if (idsRes.isErr())
+		return geode::Err(idsRes.unwrapErr());
+	auto& ids = idsRes.unwrap();
 
 	if (!ids.extras.contains(id))
 		return geode::Err("ID {} doesn't have extra data", id);
@@ -232,7 +246,11 @@ geode::Result<NamedIDsExtras> NIDExtrasManager::getNIDExtras(NID nid)
 {
 	LEVEL_ID_API_CHECK();
 
-	return geode::Ok(extrasContainerForNID(nid));
+	auto idsRes = extrasContainerForNID(nid);
+	if (idsRes.isErr())
+		return geode::Err(idsRes.unwrapErr());
+
+	return geode::Ok(idsRes.unwrap());
 }
 
 bool NIDExtrasManager::isDirty() { return g_isDirty; }

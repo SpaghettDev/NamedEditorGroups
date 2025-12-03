@@ -64,6 +64,6 @@ static inline void ShowEditNamedIDPopup(const NID nid, short id, std::function<v
 			EditNamedIDPopup<NID::COLOR>::create(id, std::move(changedIDCallback), std::move(savedCallback))->show(); break;
 
 		default:
-			throw "Invalid NID enum value";
+			break;
 	}
 }

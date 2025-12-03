@@ -17,7 +17,7 @@ NID nidForPopup(SetIDPopup* popup)
 	else if (typeinfo_cast<FindObjectPopup*>(popup) || typeinfo_cast<SetIDPopup*>(popup))
 		return NID::GROUP;
 
-	throw "Invalid SetIDPopup type!";
+	return NID::_INVALID;
 }
 
 struct NIDSetIDPopup : geode::Modify<NIDSetIDPopup, SetIDPopup>
