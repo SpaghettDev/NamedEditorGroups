@@ -37,7 +37,7 @@ struct NIDEditorUITweaks : geode::Modify<NIDEditorUITweaks, EditorUI>
 		else
 			selectedObjects->addObjectsFromArray(this->m_selectedObjects);
 
-		for (auto idx = 0; auto object : origObjects)
+		for (auto idx = 0; auto& object : origObjects)
 		{
 			auto newObj = static_cast<GameObject*>(selectedObjects->objectAtIndex(idx));
 
@@ -64,15 +64,15 @@ struct NIDEditorUITweaks : geode::Modify<NIDEditorUITweaks, EditorUI>
 			{
 				auto newEffectObj = static_cast<EffectGameObject*>(newObj);
 
-				// idk
-				if (!newEffectObj) continue;
+				if (!newEffectObj || !ng::constants::OBJECT_ID_TO_DYNAMIC_GROUPS_GETTERS.contains(newEffectObj->m_objectID))
+					continue;
 
-				for (const auto& [nid, getters] : ng::constants::EFFECTGAMEOBJECT_TO_ID_TYPE.at(newEffectObj->m_objectID))
+				for (const auto& [nid, getters] : ng::constants::OBJECT_ID_TO_DYNAMIC_GROUPS_GETTERS[newEffectObj->m_objectID])
 				{
 					NID realNID = nid;
 					if (realNID == NID::_UNKNOWN) break;
 
-					const auto& [dataGetter, objGetter] = getters;
+					const auto [dataGetter, objGetter] = getters;
 					if (objGetter(newEffectObj) == dataGetter(object)) continue;
 
 					// Edit Area triggers ID can either be Group ID or Effect ID

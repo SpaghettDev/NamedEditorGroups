@@ -1632,9 +1632,13 @@ namespace ng::constants
 	static_assert(DYNAMIC_PROPERTIES_CHOICES.unique());
 
 	// lord help me this game is unbearable
-#define MAKE_GETTER_PAIR(member) { +[](GameObjectData& o) -> int& { return o.member; }, +[](EffectGameObject* o) -> int& { return o->member; } }
-#define FMAP_GETTER_PAIR fmap<NID, std::pair<int&(*)(ng::types::GameObjectData&), int&(*)(EffectGameObject*)>, 6>
-	inline constexpr const auto EFFECTGAMEOBJECT_TO_ID_TYPE = fmap<std::uint16_t, fast_map<fm::element<NID, std::pair<int&(*)(ng::types::GameObjectData&), int&(*)(EffectGameObject*)>>, static_cast<std::size_t>(NID::_INTERNAL_TLAST)>>({
+	using data_getters_pair_t = std::pair<int&(*)(ng::types::GameObjectData&), int&(*)(EffectGameObject*)>;
+	using data_getters_map_t = fm::element<NID, data_getters_pair_t>;
+
+#define FMAP_GETTER_PAIR fmap<NID, data_getters_pair_t, 6>
+#define MAKE_GETTER_PAIR(member) data_getters_pair_t{ +[](GameObjectData& o) -> int& { return o.member; }, +[](EffectGameObject* o) -> int& { return o->member; } }
+
+	inline constexpr const auto OBJECT_ID_TO_DYNAMIC_GROUPS_GETTERS = fmap<std::uint16_t, fast_map<data_getters_map_t, 6>, 54>({
 		// Move Trigger
 		{ 901, FMAP_GETTER_PAIR({
 			{ NID::GROUP, MAKE_GETTER_PAIR(m_targetGroupID) },
@@ -1895,7 +1899,7 @@ namespace ng::constants
 			{ NID::GROUP, MAKE_GETTER_PAIR(m_targetGroupID) }
 		}) }
 	});
-	static_assert(EFFECTGAMEOBJECT_TO_ID_TYPE.unique());
-#undef FMAP_PAIR
+	static_assert(OBJECT_ID_TO_DYNAMIC_GROUPS_GETTERS.unique());
+#undef FMAP_GETTER_PAIR
 #undef MAKE_GETTER_PAIR
 }

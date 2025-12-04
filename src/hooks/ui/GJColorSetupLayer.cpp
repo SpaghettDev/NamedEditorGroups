@@ -61,6 +61,13 @@ struct NIDGJColorSetupLayer : geode::Modify<NIDGJColorSetupLayer, GJColorSetupLa
 		return true;
 	}
 
+	void onClose(CCObject* sender)
+	{
+		GJColorSetupLayer::onClose(sender);
+
+		CCTouchDispatcher::get()->removeDelegate(this);
+	}
+
 	void updateSpriteColors()
 	{
 		GJColorSetupLayer::updateSpriteColors();
@@ -88,14 +95,14 @@ struct NIDGJColorSetupLayer : geode::Modify<NIDGJColorSetupLayer, GJColorSetupLa
 
 	static void onEditInput(NIDGJColorSetupLayer* self, geode::TextInput* input, short id, const std::string& str)
 	{
-		short btnID = id - self->m_page * self->m_colorsPerPage - 1;
+		short colorID = id + self->m_page * self->m_colorsPerPage;
 
 		if (
 			auto otherNamedID = NIDManager::getIDForName<NID::COLOR>(str);
-			otherNamedID.isOkAnd([&](short otherID) { return otherID != id; })
+			otherNamedID.isOkAnd([&](short otherID) { return otherID != colorID; })
 		) {
-			(void)NIDManager::removeNamedID<NID::COLOR>(id);
-			static_cast<CCLabelBMFont*>(self->m_colorLabels->objectAtIndex(btnID))->setVisible(false);
+			(void)NIDManager::removeNamedID<NID::COLOR>(colorID);
+			static_cast<CCLabelBMFont*>(self->m_colorLabels->objectAtIndex(id - 1))->setVisible(false);
 
 			return ng::utils::cocos::createNotificationToast(
 				self,
@@ -105,14 +112,14 @@ struct NIDGJColorSetupLayer : geode::Modify<NIDGJColorSetupLayer, GJColorSetupLa
 		}
 
 		if (str.empty())
-			(void)NIDManager::removeNamedID<NID::COLOR>(id);
-		else if (auto res = NIDManager::saveNamedID<NID::COLOR>(std::string{ str }, id); res.isErr())
+			(void)NIDManager::removeNamedID<NID::COLOR>(colorID);
+		else if (auto res = NIDManager::saveNamedID<NID::COLOR>(std::string{ str }, colorID); res.isErr())
 		{
 			input->setString("");
 			input->getInputNode()->onClickTrackNode(false);
 			ng::utils::cocos::createNotificationToast(self, res.unwrapErr(), 1.f, 45.f);
 		}
 
-		static_cast<CCLabelBMFont*>(self->m_colorLabels->objectAtIndex(btnID))->setVisible(!str.empty());
+		static_cast<CCLabelBMFont*>(self->m_colorLabels->objectAtIndex(id - 1))->setVisible(!str.empty());
 	}
 };

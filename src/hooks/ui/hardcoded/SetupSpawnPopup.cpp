@@ -246,7 +246,7 @@ struct NIDSetupSpawnPopup : geode::Modify<NIDSetupSpawnPopup, SetupSpawnPopup>
 		for (std::size_t idx = 0; const auto& remapObj : uniqueRemapObjects)
 		{
 			// maybe paginate this as well
-			if (idx > 20) break;
+			if (idx >= 20) break;
 
 			auto newButtonSprite = ButtonSprite::create(
 				fmt::format("{}\n{}", remapObj->m_groupID, remapObj->m_chance).c_str(),

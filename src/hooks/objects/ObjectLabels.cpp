@@ -19,6 +19,7 @@ struct NIDEffectGameObject : geode::Modify<NIDEffectGameObject, EffectGameObject
 	struct Fields
 	{
 		Ref<CCLabelBMFont> m_id_name_label = CCLabelBMFont::create("", "bigFont.fnt");
+		bool m_has_id_name_label = false;
 	};
 
 	void customSetup()
@@ -36,12 +37,8 @@ struct NIDEffectGameObject : geode::Modify<NIDEffectGameObject, EffectGameObject
 		// lol why does the game not do this
 		this->setCascadeOpacityEnabled(true);
 
-		geode::Loader::get()->queueInMainThread([this, idNameLabel = m_fields->m_id_name_label] {
-			idNameLabel->setID("id-name-label"_spr);
-			this->addChild(idNameLabel);
-			// 28.5f is content width of move trigger, which works well for all other triggers
-			idNameLabel->limitLabelWidth(28.5f + 10.f, .5f, .1f);
-		});
+		// 28.5f is content width of move trigger, which works well for all other triggers
+		m_fields->m_id_name_label->limitLabelWidth(28.5f + 10.f, .5f, .1f);
 	}
 };
 
@@ -62,6 +59,7 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 		auto effectGameObj = static_cast<NIDEffectGameObject*>(object);
 
 		CCLabelBMFont* idNameLabel = effectGameObj->m_fields->m_id_name_label;
+		bool& hasIDNameLabel = effectGameObj->m_fields->m_has_id_name_label;
 		std::string idNameStr = "";
 		CCPoint idLabelPos;
 
@@ -213,6 +211,16 @@ struct NIDLevelEditorLayer : geode::Modify<NIDLevelEditorLayer, LevelEditorLayer
 		}
 
 		idNameLabel->setString(idNameStr.c_str());
+		// 28.5f is content width of move trigger, which works well for all other triggers
+		idNameLabel->limitLabelWidth(28.5f + 10.f, .5f, .1f);
 		idNameLabel->setPosition({ idLabelPos.x, idLabelPos.y - 9.f });
+
+		if (!hasIDNameLabel)
+		{
+			hasIDNameLabel = true;
+
+			idNameLabel->setID("id-name-label"_spr);
+			object->addChild(idNameLabel);
+		}
 	}
 };

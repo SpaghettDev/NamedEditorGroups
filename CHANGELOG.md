@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.3.2] - 2025-12-04
+
+## Fixed
+
+- Custom Color Popup crash
+- Multiple Spawn Group Trigger crash
+- Android Build Helper/Regroup crash on specific triggers
+- Object labels crashing if scrolling with too much velocity
+
 ## [2.3.1] - 2025-12-02
 
 ## Fixed

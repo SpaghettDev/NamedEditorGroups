@@ -1,6 +1,6 @@
 #pragma once
 
-// heavily inspired by https://github.com/mapbox/eternal
+// https://github.com/mapbox/eternal
 
 #include <utility>
 #include <functional>
@@ -168,6 +168,8 @@ namespace ng::types
 		}
 
 		constexpr const mapped_type& at(const key_type& key) const noexcept { return find(key)->second; }
+
+		constexpr const mapped_type& operator[](const key_type& key) const noexcept { return at(key); }
 
 		constexpr std::size_t size() const noexcept { return N; }
 
