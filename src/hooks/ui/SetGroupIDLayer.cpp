@@ -173,6 +173,7 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 
 					std::set<short> objIDs;
 					objIDs.insert(obj->m_groups->begin(), obj->m_groups->end());
+					// why is this game like this
 					objIDs.erase(0);
 					groupIDs.emplace_back(std::move(objIDs));
 				}
@@ -306,6 +307,8 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 			[&] {
 				this->textChanged(this->m_groupIDInput);
 				this->updateGroupIDButtons();
+
+				ng::utils::editor::postIGVUpdateEvent();
 		})->show();
 	}
 

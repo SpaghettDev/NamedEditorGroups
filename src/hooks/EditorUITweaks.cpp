@@ -64,10 +64,12 @@ struct NIDEditorUITweaks : geode::Modify<NIDEditorUITweaks, EditorUI>
 			{
 				auto newEffectObj = static_cast<EffectGameObject*>(newObj);
 
-				if (!newEffectObj || !ng::constants::OBJECT_ID_TO_DYNAMIC_GROUPS_GETTERS.contains(newEffectObj->m_objectID))
+				auto dynamicGroupGetters = ng::constants::OBJECT_ID_TO_DYNAMIC_GROUPS_GETTERS.find(newEffectObj->m_objectID);
+
+				if (!newEffectObj || dynamicGroupGetters == ng::constants::OBJECT_ID_TO_DYNAMIC_GROUPS_GETTERS.end())
 					continue;
 
-				for (const auto& [nid, getters] : ng::constants::OBJECT_ID_TO_DYNAMIC_GROUPS_GETTERS[newEffectObj->m_objectID])
+				for (const auto& [nid, getters] : dynamicGroupGetters->second)
 				{
 					NID realNID = nid;
 					if (realNID == NID::_UNKNOWN) break;

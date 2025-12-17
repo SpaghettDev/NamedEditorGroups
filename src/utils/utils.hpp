@@ -173,4 +173,5 @@ namespace ng::utils::cocos
 namespace ng::utils::editor
 {
 	void refreshObjectLabels();
+	void postIGVUpdateEvent();
 }

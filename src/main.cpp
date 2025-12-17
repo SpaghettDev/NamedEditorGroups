@@ -2,13 +2,16 @@
 
 #include "globals.hpp"
 
+using namespace geode::prelude;
+
 $on_mod(Loaded)
 {
 	new geode::EventListener(+[](geode::GameEvent*) {
-		ng::globals::g_isEditorIDAPILoaded = geode::Loader::get()->isModLoaded("cvolton.level-id-api");
-		ng::globals::g_isBetterEditLoaded = geode::Loader::get()->isModLoaded("hjfod.betteredit");
+		ng::globals::g_isEditorIDAPILoaded = Loader::get()->isModLoaded("cvolton.level-id-api");
+		ng::globals::g_isBetterEditLoaded = Loader::get()->isModLoaded("hjfod.betteredit");
+		ng::globals::g_isImprovedGroupViewLoaded = Loader::get()->isModLoaded("alphalaneous.improved_group_view");
 
-		ng::globals::g_buildHelperRawNameFormat = geode::Mod::get()->getSettingValue<std::string>("auto-name-format");
+		ng::globals::g_buildHelperRawNameFormat = Mod::get()->getSettingValue<std::string>("auto-name-format");
 
 		{
 			std::string rawNameFormat = ng::globals::g_buildHelperRawNameFormat;

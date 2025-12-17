@@ -117,7 +117,7 @@ namespace ng::types
 	}
 
 	/**
-	 * @brief constexpr std
+	 * @brief constexpr std::map
 	 */
 	template <typename E, std::size_t N>
 	class fast_map

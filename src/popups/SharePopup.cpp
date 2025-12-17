@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include <Geode/utils/general.hpp>
+#include <Geode/utils/base64.hpp>
 
 #include <NIDManager.hpp>
 #include <NIDEnum.hpp>
@@ -111,7 +112,7 @@ void SharePopup::onImportButton(CCObject*)
 
 	if (!clipboard.empty() && ng::base64::isBase64URLLike(clipboard))
 	{
-		if (auto b64decoded = ng::base64::base64URLDecode(clipboard); b64decoded.isErr())
+		if (auto b64decoded = geode::utils::base64::decodeString(clipboard, geode::utils::base64::Base64Variant::UrlWithPad); b64decoded.isErr())
 		{
 			auto errorPopup = FLAlertLayer::create(
 				nullptr,

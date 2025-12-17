@@ -368,8 +368,7 @@ NID NIDSetupTriggerPopup::evaluateDynamicType(SetupTriggerPopup* self, NID nid, 
 		? self->m_gameObject
 		: static_cast<GameObject*>(self->m_gameObjects->objectAtIndex(0));
 
-	auto& toggleMap = ng::constants::DYNAMIC_PROPERTIES_TOGGLES.at(obj->m_objectID);
-	auto& toggleInfo = toggleMap.at(property);
+	auto& toggleInfo = ng::constants::DYNAMIC_PROPERTIES_TOGGLES.at(obj->m_objectID).at(property);
 	auto propVal = self->getTriggerValue(toggleInfo.togglePropID, obj);
 
 	return propVal == toggleInfo.counterState ? NID::COUNTER : NID::TIMER;
@@ -379,9 +378,10 @@ void NIDSetupTriggerPopup::valueChanged(int property, float value)
 {
 	SetupTriggerPopup::valueChanged(property, value);
 
-	if (!ng::constants::DYNAMIC_PROPERTIES_TOGGLES.contains(m_fields->m_object_id)) return;
+	auto dynamicPropsToggles = ng::constants::DYNAMIC_PROPERTIES_TOGGLES.find(m_fields->m_object_id);
+	if (dynamicPropsToggles == ng::constants::DYNAMIC_PROPERTIES_TOGGLES.end()) return;
 
-	for (const auto& [key, val] : ng::constants::DYNAMIC_PROPERTIES_TOGGLES.at(m_fields->m_object_id))
+	for (const auto& [key, val] : dynamicPropsToggles->second)
 	{
 		if (!m_fields->m_id_inputs.contains(key)) return;
 		if (val.togglePropID != property) continue;
@@ -405,8 +405,9 @@ void NIDSetupTriggerPopup::updateValue(int property, float value)
 {
 	SetupTriggerPopup::updateValue(property, value);
 
-	if (!ng::constants::DYNAMIC_PROPERTIES_CHOICES.contains(m_fields->m_object_id)) return;
-	auto& choiceProperties = ng::constants::DYNAMIC_PROPERTIES_CHOICES.at(m_fields->m_object_id);
+	auto dynamicPropsChoices = ng::constants::DYNAMIC_PROPERTIES_CHOICES.find(m_fields->m_object_id);
+	if (dynamicPropsChoices == ng::constants::DYNAMIC_PROPERTIES_CHOICES.end()) return;
+	auto& choiceProperties = dynamicPropsChoices->second;
 
 	if (!choiceProperties.contains(property)) return;
 	auto& choiceInfo = choiceProperties.at(property);

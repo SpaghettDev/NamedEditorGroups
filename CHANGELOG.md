@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.3.3] - 2025-12-17
+
+## Added
+
+- Post event for Improved Group View
+
+## Changed
+
+- Base64 implementation to use geode::utils::base64
+
 ## [2.3.2] - 2025-12-04
 
 ## Fixed
@@ -19,7 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## Fixed
 
 - NIDManager::getNameForID implementation
-- Made API noexcept
+- Made API noexcept (fixed Improved Group View crash)
 
 ## [2.3.0] - 2025-12-01
 

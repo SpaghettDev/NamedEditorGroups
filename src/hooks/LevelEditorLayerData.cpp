@@ -1,6 +1,7 @@
 #include "LevelEditorLayerData.hpp"
 
 #include <Geode/utils/general.hpp>
+#include <Geode/utils/base64.hpp>
 
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include <Geode/modify/EditorUI.hpp>
@@ -13,7 +14,6 @@
 
 #include <cvolton.level-id-api/include/EditorIDs.hpp>
 
-#include "base64.hpp"
 #include "globals.hpp"
 #include "constants.hpp"
 
@@ -67,7 +67,7 @@ geode::Result<void, std::pair<std::string, std::string>> LevelEditorLayerData::p
 		);
 		std::string_view saveObjStr = intermediateStr.substr(0, intermediateStr.find(';'));
 
-		if (auto data = ng::base64::base64URLDecode(saveObjStr))
+		if (auto data = geode::utils::base64::decodeString(saveObjStr, geode::utils::base64::Base64Variant::UrlWithPad))
 		{
 			if (auto importRes = NIDManager::importNamedIDs(data.unwrap()); importRes.isErr())
 			{

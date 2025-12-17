@@ -8,6 +8,9 @@
 #include <Geode/binding/TextAlertPopup.hpp>
 #include <Geode/binding/LevelEditorLayer.hpp>
 
+#include <alphalaneous.improved_group_view/api/GroupViewUpdateEvent.hpp>
+
+#include "globals.hpp"
 #include "constants.hpp"
 
 geode::Result<> ng::utils::sanitizeName(const std::string_view name)
@@ -94,9 +97,18 @@ void ng::utils::editor::refreshObjectLabels()
 	{
 		for (auto trigger : lel->m_activeObjects)
 		{
-			// ???
+			// trigger can be nullptr for some fucking reason
+			// 1816 is player object, which has a hidden object label
 			if (!trigger || trigger->m_objectID == 1816u) continue;
 			lel->updateObjectLabel(trigger);
 		}
 	}
+}
+
+void ng::utils::editor::postIGVUpdateEvent()
+{
+	if (!ng::globals::g_isImprovedGroupViewLoaded)
+		return;
+
+	igv::GroupViewUpdateEvent().post();
 }
