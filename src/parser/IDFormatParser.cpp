@@ -15,7 +15,7 @@ geode::Result<Tokens> ng::parser::parseFormat(const std::string_view format)
 		{
 			std::size_t end = format.find('}', pos);
 			if (end == std::string::npos)
-				return geode::Err("");
+				return geode::Err("Closing brace for pos {} not found", pos);
 
 			std::string_view placeholder = format.substr(pos + 1, end - pos - 1);
 
@@ -30,7 +30,7 @@ geode::Result<Tokens> ng::parser::parseFormat(const std::string_view format)
 				hasID = true;
 			}
 			else
-				return geode::Err("");
+				return geode::Err("Invalid placeholder '{}'", placeholder);
 
 			pos = end + 1;
 		}
@@ -48,7 +48,7 @@ geode::Result<Tokens> ng::parser::parseFormat(const std::string_view format)
 	}
 
 	if (!hasName || !hasID)
-		return geode::Err("");
+		return geode::Err("Format must contain both {{name}} and {{id}} placeholders");
 
 	return geode::Ok(tokens);
 }

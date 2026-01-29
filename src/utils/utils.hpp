@@ -159,6 +159,7 @@ namespace ng::utils
 	bool endsWithNumbers(const std::string_view);
 	geode::Result<int> numberFromStart(const std::string_view);
 	geode::Result<int> numberFromEnd(const std::string_view);
+	std::string parseAutoNameFormat(std::string&&);
 }
 
 namespace ng::utils::cocos
@@ -166,12 +167,19 @@ namespace ng::utils::cocos
 	void createNotificationToast(cocos2d::CCLayer*, const std::string&, float, float);
 	cocos2d::CCNode* getChildByPredicate(cocos2d::CCNode*, std::function<bool(cocos2d::CCNode*)>&&);
 
-	// allows nested/multiple CCMenus to receive touches
-	void fixTouchPriority(cocos2d::CCTouchDelegate*);
+	/**
+	 * @brief allows nested/multiple CCMenus to receive touches
+	 * hooks T::onExit (using VMTHooker) to unregister from touch dispatcher
+	 * Modify class must have a method with the signature
+	 * `static void onExitHook(auto& originalFn, T* self)`
+	 */
+	template <typename T>
+	void fixTouchPriority(T*);
 }
 
 namespace ng::utils::editor
 {
 	void refreshObjectLabels();
 	void postIGVUpdateEvent();
+	void save();
 }

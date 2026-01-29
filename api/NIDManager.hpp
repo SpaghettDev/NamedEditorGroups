@@ -82,7 +82,7 @@ namespace NIDManager
 	bool isDirty();
 	bool isEmpty();
 	std::string dumpNamedIDs();
-	geode::Result<> importNamedIDs(const std::string& str);
+	geode::Result<> importNamedIDs(const std::string& str, bool setDirty = false);
 
 	void reset();
 #endif // !SPAGHETTDEV_NAMED_EDITOR_GROUPS_EXPORTING

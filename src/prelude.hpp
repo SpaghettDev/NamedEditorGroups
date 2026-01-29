@@ -18,9 +18,10 @@ namespace ng
 		namespace fuzzy_match {}
 	}
 
-	namespace base64 {}
-	namespace parser {}
 	namespace constants {}
 	namespace globals {}
 	namespace types {}
+	namespace base64 {}
+	namespace parser {}
+	namespace debug {}
 }

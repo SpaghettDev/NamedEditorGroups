@@ -9,6 +9,8 @@
 #include <ranges>
 
 #include "utils.hpp"
+#include "vmthooker.hpp"
+#include "touchprio_fix.hpp"
 #include "operators.hpp" // IWYU pragma: keep
 #ifdef __APPLE__
 #include "joined_spans.hpp"
@@ -366,5 +368,15 @@ struct NIDSetupSpawnPopup : geode::Modify<NIDSetupSpawnPopup, SetupSpawnPopup>
 			// garbage.
 			self->updateValue(property, id);
 		}
+	}
+
+	static void onExitHook(auto& original, SetupSpawnPopup* self)
+	{
+		CCTouchDispatcher::get()->removeDelegate(self);
+
+		original(self);
+
+		ng::utils::VMTHooker<&cocos2d::CCLayer::onExit, SetupSpawnPopup>::get(self)
+			.toggleHook(NIDSetupSpawnPopup::onExitHook, false);
 	}
 };

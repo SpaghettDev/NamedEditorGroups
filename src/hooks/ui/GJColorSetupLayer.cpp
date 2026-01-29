@@ -4,6 +4,8 @@
 
 #include "utils.hpp"
 #include "constants.hpp"
+#include "vmthooker.hpp"
+#include "touchprio_fix.hpp"
 
 using namespace geode::prelude;
 
@@ -61,13 +63,6 @@ struct NIDGJColorSetupLayer : geode::Modify<NIDGJColorSetupLayer, GJColorSetupLa
 		return true;
 	}
 
-	void onClose(CCObject* sender)
-	{
-		GJColorSetupLayer::onClose(sender);
-
-		CCTouchDispatcher::get()->removeDelegate(this);
-	}
-
 	void updateSpriteColors()
 	{
 		GJColorSetupLayer::updateSpriteColors();
@@ -121,5 +116,15 @@ struct NIDGJColorSetupLayer : geode::Modify<NIDGJColorSetupLayer, GJColorSetupLa
 		}
 
 		static_cast<CCLabelBMFont*>(self->m_colorLabels->objectAtIndex(id - 1))->setVisible(!str.empty());
+	}
+
+	static void onExitHook(auto& original, GJColorSetupLayer* self)
+	{
+		CCTouchDispatcher::get()->removeDelegate(self);
+
+		original(self);
+
+		ng::utils::VMTHooker<&cocos2d::CCLayer::onExit, GJColorSetupLayer>::get(self)
+			.toggleHook(NIDGJColorSetupLayer::onExitHook, false);
 	}
 };

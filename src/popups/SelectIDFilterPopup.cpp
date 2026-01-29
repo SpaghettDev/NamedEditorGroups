@@ -44,7 +44,7 @@ bool SelectIDFilterPopup::setup(NID currentNid, std::function<void(NID)>&& onCha
 	m_toggles_menu->setPosition({ 110.f, 55.f });
 	this->m_buttonMenu->addChild(m_toggles_menu);
 
-	for (NID nid = NID::GROUP; nid <= NID::_INTERNAL_TLAST; nid = static_cast<NID>(static_cast<int>(nid) + 1))
+	for (NID nid = NID::GROUP; nid < NID::_INTERNAL_LAST; nid = static_cast<NID>(static_cast<int>(nid) + 1))
 	{
 		auto toggleMenu = CCMenu::create();
 		toggleMenu->setContentSize({ 150.f, 50.f });

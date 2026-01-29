@@ -202,7 +202,12 @@ void NamedIDsPopup::onSettingsButton(CCObject*)
 
 void NamedIDsPopup::onShareButton(CCObject*)
 {
-	SharePopup::create()->show();
+	SharePopup::create([&](bool success) {
+		if (!success) return;
+
+		this->updateState();
+		ng::utils::editor::save();
+	}, [](bool) {})->show();
 }
 
 void NamedIDsPopup::updateList(NID nid)

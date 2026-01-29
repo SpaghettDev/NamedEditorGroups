@@ -16,12 +16,15 @@ namespace ng::constants
 	namespace old
 	{
 		inline constexpr cocos2d::CCPoint SAVE_DATA_OBJECT_POS{ -7000.f, -5000.f };
-		inline constexpr std::string_view SAVE_OBJECT_STRING_START = ";1,914,2,-7000,3,-5090,";
+		inline constexpr const char* SAVE_OBJECT_STRING_START = ";1,914,2,-7000,3,-5090,";
+		inline constexpr std::string_view SAVE_OBJECT_STRING_START_VIEW = SAVE_OBJECT_STRING_START;
 	}
 
 	inline constexpr cocos2d::CCPoint SAVE_DATA_OBJECT_POS{ -10000.f, -10000.f };
-	inline constexpr std::string_view SAVE_OBJECT_STRING_START = ";1,914,2,-10000,3,-10090,";
-	inline constexpr std::string_view TEXT_OBJECT_STRING_SEPARATOR = "31,";
+	inline constexpr const char* SAVE_OBJECT_STRING_START = ";1,914,2,-10000,3,-10090,";
+	inline constexpr std::string_view SAVE_OBJECT_STRING_START_VIEW = SAVE_OBJECT_STRING_START;
+	inline constexpr const char* TEXT_OBJECT_STRING_SEPARATOR = "31,";
+	inline constexpr std::string_view TEXT_OBJECT_STRING_SEPARATOR_VIEW = TEXT_OBJECT_STRING_SEPARATOR;
 
 	inline constexpr std::uint8_t MAX_NAMED_ID_LENGTH = 24;
 	inline constexpr const char* VALID_NAMED_ID_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@_-,.!$^&*()+=/<>?\\01234567890";

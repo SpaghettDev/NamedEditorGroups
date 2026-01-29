@@ -116,7 +116,10 @@ void EditNamedIDPopup<nid>::keyDown(cocos2d::enumKeyCodes key)
 template <NID nid>
 void EditNamedIDPopup<nid>::onExit()
 {
-	CCTouchDispatcher::get()->unregisterForcePrio(this);
+	auto TD = CCTouchDispatcher::get();
+
+	TD->unregisterForcePrio(this);
+	TD->removeDelegate(this);
 
 	Popup::onExit();
 }

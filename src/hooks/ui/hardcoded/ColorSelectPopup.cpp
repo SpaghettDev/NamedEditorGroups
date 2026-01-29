@@ -6,7 +6,6 @@
 #include "../popups/EditNamedIDPopup.hpp"
 
 #include "utils.hpp"
-#include "globals.hpp"
 #include "constants.hpp"
 
 using namespace geode::prelude;

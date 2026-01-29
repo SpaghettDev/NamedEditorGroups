@@ -73,9 +73,9 @@ geode::Result<NamedIDs> NamedIDs::from(std::string_view str)
 			return geode::Err(parseRes.unwrapErr());
 		else
 		{
-			auto&& parseResUnwrapped = parseRes.unwrap();
+			auto&& [name, id] = parseRes.unwrap();
 
-			res.namedIDs[std::move(parseResUnwrapped.first)] = parseResUnwrapped.second;
+			res.namedIDs[std::move(name)] = id;
 		}
 
 		posStart = posEnd + 1;
@@ -87,12 +87,10 @@ geode::Result<NamedIDs> NamedIDs::from(std::string_view str)
 			return geode::Err(parseRes.unwrapErr());
 		else
 		{
-			auto&& parseResUnwrapped = parseRes.unwrap();
+			auto&& [name, id] = parseRes.unwrap();
 
-			res.namedIDs[std::move(parseResUnwrapped.first)] = parseResUnwrapped.second;
+			res.namedIDs[std::move(name)] = id;
 		}
-
-		auto ngSeparatorIdx = str.find(':', posStart);
 	}
 
 	return geode::Ok(std::move(res));

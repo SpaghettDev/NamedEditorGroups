@@ -175,7 +175,7 @@ std::string NIDManager::dumpNamedIDs()
 	);
 }
 
-geode::Result<> NIDManager::importNamedIDs(const std::string& str)
+geode::Result<> NIDManager::importNamedIDs(const std::string& str, bool setDirty)
 {
 	auto parseStr = [](NamedIDs& namedIDs, std::string_view& str, const std::string_view name) -> geode::Result<> {
 		if (auto namedIDsRes = NamedIDs::from(str))
@@ -187,7 +187,7 @@ geode::Result<> NIDManager::importNamedIDs(const std::string& str)
 			return geode::Err("Unable to parse {} NamedIDs: {}", name, namedIDsRes.unwrapErr());
 	};
 
-	auto strView = std::string_view{ std::move(str) };
+	auto strView = std::string_view{ str };
 
 	auto firstDelimPos = strView.find('|');
 	auto secondDelimPos = strView.find('|', firstDelimPos + 1);
@@ -236,6 +236,8 @@ geode::Result<> NIDManager::importNamedIDs(const std::string& str)
 	if (fifthDelimPos != std::string_view::npos)
 		if (auto res = parseStr(g_namedColors, colorsStr, "Color"); res.isErr())
 			return res;
+
+	g_isDirty = g_isDirty || setDirty;
 
 	return geode::Ok();
 }

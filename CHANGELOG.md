@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.0] - 2026-01-28
+
+## Changed
+
+- Optimimzed codebase
+
+## Fixed
+
+- Importing NIDs and exiting not dumping into level
+- Crash when using build helper on many objects
+- Touch priority issues on Android
+
 ## [2.3.3] - 2025-12-17
 
 ## Added

@@ -558,6 +558,7 @@ void NamedIDCell<true>::ccTouchMoved(CCTouch* touch, CCEvent* event)
 void NamedIDCell<true>::ccTouchEnded(CCTouch* touch, CCEvent* event)
 {
 	if (touch->getTag() == TOUCH_MOVED_EVENT_TAG) return;
+	if (!this->isVisible()) return;
 
 	const CCSize& contentSize = this->getContentSize();
 	const CCPoint& anchor = this->getAnchorPoint();
@@ -565,12 +566,8 @@ void NamedIDCell<true>::ccTouchEnded(CCTouch* touch, CCEvent* event)
 	CCPoint origin{ -anchor.x * contentSize.width, -anchor.y * contentSize.height };
 	CCPoint dest{ origin.x + contentSize.width, origin.y + contentSize.height };
 
-	if (
-		this->isVisible() && 
-		CCRect{ origin, dest }.containsPoint(this->convertTouchToNodeSpace(touch))
-	) {
+	if (CCRect{ origin, dest }.containsPoint(this->convertTouchToNodeSpace(touch)))
 		m_on_select_cb(m_id_type, m_id);
-	}
 }
 
 void NamedIDCell<true>::registerWithTouchDispatcher()

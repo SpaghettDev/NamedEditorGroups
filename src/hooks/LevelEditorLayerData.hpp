@@ -9,8 +9,10 @@
 
 #include <Geode/Result.hpp>
 
-struct LevelEditorLayerData : geode::Modify<LevelEditorLayerData, LevelEditorLayer>
+struct NIDLevelEditorLayerData : geode::Modify<NIDLevelEditorLayerData, LevelEditorLayer>
 {
+	inline static bool s_shouldDeleteSaveObject = false;
+
 	struct Fields
 	{
 		geode::Result<void, std::pair<std::string, std::string>> m_parse_result = geode::Ok();
@@ -32,7 +34,7 @@ struct LevelEditorLayerData : geode::Modify<LevelEditorLayerData, LevelEditorLay
 	void createSaveObject();
 };
 
-struct EditorPauseLayerSave : geode::Modify<EditorPauseLayerSave, EditorPauseLayer>
+struct NIDEditorPauseLayerSave : geode::Modify<NIDEditorPauseLayerSave, EditorPauseLayer>
 {
 	void saveLevel();
 	void onExitEditor(CCObject*);

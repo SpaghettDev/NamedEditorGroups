@@ -7,6 +7,8 @@
 #include <NIDManager.hpp>
 
 #include "utils.hpp"
+#include "vmthooker.hpp"
+#include "touchprio_fix.hpp"
 
 using namespace geode::prelude;
 
@@ -227,5 +229,15 @@ struct NIDSetupRandAdvTriggerPopup : geode::Modify<NIDSetupRandAdvTriggerPopup, 
 				this->updateGroupIDButtons();
 			}
 		)->show();
+	}
+
+	static void onExitHook(auto& original, SetupRandAdvTriggerPopup* self)
+	{
+		CCTouchDispatcher::get()->removeDelegate(self);
+
+		original(self);
+
+		ng::utils::VMTHooker<&cocos2d::CCLayer::onExit, SetupRandAdvTriggerPopup>::get(self)
+			.toggleHook(NIDSetupRandAdvTriggerPopup::onExitHook, false);
 	}
 };

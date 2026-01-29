@@ -1,5 +1,7 @@
 #include <Geode/modify/EditLevelLayer.hpp>
 
+#include <Geode/utils/base64.hpp>
+
 #include <NIDManager.hpp>
 
 #include "../LevelEditorLayerData.hpp"
@@ -24,7 +26,7 @@ struct NIDEditLevelLayer : geode::Modify<NIDEditLevelLayer, EditLevelLayer>
 		);
 #endif
 
-		if (auto res = LevelEditorLayerData::parseDataString(decompressedString); res.isErr())
+		if (auto res = NIDLevelEditorLayerData::parseDataString(decompressedString); res.isErr())
 		{
 			const auto& [err, saveObjStr] = res.unwrapErr();
 
@@ -43,6 +45,8 @@ struct NIDEditLevelLayer : geode::Modify<NIDEditLevelLayer, EditLevelLayer>
 			);
 			errorPopup->m_scene = this;
 			errorPopup->show();
+
+			NIDLevelEditorLayerData::s_shouldDeleteSaveObject = true;
 
 			geode::utils::clipboard::write(saveObjStr);
 		}

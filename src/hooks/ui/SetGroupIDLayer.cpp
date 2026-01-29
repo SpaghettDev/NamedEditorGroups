@@ -8,6 +8,7 @@
 
 #include "utils.hpp"
 #include "constants.hpp"
+#include "globals.hpp"
 
 using namespace geode::prelude;
 
@@ -317,3 +318,53 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 		NamedIDsPopup::create(false)->show();
 	}
 };
+
+// Moves BetterEdit's unmix button so it doesn't overlap with the add group ID label
+struct NIDSetGroupIDLayerBE : geode::Modify<NIDSetGroupIDLayerBE, SetGroupIDLayer>
+{
+	inline static geode::Hook* onInitHook;
+
+	static void onModify(auto& self)
+	{
+		auto hook = self.m_hooks.find("SetGroupIDLayer::init");
+
+		if (hook == self.m_hooks.end())
+		{
+			log::warn("Failed to find NIDSetGroupIDLayerBE::init hook");
+			return;
+		}
+
+		onInitHook = hook->second.get();
+		onInitHook->setAutoEnable(false);
+
+		if (!self.setHookPriorityAfterPost("SetGroupIDLayer::init", "hjfod.betteredit"))
+			log::warn("Failed to set hook priority for SetGroupIDLayer::init (BetterEdit support)");
+	}
+
+	bool init(GameObject* obj, CCArray* objs)
+	{
+		if (!SetGroupIDLayer::init(obj, objs)) return false;
+
+		if (auto unmixBtn = this->m_mainLayer->querySelector("editor-layer-2-menu > hjfod.betteredit/unmix-button"))
+			unmixBtn->setPositionY(37.f);
+
+		return true;
+	}
+};
+
+
+$on_mod(Loaded)
+{
+	if (!ng::globals::g_isBetterEditLoaded && NIDSetGroupIDLayerBE::onInitHook)
+	{
+		NIDSetGroupIDLayerBE::onInitHook->setAutoEnable(false);
+
+		if (!Mod::get()->disownHook(NIDSetGroupIDLayerBE::onInitHook))
+		{
+			log::warn("Failed to disown NIDSetGroupIDLayerBE::init hook");
+			return;
+		}
+
+		log::debug("Disowned NIDSetGroupIDLayerBE::init hook");
+	}
+}

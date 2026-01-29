@@ -16,11 +16,12 @@
 
 #include "globals.hpp"
 #include "constants.hpp"
+#include "benchmark.hpp"
 
 using namespace geode::prelude;
 
 // get the save data very early
-void LevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
+void NIDLevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
 {
 #ifdef GEODE_IS_ANDROID
 	auto levelStr = std::string{ levelString };
@@ -37,76 +38,85 @@ void LevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
 
 	NIDManager::reset();
 
-	if (levelStr.find(ng::constants::old::SAVE_OBJECT_STRING_START) != std::string_view::npos)
+	if (std::strstr(levelStr.c_str(), ng::constants::old::SAVE_OBJECT_STRING_START) != nullptr)
 		updateSaveObject(levelString);
 
-	m_fields->m_parse_result = parseDataString(levelStr);
+	{
+		NID_PROFILER("Parse string");
+
+		m_fields->m_parse_result = parseDataString(levelStr);
+	}
 
 	LevelEditorLayer::createObjectsFromSetup(levelString);
 }
 
 
+geode::Result<void, std::pair<std::string, std::string>> NIDLevelEditorLayerData::parseDataString(
 #ifdef GEODE_IS_ANDROID
-geode::Result<void, std::pair<std::string, std::string>> LevelEditorLayerData::parseDataString(const std::string& str)
+	const std::string& str
 #else
-geode::Result<void, std::pair<std::string, std::string>> LevelEditorLayerData::parseDataString(const gd::string& str)
+	const gd::string& str
 #endif
-{
-	std::string_view lvlStr = str;
+) {
+	std::string_view lvlStr{ str };
 
-	if (
-		std::size_t saveObjStrOffset = lvlStr.find(ng::constants::SAVE_OBJECT_STRING_START);
-		saveObjStrOffset != std::string_view::npos
-	) {
-		std::string_view intermediateStr = lvlStr.substr(
-			saveObjStrOffset + ng::constants::SAVE_OBJECT_STRING_START.size()
-		);
-		intermediateStr = intermediateStr.substr(
-			intermediateStr.find(ng::constants::TEXT_OBJECT_STRING_SEPARATOR) +
-			ng::constants::TEXT_OBJECT_STRING_SEPARATOR.size()
-		);
-		std::string_view saveObjStr = intermediateStr.substr(0, intermediateStr.find(';'));
+	// const std::size_t saveObjStrOffset = lvlStr.find(ng::constants::SAVE_OBJECT_STRING_START);
+	const auto saveObjStrOffset = std::strstr(lvlStr.data(), ng::constants::SAVE_OBJECT_STRING_START) - lvlStr.data();
+	if (saveObjStrOffset <= 0)
+		return geode::Ok();
 
-		if (auto data = geode::utils::base64::decodeString(saveObjStr, geode::utils::base64::Base64Variant::UrlWithPad))
-		{
-			if (auto importRes = NIDManager::importNamedIDs(data.unwrap()); importRes.isErr())
-			{
-				NIDManager::reset();
+	// lvlStr.remove_prefix(saveObjStrOffset + ng::constants::SAVE_OBJECT_STRING_START.size());
+	lvlStr.remove_prefix(saveObjStrOffset + ng::constants::SAVE_OBJECT_STRING_START_VIEW.size());
 
-				return geode::Err(std::pair{
-					fmt::format("<cr>{}</c>", importRes.unwrapErr()),
-					std::string{ saveObjStr }
-				});
-			}
-		}
-		else
+	// const auto separatorOffset = lvlStr.find(ng::constants::TEXT_OBJECT_STRING_SEPARATOR);
+	const auto separatorOffset = std::strstr(lvlStr.data(), ng::constants::TEXT_OBJECT_STRING_SEPARATOR) - lvlStr.data();
+	if (separatorOffset <= 0)
+		return geode::Ok();
+
+	// lvlStr.remove_prefix(separatorOffset + ng::constants::TEXT_OBJECT_STRING_SEPARATOR.size());
+	lvlStr.remove_prefix(separatorOffset + ng::constants::TEXT_OBJECT_STRING_SEPARATOR_VIEW.size());
+
+	std::string_view saveObjStr = lvlStr.substr(0, lvlStr.find(';'));
+
+	if (auto data = geode::utils::base64::decodeString(saveObjStr, geode::utils::base64::Base64Variant::UrlWithPad))
+	{
+		if (auto importRes = NIDManager::importNamedIDs(data.unwrap()); importRes.isErr())
 		{
 			NIDManager::reset();
 
 			return geode::Err(std::pair{
-				fmt::format("Unable to decode base64 in NamedIDS: <cr>{}</c>", data.unwrapErr()),
+				fmt::format("<cr>{}</c>", importRes.unwrapErr()),
 				std::string{ saveObjStr }
 			});
 		}
+	}
+	else
+	{
+		NIDManager::reset();
+
+		return geode::Err(std::pair{
+			fmt::format("Unable to decode base64 in NamedIDS: <cr>{}</c>", data.unwrapErr()),
+			std::string{ saveObjStr }
+		});
 	}
 
 	return geode::Ok();
 }
 
-void LevelEditorLayerData::updateSaveObject(gd::string& levelString)
+void NIDLevelEditorLayerData::updateSaveObject(gd::string& levelString)
 {
 #ifdef GEODE_IS_ANDROID
 	auto lvlStr = std::string{ levelString };
 
 	lvlStr.replace(
-		lvlStr.find(ng::constants::old::SAVE_OBJECT_STRING_START),
-		ng::constants::old::SAVE_OBJECT_STRING_START.size(),
+		lvlStr.find(ng::constants::old::SAVE_OBJECT_STRING_START_VIEW),
+		ng::constants::old::SAVE_OBJECT_STRING_START_VIEW.size(),
 		ng::constants::SAVE_OBJECT_STRING_START
 	);
 #else
 	levelString.replace(
-		levelString.find(ng::constants::old::SAVE_OBJECT_STRING_START),
-		ng::constants::old::SAVE_OBJECT_STRING_START.size(),
+		levelString.find(ng::constants::old::SAVE_OBJECT_STRING_START_VIEW),
+		ng::constants::old::SAVE_OBJECT_STRING_START_VIEW.size(),
 		ng::constants::SAVE_OBJECT_STRING_START
 	);
 #endif
@@ -116,37 +126,44 @@ void LevelEditorLayerData::updateSaveObject(gd::string& levelString)
 #endif
 }
 
-TextGameObject* LevelEditorLayerData::getSaveObject()
+TextGameObject* NIDLevelEditorLayerData::getSaveObject()
 {
 	short currentLayer = this->m_currentLayer;
 	this->m_currentLayer = -1;
-	auto object = static_cast<TextGameObject*>(this->objectAtPosition(ng::constants::SAVE_DATA_OBJECT_POS));
+	auto object = static_cast<TextGameObject*>(
+		this->objectAtPosition(ng::constants::SAVE_DATA_OBJECT_POS)
+	);
 	this->m_currentLayer = currentLayer;
 
-	if (m_fields->m_parse_result.isErr())
+	if (m_fields->m_parse_result.isErr()) [[unlikely]]
 	{
 		this->removeObject(object, true);
 		object = nullptr;
 
-		const auto& [err, saveObjStr] = m_fields->m_parse_result.unwrapErr();
+		if (!s_shouldDeleteSaveObject)
+		{
+			s_shouldDeleteSaveObject = false;
 
-		auto errorPopup = FLAlertLayer::create(
-			nullptr,
-			"Error parsing save object",
-			fmt::format(
-				"{}\n"
-				"Save string has been copied to clipboard "
-				"and the save object has been deleted.",
-				err
-			),
-			"OK",
-			nullptr,
-			350.f
-		);
-		errorPopup->m_scene = this;
-		errorPopup->show();
-
-		geode::utils::clipboard::write(saveObjStr);
+			const auto& [err, saveObjStr] = m_fields->m_parse_result.unwrapErr();
+	
+			auto errorPopup = FLAlertLayer::create(
+				nullptr,
+				"Error parsing save object",
+				fmt::format(
+					"{}\n"
+					"Save string has been copied to clipboard "
+					"and the save object has been deleted.",
+					err
+				),
+				"OK",
+				nullptr,
+				350.f
+			);
+			errorPopup->m_scene = this;
+			errorPopup->show();
+	
+			geode::utils::clipboard::write(saveObjStr);
+		}
 
 		m_fields->m_parse_result = geode::Ok();
 	}
@@ -154,7 +171,7 @@ TextGameObject* LevelEditorLayerData::getSaveObject()
 	return object;
 }
 
-void LevelEditorLayerData::createSaveObject()
+void NIDLevelEditorLayerData::createSaveObject()
 {
 	if (getSaveObject()) return;
 
@@ -172,11 +189,11 @@ void LevelEditorLayerData::createSaveObject()
 }
 
 
-void EditorPauseLayerSave::saveLevel()
+void NIDEditorPauseLayerSave::saveLevel()
 {
 	if (NIDManager::isDirty())
 	{
-		auto lel = static_cast<LevelEditorLayerData*>(LevelEditorLayer::get());
+		auto lel = static_cast<NIDLevelEditorLayerData*>(LevelEditorLayer::get());
 		auto saveObject = lel->getSaveObject();
 
 		if (!saveObject)
@@ -194,7 +211,7 @@ void EditorPauseLayerSave::saveLevel()
 	EditorPauseLayer::saveLevel();
 }
 
-void EditorPauseLayerSave::onExitEditor(CCObject* sender)
+void NIDEditorPauseLayerSave::onExitEditor(CCObject* sender)
 {
 	NIDManager::reset();
 	NIDExtrasManager::reset();

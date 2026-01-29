@@ -10,6 +10,8 @@
 
 #include <alphalaneous.improved_group_view/api/GroupViewUpdateEvent.hpp>
 
+#include "../hooks/LevelEditorLayerData.hpp"
+
 #include "globals.hpp"
 #include "constants.hpp"
 
@@ -18,9 +20,8 @@ geode::Result<> ng::utils::sanitizeName(const std::string_view name)
 	if (name.size() > ng::constants::MAX_NAMED_ID_LENGTH)
 		return geode::Err("Name is too long!");
 
-	for (char c : name)
-		if (ng::constants::VALID_NAMED_ID_CHARACTERS_VIEW.find(c) == std::string_view::npos)
-			return geode::Err("Name contains invalid character '{}'", c);
+	if (auto invalidCharIdx = name.find_first_not_of(ng::constants::VALID_NAMED_ID_CHARACTERS_VIEW); invalidCharIdx != std::string_view::npos)
+		return geode::Err("Name contains invalid character '{}'", name[invalidCharIdx]);
 
 	return geode::Ok();
 }
@@ -83,13 +84,6 @@ cocos2d::CCNode* ng::utils::cocos::getChildByPredicate(cocos2d::CCNode* parent, 
 	return nullptr;
 }
 
-void ng::utils::cocos::fixTouchPriority(cocos2d::CCTouchDelegate* delegate)
-{
-	cocos2d::CCTouchDispatcher::get()->addTargetedDelegate(
-		delegate, cocos2d::kCCMenuHandlerPriority, true
-	);
-}
-
 
 void ng::utils::editor::refreshObjectLabels()
 {
@@ -111,4 +105,17 @@ void ng::utils::editor::postIGVUpdateEvent()
 		return;
 
 	igv::GroupViewUpdateEvent().post();
+}
+
+void ng::utils::editor::save()
+{
+	if (auto lel = LevelEditorLayer::get())
+	{
+		// little dirty hack :p
+		static char eplBuff[sizeof(NIDEditorPauseLayerSave)];
+		static auto epl = new (eplBuff) NIDEditorPauseLayerSave();
+		epl->m_editorLayer = lel;
+	
+		epl->saveLevel();
+	}
 }

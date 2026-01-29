@@ -16,9 +16,17 @@ project(Named-Editor-Groups VERSION 1.0.0)
 
 set(SRC_DIR "${PROJECT_SOURCE_DIR}/src")
 
-file(GLOB_RECURSE SRC_MAIN
-    "${SRC_DIR}/**.cpp"
-)
+if (CMAKE_GENERATOR MATCHES "Visual Studio")
+    # glob headers on Visual Studio so headers appear in the solution explorer view
+    file(GLOB_RECURSE SRC_MAIN
+        "${SRC_DIR}/**.hpp"
+        "${SRC_DIR}/**.cpp"
+    )
+else()
+    file(GLOB_RECURSE SRC_MAIN
+        "${SRC_DIR}/**.cpp"
+    )
+endif()
 
 add_library(${PROJECT_NAME} SHARED "${SRC_MAIN}")
 # allow easy inclusion of stuff
@@ -29,6 +37,10 @@ target_include_directories(${PROJECT_NAME}
     PRIVATE ${SRC_DIR}/types
     PRIVATE ${SRC_DIR}/utils
 )
+
+# make Visual Studio recognize folders as "filters"
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 23)
 
 target_include_directories(${PROJECT_NAME} PUBLIC api/)
 

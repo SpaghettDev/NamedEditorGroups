@@ -13,11 +13,11 @@
 
 using namespace geode::prelude;
 
-SharePopup* SharePopup::create()
+SharePopup* SharePopup::create(std::function<void(bool)>&& importCb, std::function<void(bool)>&& exportCb)
 {
 	auto ret = new SharePopup();
 
-	if (ret && ret->initAnchored(155.f, 145.f))
+	if (ret && ret->initAnchored(155.f, 145.f, std::move(importCb), std::move(exportCb)))
 		ret->autorelease();
 	else
 	{
@@ -28,8 +28,11 @@ SharePopup* SharePopup::create()
 	return ret;
 }
 
-bool SharePopup::setup()
+bool SharePopup::setup(std::function<void(bool)>&& importCb, std::function<void(bool)>&& exportCb)
 {
+	m_on_imported_callback = std::move(importCb);
+	m_on_exported_callback = std::move(exportCb);
+
 	this->setID("SharePopup");
 
 	auto importBg = cocos2d::extension::CCScale9Sprite::create("square02b_001.png", { .0f, .0f, 80.f, 80.f });
@@ -126,17 +129,22 @@ void SharePopup::onImportButton(CCObject*)
 				350.f
 			);
 			errorPopup->m_scene = this;
-			return errorPopup->show();
+			errorPopup->show();
+
+			return m_on_imported_callback(false);
 		}
 		else
 			clipboard = b64decoded.unwrap();
 	}
 
 	// quick sanity checks
-	if (clipboard.empty() || std::ranges::count(clipboard, '|') < static_cast<std::size_t>(NID::_INTERNAL_TLAST) - 1)
+	if (clipboard.empty() || std::ranges::count(clipboard, '|') < static_cast<std::size_t>(NID::_INTERNAL_LAST) - 3)
+	{
+		m_on_imported_callback(false);
 		return ng::utils::cocos::createNotificationToast(this, "Invalid save data string!", .5f, 30.f);
+	}
 
-	if (auto res = NIDManager::importNamedIDs(clipboard); res.isErr())
+	if (auto res = NIDManager::importNamedIDs(clipboard, true); res.isErr())
 	{
 		auto errorPopup = FLAlertLayer::create(
 			nullptr,
@@ -147,10 +155,14 @@ void SharePopup::onImportButton(CCObject*)
 			350.f
 		);
 		errorPopup->m_scene = this;
-		return errorPopup->show();
+		errorPopup->show();
+
+		return m_on_imported_callback(false);
 	}
 
 	ng::utils::cocos::createNotificationToast(this, "Successfully imported NamedIDs", 1.f, 60.f);
+
+	m_on_imported_callback(true);
 }
 
 void SharePopup::onExportButton(CCObject*)
@@ -158,4 +170,6 @@ void SharePopup::onExportButton(CCObject*)
 	geode::utils::clipboard::write(NIDManager::dumpNamedIDs());
 
 	ng::utils::cocos::createNotificationToast(this, "Successfully copied to clipboard", .5f, 60.f);
+
+	m_on_exported_callback(true);
 }

@@ -311,7 +311,7 @@ void NIDExtrasManager::init(int levelID)
 	// TODO: maybe transition helper here
 	if (NamedIDExtra::VERSION - version >= 10)
 	{
-		geode::log::warn("Extras save data version mismatch: {} (savedata) != {} (current)", NamedIDExtra::VERSION, version);
+		geode::log::warn("Extras save data version mismatch: {} (cur. savedata ver.) != {} (file ver.)", NamedIDExtra::VERSION, version);
 		return;
 	}
 

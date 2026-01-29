@@ -12,7 +12,6 @@ enum class NID : char
 
 #ifdef SPAGHETTDEV_NAMED_EDITOR_GROUPS_EXPORTING
 	_INTERNAL_LAST,
-	_INTERNAL_TLAST = DYNAMIC_COUNTER_TIMER - 1,
 	_INVALID = static_cast<char>(-1),
 	_UNKNOWN = 0
 #endif

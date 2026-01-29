@@ -41,7 +41,7 @@ struct NIDEditorUITweaks : geode::Modify<NIDEditorUITweaks, EditorUI>
 		{
 			auto newObj = static_cast<GameObject*>(selectedObjects->objectAtIndex(idx));
 
-			if (object.m_groupCount > 0)
+			if (object.m_groupCount > 0 && newObj->m_groups)
 			{
 				for (auto idx = 0; short id : object.m_groups)
 				{
