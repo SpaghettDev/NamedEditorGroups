@@ -10,7 +10,9 @@
 #if defined(_MSC_VER)
 	#include <intrin.h>
 	#pragma intrinsic(__rdtsc)
-#elif (defined(__i386__) || defined(__x86_64__)) && !(defined(__aarch64__) || defined(__arm__))
+#elif defined(__aarch64__) || defined(__arm__)
+	#include <arm_acle.h>
+#elif (defined(__i386__) || defined(__x86_64__))
 	#if defined(__GNUC__) || defined(__clang__)
 		#include <x86intrin.h>
 	#endif
@@ -46,10 +48,12 @@ namespace ng::debug
 				return _rdtsc();
 			#elif defined(__i386__) || defined(__x86_64__)
 				return __builtin_ia32_rdtsc();
-			#elif defined(__aarch64__) || defined(__arm__)
-				std::uint64_t v;
-				asm volatile("mrs %0, cntvct_el0" : "=r"(v));
-				return v;
+			#elif defined(__aarch64__)
+				return __builtin_aarch64_rsr64("cntvct_el0");
+			#elif defined(__arm__)
+				std::uint32_t hi, lo;
+				asm volatile("mrrc p15, 1, %0, %1, c14" : "=r"(lo), "=r"(hi));
+				return (static_cast<std::uint64_t>(hi) << 32) | lo;
 			#else
 				std::uint32_t lo, hi;
 				asm volatile ("rdtsc" : "=a" (lo), "=d" (hi));
