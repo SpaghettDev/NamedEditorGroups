@@ -8,10 +8,12 @@
 #include <source_location>
 
 #if defined(_MSC_VER)
-    #include <intrin.h>
-    #pragma intrinsic(__rdtsc)
-#elif defined(__GNUC__) || defined(__clang__)
-    #include <x86intrin.h>
+	#include <intrin.h>
+	#pragma intrinsic(__rdtsc)
+#elif (defined(__i386__) || defined(__x86_64__)) && !(defined(__aarch64__) || defined(__arm__))
+	#if defined(__GNUC__) || defined(__clang__)
+		#include <x86intrin.h>
+	#endif
 #endif
 
 
@@ -35,15 +37,19 @@ namespace ng::debug
 		using time_point = std::chrono::time_point<proc_timestamp_clock>;
 		static constexpr bool is_steady = true;
 
-		// Helper to read TSC safely with compiler barriers
+		// Helper to read TSC / platform timestamp safely with compiler barriers
 		static rep rdtsc() noexcept
 		{
 			// Compiler barrier to prevent reordering around rdtsc
 			#if defined(_MSC_VER)
 				_ReadWriteBarrier();
 				return _rdtsc();
-			#elif defined(__GNUC__) || defined(__clang__)
+			#elif defined(__i386__) || defined(__x86_64__)
 				return __builtin_ia32_rdtsc();
+			#elif defined(__aarch64__) || defined(__arm__)
+				std::uint64_t v;
+				asm volatile("mrs %0, cntvct_el0" : "=r"(v));
+				return v;
 			#else
 				std::uint32_t lo, hi;
 				asm volatile ("rdtsc" : "=a" (lo), "=d" (hi));
@@ -84,10 +90,8 @@ namespace ng::debug
 			auto target = result.steady_start + duration;
 			while (std::chrono::high_resolution_clock::now() <= target)
 			{
-				// Spin-wait
-				#if defined(__GNUC__) || defined(__clang__)
-					__builtin_ia32_pause();
-				#endif
+				// Spin-wait: portable hint/yield
+				std::this_thread::yield();
 			}
 
 			std::uint64_t tsc_end = rdtsc();
@@ -155,8 +159,7 @@ namespace ng::debug
 				const auto now = clock::now();
 
 				if constexpr (std::is_same_v<clock, proc_timestamp_clock>)
-					// *m_elapsed = proc_timestamp_clock::to_nanoseconds(now - m_start).count();
-					*m_elapsed = proc_timestamp_clock::to_nanoseconds(now - m_start, 1).count();
+					*m_elapsed = proc_timestamp_clock::to_nanoseconds(now - m_start).count();
 				else
 					*m_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(now - m_start).count();
 
@@ -169,7 +172,7 @@ namespace ng::debug
 		void reset() noexcept
 		{
 			m_start = clock::now();
-			m_elapsed = 0;
+			*m_elapsed = 0; // fix: zero the pointed value
 			m_stopped = false;
 		}
 
