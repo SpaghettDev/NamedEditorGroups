@@ -5,13 +5,13 @@
 
 #include <NIDEnum.hpp>
 
-class EditDescriptionPopup : public geode::Popup<NID, short>, TextInputDelegate
+class EditDescriptionPopup : public geode::Popup, TextInputDelegate
 {
 public:
 	static EditDescriptionPopup* create(NID, short);
 
 protected:
-	bool setup(NID, short) override;
+	bool init(NID, short);
 
 public:
 	virtual void textChanged(CCTextInputNode*) override;

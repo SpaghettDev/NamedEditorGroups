@@ -4,13 +4,13 @@
 
 #include <Geode/ui/Popup.hpp>
 
-class SharePopup : public geode::Popup<std::function<void(bool)>&&, std::function<void(bool)>&&>
+class SharePopup : public geode::Popup
 {
 public:
 	static SharePopup* create(std::function<void(bool)>&&, std::function<void(bool)>&&);
 
 protected:
-	bool setup(std::function<void(bool)>&&, std::function<void(bool)>&&) override;
+	bool init(std::function<void(bool)>&&, std::function<void(bool)>&&);
 
 public:
 	void onImportButton(cocos2d::CCObject*);

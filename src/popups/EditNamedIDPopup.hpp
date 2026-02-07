@@ -7,15 +7,15 @@
 #include <NIDEnum.hpp>
 
 template <NID nid>
-class EditNamedIDPopup : public geode::Popup<short, std::function<void(short)>&&, std::function<void()>&&>
+class EditNamedIDPopup : public geode::Popup
 {
 public:
 	static EditNamedIDPopup* create(short, std::function<void(short)>&&, std::function<void()>&&);
 
 protected:
-	bool setup(short, std::function<void(short)>&&, std::function<void()>&&) override;
+	bool init(short, std::function<void(short)>&&, std::function<void()>&&);
 	virtual void keyBackClicked() override {};
-	virtual void keyDown(cocos2d::enumKeyCodes) override;
+	virtual void keyDown(cocos2d::enumKeyCodes, double) override;
 	virtual void onExit() override;
 
 public:

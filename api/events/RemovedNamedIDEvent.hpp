@@ -4,19 +4,16 @@
 
 #include "../NIDEnum.hpp"
 
-class RemovedNamedIDEvent : public geode::Event
+struct RemovedNamedIDEvent : geode::SimpleEvent<RemovedNamedIDEvent, NID, std::string_view, short>
 {
-public:
-	RemovedNamedIDEvent(NID nid, const std::string& name, short id)
-		: m_id_type(nid), m_name(name), m_id(id)
-	{}
+	using SimpleEvent::SimpleEvent;
 
 	NID getIDType() const { return m_id_type; }
-	const std::string& getName() const& { return m_name; };
+	std::string_view getName() const { return m_name; };
 	short getID() const { return m_id; }
 
 protected:
 	NID m_id_type;
-	std::string m_name;
+	std::string_view m_name;
 	short m_id;
 };

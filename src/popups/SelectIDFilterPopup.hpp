@@ -6,13 +6,13 @@
 
 #include <NIDEnum.hpp>
 
-class SelectIDFilterPopup : public geode::Popup<NID, std::function<void(NID)>&&>
+class SelectIDFilterPopup : public geode::Popup
 {
 public:
 	static SelectIDFilterPopup* create(NID, std::function<void(NID)>&&);
 
 protected:
-	bool setup(NID, std::function<void(NID)>&&) override;
+	bool init(NID, std::function<void(NID)>&&);
 
 public:
 	void onToggleButton(cocos2d::CCObject*);

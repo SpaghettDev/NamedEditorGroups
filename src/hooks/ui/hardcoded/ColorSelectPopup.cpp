@@ -70,7 +70,7 @@ struct NIDColorSelectPopup : geode::Modify<NIDColorSelectPopup, ColorSelectPopup
 					this,
 					NID::COLOR,
 					COLOR_ID_PROPERTY,
-					std::move(colorIDNodes),
+					std::span{ colorIDNodes },
 					this->m_mainLayer,
 					this->m_buttonMenu
 				);
@@ -121,7 +121,7 @@ struct NIDColorSelectPopup : geode::Modify<NIDColorSelectPopup, ColorSelectPopup
 				this,
 				NID::COLOR,
 				CHANNEL_ID_PROPERTY,
-				std::move(channelIDNodes),
+				std::span{ channelIDNodes },
 				this->m_mainLayer,
 				this->m_buttonMenu
 			);

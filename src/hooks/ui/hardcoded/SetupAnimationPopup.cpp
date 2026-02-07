@@ -66,7 +66,7 @@ struct NIDSetupAnimationPopup : geode::Modify<NIDSetupAnimationPopup, SetupAnima
 			this,
 			NID::GROUP,
 			GROUP_ID_PROPERTY,
-			std::move(groupIDNodes),
+			std::span{ groupIDNodes },
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);

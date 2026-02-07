@@ -5,12 +5,9 @@
 #include "../NIDEnum.hpp"
 #include "../types/NamedIDExtras.hpp"
 
-class NewNamedIDExtrasEvent : public geode::Event
+struct NewNamedIDExtrasEvent : geode::SimpleEvent<NewNamedIDExtrasEvent, NID, short, const NamedIDExtra&>
 {
-public:
-	NewNamedIDExtrasEvent(NID nid, short id, const NamedIDExtra& extras)
-		: m_id_type(nid), m_id(id), m_extras(extras)
-	{}
+	using SimpleEvent::SimpleEvent;
 
 	NID getIDType() const { return m_id_type; }
 	short getID() const { return m_id; }

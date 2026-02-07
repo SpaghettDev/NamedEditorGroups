@@ -110,7 +110,7 @@ struct NIDSetupInstantCountPopup : geode::Modify<NIDSetupInstantCountPopup, Setu
 			this,
 			NID::COUNTER,
 			ITEM_ID_PROPERTY,
-			std::move(itemIDNodes),
+			std::span{ itemIDNodes },
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
@@ -120,7 +120,7 @@ struct NIDSetupInstantCountPopup : geode::Modify<NIDSetupInstantCountPopup, Setu
 			this,
 			NID::GROUP,
 			TARGET_GROUP_ID_PROPERTY,
-			std::move(targetIDNodes),
+			std::span{ targetIDNodes },
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);

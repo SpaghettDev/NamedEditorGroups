@@ -77,7 +77,7 @@ struct NIDSetupCameraEdgePopup : geode::Modify<NIDSetupCameraEdgePopup, SetupCam
 			this,
 			NID::GROUP,
 			TARGET_GROUP_ID_PROPERTY,
-			std::move(targetIDNodes),
+			std::span{ targetIDNodes },
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);

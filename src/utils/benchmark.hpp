@@ -254,6 +254,7 @@ namespace ng::debug
 }
 
 #ifdef NID_DEBUG_BUILD
+	// internal
 	#define _iNID_PROFILER_MACRO_CAT_IMPL(lhs, rhs)      lhs##rhs
 	#define _iNID_PROFILER_MACRO_CAT(lhs, rhs)           _iNID_PROFILER_MACRO_CAT_IMPL(lhs, rhs)
 	#define _iNID_PROFILER_MACRO_MAKER_ARGS(...)         { __VA_ARGS__ }

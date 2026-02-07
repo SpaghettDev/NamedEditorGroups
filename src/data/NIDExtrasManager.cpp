@@ -1,7 +1,15 @@
+#define GEODE_DEFINE_EVENT_EXPORTS
 #include <NIDExtrasManager.hpp>
+#undef GEODE_DEFINE_EVENT_EXPORTS
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundefined-inline"
 #include <NIDManager.hpp>
+#pragma clang diagnostic pop
+
 #include <types/NamedIDExtras.hpp>
 
+#include <string_view>
 #include <filesystem>
 #include <fstream>
 
@@ -65,7 +73,7 @@ geode::Result<bool> NIDExtrasManager::getIsNamedIDPreviewed(NID nid, short id)
 	return geode::Ok(ids[id].isPreviewed);
 }
 
-geode::Result<bool> NIDExtrasManager::getIsNamedIDPreviewed(NID nid, std::string&& name)
+geode::Result<bool> NIDExtrasManager::getIsNamedIDPreviewed(NID nid, std::string_view name)
 {
 	LEVEL_ID_API_CHECK();
 
@@ -88,7 +96,7 @@ geode::Result<std::string> NIDExtrasManager::getNamedIDDescription(NID nid, shor
 	return geode::Ok(ids[id].description);
 }
 
-geode::Result<std::string> NIDExtrasManager::getNamedIDDescription(NID nid, std::string&& name)
+geode::Result<std::string> NIDExtrasManager::getNamedIDDescription(NID nid, std::string_view name)
 {
 	LEVEL_ID_API_CHECK();
 
@@ -113,13 +121,13 @@ geode::Result<> NIDExtrasManager::setNamedIDIsPreviewed(NID nid, short id, bool 
 	else
 		ids[id].isPreviewed = state;
 
-	NewNamedIDExtrasEvent(nid, id, ids[id]).post();
 	g_isDirty = true;
+	NewNamedIDExtrasEvent().send(nid, id, ids[id]);
 
 	return geode::Ok();
 }
 
-geode::Result<> NIDExtrasManager::setNamedIDIsPreviewed(NID nid, std::string&& name, bool state)
+geode::Result<> NIDExtrasManager::setNamedIDIsPreviewed(NID nid, std::string_view name, bool state)
 {
 	LEVEL_ID_API_CHECK();
 
@@ -130,7 +138,7 @@ geode::Result<> NIDExtrasManager::setNamedIDIsPreviewed(NID nid, std::string&& n
 	return setNamedIDIsPreviewed(nid, res.unwrap(), state);
 }
 
-geode::Result<> NIDExtrasManager::setNamedIDDescription(NID nid, short id, std::string&& description)
+geode::Result<> NIDExtrasManager::setNamedIDDescription(NID nid, short id, std::string_view description)
 {
 	LEVEL_ID_API_CHECK();
 
@@ -140,17 +148,17 @@ geode::Result<> NIDExtrasManager::setNamedIDDescription(NID nid, short id, std::
 	auto& ids = idsRes.unwrap();
 
 	if (!ids.extras.contains(id))
-		ids.extras[id] = { std::move(description), true };
+		ids.extras[id] = { std::string{ description }, true };
 	else
-		ids[id].description = std::move(description);
+		ids[id].description = description;
 
-	NewNamedIDExtrasEvent(nid, id, ids[id]).post();
 	g_isDirty = true;
+	NewNamedIDExtrasEvent().send(nid, id, ids[id]);
 
 	return geode::Ok();
 }
 
-geode::Result<> NIDExtrasManager::setNamedIDDescription(NID nid, std::string&& name, std::string&& description)
+geode::Result<> NIDExtrasManager::setNamedIDDescription(NID nid, std::string_view name, std::string_view description)
 {
 	LEVEL_ID_API_CHECK();
 
@@ -158,7 +166,7 @@ geode::Result<> NIDExtrasManager::setNamedIDDescription(NID nid, std::string&& n
 	if (res.isErr())
 		return geode::Err(res.unwrapErr());
 
-	return setNamedIDDescription(nid, res.unwrap(), std::move(description));
+	return setNamedIDDescription(nid, res.unwrap(), description);
 }
 
 geode::Result<NamedIDExtra> NIDExtrasManager::getNamedIDExtras(NID nid, short id)
@@ -183,7 +191,7 @@ geode::Result<NamedIDExtra> NIDExtrasManager::getNamedIDExtras(NID nid, const st
 	return getNamedIDExtras(nid, res.unwrap());
 }
 
-geode::Result<> NIDExtrasManager::setNamedIDExtras(NID nid, short id, NamedIDExtra&& extras)
+geode::Result<> NIDExtrasManager::setNamedIDExtras(NID nid, short id, NamedIDExtra extras)
 {
 	LEVEL_ID_API_CHECK();
 
@@ -194,13 +202,13 @@ geode::Result<> NIDExtrasManager::setNamedIDExtras(NID nid, short id, NamedIDExt
 
 	ids.extras[id] = std::move(extras);
 
-	NewNamedIDExtrasEvent(nid, id, ids.extras[id]).post();
 	g_isDirty = true;
+	NewNamedIDExtrasEvent().send(nid, id, ids.extras[id]);
 
 	return geode::Ok();
 }
 
-geode::Result<> NIDExtrasManager::setNamedIDExtras(NID nid, std::string&& name, NamedIDExtra&& extras)
+geode::Result<> NIDExtrasManager::setNamedIDExtras(NID nid, std::string_view name, NamedIDExtra extras)
 {
 	LEVEL_ID_API_CHECK();
 
@@ -225,13 +233,13 @@ geode::Result<> NIDExtrasManager::removeNamedIDExtras(NID nid, short id)
 
 	ids.extras.erase(id);
 
-	RemovedNamedIDExtrasEvent(nid, id).post();
 	g_isDirty = true;
+	RemovedNamedIDExtrasEvent().send(nid, id);
 
 	return geode::Ok();
 }
 
-geode::Result<> NIDExtrasManager::removeNamedIDExtras(NID nid, std::string&& name)
+geode::Result<> NIDExtrasManager::removeNamedIDExtras(NID nid, std::string_view name)
 {
 	LEVEL_ID_API_CHECK();
 
@@ -261,8 +269,8 @@ void NIDExtrasManager::init(int levelID)
 
 	if (s_saveDataDir.empty())
 	{
-		std::filesystem::create_directories(geode::Mod::get()->getSaveDir() / "extras");
 		s_saveDataDir = geode::Mod::get()->getSaveDir() / "extras";
+		std::filesystem::create_directories(s_saveDataDir);
 	}
 
 	std::ifstream fileIn(s_saveDataDir / fmt::format("{}.nide", g_levelID), std::ios::binary);
@@ -329,19 +337,19 @@ void NIDExtrasManager::save()
 		std::size_t size = nide.extras.size();
 
 		fileOut.write(reinterpret_cast<const char*>(&size), sizeof(size));
-		for (const auto& pair : nide.extras)
+		for (const auto& [id, data] : nide.extras)
 		{
-			fileOut.write(reinterpret_cast<const char*>(&pair.first), sizeof(pair.first));
+			fileOut.write(reinterpret_cast<const char*>(&id), sizeof(id));
 
-			std::size_t descLen = pair.second.description.size();
+			std::size_t descLen = data.description.size();
 			fileOut.write(reinterpret_cast<const char*>(&descLen), sizeof(descLen));
-			fileOut.write(pair.second.description.c_str(), descLen);
+			fileOut.write(data.description.c_str(), descLen);
 
-			fileOut.write(reinterpret_cast<const char*>(&pair.second.isPreviewed), sizeof(pair.second.isPreviewed));
+			fileOut.write(reinterpret_cast<const char*>(&data.isPreviewed), sizeof(data.isPreviewed));
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-			fileOut.write(reinterpret_cast<const char*>(&pair.second._reserved), sizeof(pair.second._reserved));
+			fileOut.write(reinterpret_cast<const char*>(&data._reserved), sizeof(data._reserved));
 #pragma clang diagnostic pop
 		}
 	};

@@ -119,7 +119,7 @@ void AutofillNamedIDsPreview::updateList(const std::string_view query)
 
 	m_list->m_contentLayer->removeAllChildren();
 	{
-		const std::unordered_map<std::string, short>& namedIDs = NIDManager::getNamedIDs(m_ids_type);
+		const auto& namedIDs = NIDManager::getMutNamedIDs(m_ids_type);
 
 		std::vector<std::pair<std::string, short>> elements{ namedIDs.begin(), namedIDs.end() };
 		std::sort(elements.begin(), elements.end(), [](auto& a, auto& b) { return a.second < b.second; });

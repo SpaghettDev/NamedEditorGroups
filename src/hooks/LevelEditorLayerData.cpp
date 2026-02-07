@@ -30,11 +30,7 @@ void NIDLevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
 #endif
 
 	if (ng::globals::g_isEditorIDAPILoaded)
-	{
-		int id;
-		EditorIDs::Event::GetLevelID2("cvolton.level-id-api/v1/get-level-id-2", &id, this->m_level, true).post();
-		NIDExtrasManager::init(id);
-	}
+		NIDExtrasManager::init(EditorIDs::getID(this->m_level));
 
 	NIDManager::reset();
 

@@ -4,12 +4,9 @@
 
 #include "../NIDEnum.hpp"
 
-class RemovedNamedIDExtrasEvent : public geode::Event
+struct RemovedNamedIDExtrasEvent : geode::SimpleEvent<RemovedNamedIDExtrasEvent, NID, short>
 {
-public:
-	RemovedNamedIDExtrasEvent(NID nid, short id)
-		: m_id_type(nid), m_id(id)
-	{}
+	using SimpleEvent::SimpleEvent;
 
 	NID getIDType() const { return m_id_type; }
 	short getID() const { return m_id; }

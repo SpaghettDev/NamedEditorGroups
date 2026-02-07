@@ -14,7 +14,8 @@ EditNamedIDPopup<nid>* EditNamedIDPopup<nid>::create(short id, std::function<voi
 {
 	auto ret = new EditNamedIDPopup<nid>();
 
-	if (ret && ret->initAnchored(240.f, 150.f, id, std::move(changedIDCallback), std::move(savedCallback)))
+
+	if (ret && ret->init(id, std::move(changedIDCallback), std::move(savedCallback)))
 		ret->autorelease();
 	else
 	{
@@ -26,8 +27,11 @@ EditNamedIDPopup<nid>* EditNamedIDPopup<nid>::create(short id, std::function<voi
 }
 
 template <NID nid>
-bool EditNamedIDPopup<nid>::setup(short id, std::function<void(short)>&& changedIDCallback, std::function<void()>&& savedCallback)
+bool EditNamedIDPopup<nid>::init(short id, std::function<void(short)>&& changedIDCallback, std::function<void()>&& savedCallback)
 {
+	if (!Popup::init(240.f, 150.f))
+		return false;
+
 	m_changed_id_callback = std::move(changedIDCallback);
 	m_saved_callback = std::move(savedCallback);
 
@@ -107,7 +111,7 @@ bool EditNamedIDPopup<nid>::setup(short id, std::function<void(short)>&& changed
 }
 
 template <NID nid>
-void EditNamedIDPopup<nid>::keyDown(cocos2d::enumKeyCodes key)
+void EditNamedIDPopup<nid>::keyDown(cocos2d::enumKeyCodes key, double)
 {
 	if (key == cocos2d::enumKeyCodes::KEY_Escape)
 		this->removeFromParent();

@@ -1,77 +1,56 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include <Geode/loader/Dispatch.hpp>
 #include <Geode/loader/Loader.hpp>
+#include <Geode/utils/StringMap.hpp>
 #include <Geode/Result.hpp>
 
 #include "NIDEnum.hpp"
 
-#ifndef NAMED_EDITOR_GROUPS_DLL
-	#ifdef GEODE_IS_WINDOWS
-		#ifdef SPAGHETTDEV_NAMED_EDITOR_GROUPS_EXPORTING
-			#define NAMED_EDITOR_GROUPS_DLL __declspec(dllexport)
-		#else
-			#define NAMED_EDITOR_GROUPS_DLL __declspec(dllimport)
-		#endif
-	#else
-		#define NAMED_EDITOR_GROUPS_DLL __attribute__((visibility("default")))
-	#endif
-#endif
+#define MY_MOD_ID "spaghettdev.named-editor-groups"
 
 namespace NIDManager
 {
-	namespace event
-	{
-		using EventGetNameForID = geode::DispatchEvent<std::string*, NID, short>;
-		using EventGetIDForName = geode::DispatchEvent<short*, NID, std::string>;
-		using EventGetNamedIDs = geode::DispatchEvent<std::unordered_map<std::string, short>*, NID>;
-
-		using EventSaveNamedID = geode::DispatchEvent<bool*, NID, std::string, short>;
-		using EventRemoveNamedID1 = geode::DispatchEvent<bool*, NID, std::string>;
-		using EventRemoveNamedID2 = geode::DispatchEvent<bool*, NID, short>;
-	}
-
-#ifndef NAMED_EDITOR_GROUPS_USE_EVENTS_API
-
-	NAMED_EDITOR_GROUPS_DLL geode::Result<std::string> getNameForID(NID nid, short id);
+	inline geode::Result<std::string> getNameForID(NID nid, short id) GEODE_EVENT_EXPORT(&getNameForID, (nid, id));
 	template <NID ID>
 	geode::Result<std::string> getNameForID(short id)
 	{
 		return getNameForID(ID, id);
 	}
 
-	NAMED_EDITOR_GROUPS_DLL geode::Result<short> getIDForName(NID nid, const std::string& name);
+	inline geode::Result<short> getIDForName(NID nid, std::string_view name) GEODE_EVENT_EXPORT(&getIDForName, (nid, name));
 	template <NID ID>
-	geode::Result<short> getIDForName(const std::string& name)
+	geode::Result<short> getIDForName(std::string_view name)
 	{
 		return getIDForName(ID, name);
 	}
 
-	NAMED_EDITOR_GROUPS_DLL const std::unordered_map<std::string, short>& getNamedIDs(NID nid);
+	inline geode::Result<const std::unordered_map<std::string, short, geode::utils::StringHash, std::equal_to<>>&> getNamedIDs(NID nid) GEODE_EVENT_EXPORT(&getNamedIDs, (nid));
 	template <NID ID>
-	const std::unordered_map<std::string, short>& getNamedIDs()
+	const std::unordered_map<std::string, short, geode::utils::StringHash, std::equal_to<>>& getNamedIDs()
 	{
-		return getNamedIDs(ID);
+		return getNamedIDs(ID).unwrap();
 	}
 
-	NAMED_EDITOR_GROUPS_DLL geode::Result<> saveNamedID(NID nid, std::string&& name, short id);
+	inline geode::Result<> saveNamedID(NID nid, std::string_view name, short id) GEODE_EVENT_EXPORT(&saveNamedID, (nid, name, id));
 	template <NID ID>
-	geode::Result<> saveNamedID(std::string&& name, short id)
+	geode::Result<> saveNamedID(std::string_view name, short id)
 	{
-		return saveNamedID(ID, static_cast<std::string&&>(name), id);
+		return saveNamedID(ID, name, id);
 	}
 
-	NAMED_EDITOR_GROUPS_DLL geode::Result<> removeNamedID(NID nid, std::string&& name);
+	inline geode::Result<> removeNamedID(NID nid, std::string_view name) GEODE_EVENT_EXPORT(&removeNamedID, (nid, name));
 	template <NID ID>
-	geode::Result<> removeNamedID(std::string&& name)
+	geode::Result<> removeNamedID(std::string_view name)
 	{
-		return removeNamedID(ID, static_cast<std::string&&>(name));
+		return removeNamedID(ID, name);
 	}
 
-	NAMED_EDITOR_GROUPS_DLL geode::Result<> removeNamedID(NID nid, short id);
+	inline geode::Result<> removeNamedID(NID nid, short id) GEODE_EVENT_EXPORT_ID(static_cast<geode::Result<>(*)(NID, short)>(removeNamedID), (nid, id), MY_MOD_ID "/" "removeNamedID");
 	template <NID ID>
 	geode::Result<> removeNamedID(short id)
 	{
@@ -83,9 +62,10 @@ namespace NIDManager
 	bool isEmpty();
 	std::string dumpNamedIDs();
 	geode::Result<> importNamedIDs(const std::string& str, bool setDirty = false);
+	std::unordered_map<std::string, short, geode::utils::StringHash, std::equal_to<>>& getMutNamedIDs(NID nid);
 
 	void reset();
 #endif // !SPAGHETTDEV_NAMED_EDITOR_GROUPS_EXPORTING
-
-#endif // !NAMED_EDITOR_GROUPS_USE_EVENTS_API
 }
+
+#undef MY_MOD_ID

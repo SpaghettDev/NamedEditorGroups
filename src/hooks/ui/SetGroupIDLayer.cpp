@@ -72,18 +72,32 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 
 
 		auto groupsListMenu = m_mainLayer->getChildByID("groups-list-menu");
+		// why the fuck is this button in groups list menu robert
+		{
+			auto groupOffsetBtn = groupsListMenu->getChildByID("settings-button");
+			groupOffsetBtn->removeFromParent();
+			
+			auto addGroupIDLabel = groupIDMenu->getChildByID("add-group-id-label");
+			groupIDMenu->addChild(groupOffsetBtn);
+			groupOffsetBtn->setPosition(
+				addGroupIDLabel->getPosition() + CCPoint{
+					addGroupIDLabel->getScaledContentWidth() / 2.f + 10.f, .0f
+				}
+			);
+		}
+
 		groupsListMenu->setPosition({ winSize.width / 2.f, winSize.height / 2.f - 17.f });
 		groupsListMenu->setAnchorPoint({ .5f, .5f });
 		groupsListMenu->ignoreAnchorPointForPosition(false);
 		groupsListMenu->setContentSize({ 340.f, 50.f });
 		groupsListMenu->setLayout(
 			RowLayout::create()
-				->setGap(10.f)
-				->setCrossAxisReverse(false)
-				->setGrowCrossAxis(true)
-				->setCrossAxisOverflow(false)
-				->setAxisAlignment(AxisAlignment::Start)
-				->setCrossAxisAlignment(AxisAlignment::End)
+			->setGap(10.f)
+			->setCrossAxisReverse(false)
+			->setGrowCrossAxis(true)
+			->setCrossAxisOverflow(false)
+			->setAxisAlignment(AxisAlignment::Start)
+			->setCrossAxisAlignment(AxisAlignment::End)
 		);
 
 

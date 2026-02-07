@@ -20,7 +20,7 @@ NamedIDsPopup* NamedIDsPopup::create(bool readOnly)
 {
 	auto ret = new NamedIDsPopup();
 
-	if (ret && ret->initAnchored(300.f, 260.f, readOnly))
+	if (ret && ret->init(readOnly))
 		ret->autorelease();
 	else
 	{
@@ -31,8 +31,11 @@ NamedIDsPopup* NamedIDsPopup::create(bool readOnly)
 	return ret;
 }
 
-bool NamedIDsPopup::setup(bool readOnly)
+bool NamedIDsPopup::init(bool readOnly)
 {
+	if (!Popup::init(300.f, 260.f))
+		return false;
+
 	this->setID("NamedIDsPopup");
 	this->setTitle("Edit Named IDs");
 
@@ -215,7 +218,7 @@ void NamedIDsPopup::updateList(NID nid)
 	m_ids_type = nid;
 
 	{
-		const std::unordered_map<std::string, short>& namedIDs = NIDManager::getNamedIDs(m_ids_type);
+		const auto namedIDs = NIDManager::getMutNamedIDs(m_ids_type);
 
 		std::vector<std::pair<std::string, short>> elements{ namedIDs.begin(), namedIDs.end() };
 		std::sort(elements.begin(), elements.end(), [](auto& a, auto& b) { return a.second < b.second; });
@@ -240,7 +243,7 @@ void NamedIDsPopup::updateState()
 	m_list->m_contentLayer->removeAllChildren();
 	updateList(m_ids_type);
 
-	if (!query.empty() && !NIDManager::getNamedIDs(m_ids_type).empty())
+	if (!query.empty() && !NIDManager::getMutNamedIDs(m_ids_type).empty())
 	{
 		bool bg = false;
 

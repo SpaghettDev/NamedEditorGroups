@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include <string_view>
 
 #include <Geode/loader/Dispatch.hpp>
 #include <Geode/Result.hpp>
@@ -8,143 +8,109 @@
 #include "NIDEnum.hpp"
 #include "types/NamedIDExtras.hpp"
 
-#ifndef NAMED_EDITOR_GROUPS_DLL
-	#ifdef GEODE_IS_WINDOWS
-		#ifdef SPAGHETTDEV_NAMED_EDITOR_GROUPS_EXPORTING
-			#define NAMED_EDITOR_GROUPS_DLL __declspec(dllexport)
-		#else
-			#define NAMED_EDITOR_GROUPS_DLL __declspec(dllimport)
-		#endif
-	#else
-		#define NAMED_EDITOR_GROUPS_DLL __attribute__((visibility("default")))
-	#endif
-#endif
+#define MY_MOD_ID "spaghettdev.named-editor-groups"
 
 namespace NIDExtrasManager
 {
-	namespace event
-	{
-		using EventGetIDIsPreviewed = geode::DispatchEvent<bool*, NID, short>;
-		using EventGetNamedIDIsPreviewed = geode::DispatchEvent<bool*, NID, std::string>;
-		using EventSetIDIsPreviewed = geode::DispatchEvent<bool*, NID, short, bool>;
-		using EventSetNamedIDIsPreviewed = geode::DispatchEvent<bool*, NID, std::string, bool>;
-
-		using EventGetIDDescription = geode::DispatchEvent<std::string*, NID, short>;
-		using EventGetNamedIDDescription = geode::DispatchEvent<std::string*, NID, std::string>;
-		using EventSetIDDescription = geode::DispatchEvent<bool*, NID, short, std::string>;
-		using EventSetNamedIDDescription = geode::DispatchEvent<bool*, NID, std::string, std::string>;
-
-		using EventGetIDExtras = geode::DispatchEvent<NamedIDExtra*, NID, short>;
-		using EventGetNamedIDExtras = geode::DispatchEvent<NamedIDExtra*, NID, std::string>;
-		using EventSetIDExtras = geode::DispatchEvent<bool*, NID, short, NamedIDExtra>;
-		using EventSetNamedIDExtras = geode::DispatchEvent<bool*, NID, std::string, NamedIDExtra>;
-		using EventRemoveIDExtras = geode::DispatchEvent<bool*, NID, short>;
-		using EventRemoveNamedIDExtras = geode::DispatchEvent<bool*, NID, std::string>;
-
-		using EventGetAllNIDExtras = geode::DispatchEvent<NamedIDsExtras*, NID>;
-	}
-
-#ifndef NAMED_EDITOR_GROUPS_USE_EVENTS_API
-
-	NAMED_EDITOR_GROUPS_DLL geode::Result<bool> getIsNamedIDPreviewed(NID nid, short id);
+	inline geode::Result<bool> getIsNamedIDPreviewed(NID nid, short id) GEODE_EVENT_EXPORT(&getIsNamedIDPreviewed, (nid, id));
 	template <NID ID>
 	geode::Result<bool> getIsNamedIDPreviewed(short id)
 	{
 		return getIsNamedIDPreviewed(ID, id);
 	}
 
-	NAMED_EDITOR_GROUPS_DLL geode::Result<bool> getIsNamedIDPreviewed(NID nid, std::string&& name);
+	inline geode::Result<bool> getIsNamedIDPreviewed(NID nid, std::string_view name) GEODE_EVENT_EXPORT_ID(static_cast<geode::Result<bool>(*)(NID, std::string_view)>(getIsNamedIDPreviewed), (nid, name), MY_MOD_ID "/" "getIsNamedIDPreviewed");
 	template <NID ID>
-	geode::Result<bool> getIsNamedIDPreviewed(std::string&& name)
+	geode::Result<bool> getIsNamedIDPreviewed(std::string_view name)
 	{
-		return getIsNamedIDPreviewed(ID, static_cast<std::string&&>(name));
+		return getIsNamedIDPreviewed(ID, name);
 	}
 
-	NAMED_EDITOR_GROUPS_DLL geode::Result<std::string> getNamedIDDescription(NID nid, short id);
+	inline geode::Result<std::string> getNamedIDDescription(NID nid, short id) GEODE_EVENT_EXPORT(&getNamedIDDescription, (nid, id));
 	template <NID ID>
 	geode::Result<std::string> getNamedIDDescription(short id)
 	{
 		return getNamedIDDescription(ID, id);
 	}
 
-	NAMED_EDITOR_GROUPS_DLL geode::Result<std::string> getNamedIDDescription(NID nid, std::string&& name);
+	inline geode::Result<std::string> getNamedIDDescription(NID nid, std::string_view name) GEODE_EVENT_EXPORT_ID(static_cast<geode::Result<std::string>(*)(NID, std::string_view)>(getNamedIDDescription), (nid, name), MY_MOD_ID "/" "getNamedIDDescription");
 	template <NID ID>
-	geode::Result<std::string> getNamedIDDescription(std::string&& name)
+	geode::Result<std::string> getNamedIDDescription(std::string_view name)
 	{
-		return getNamedIDDescription(ID, static_cast<std::string&&>(name));
+		return getNamedIDDescription(ID, name);
 	}
 
-	NAMED_EDITOR_GROUPS_DLL geode::Result<> setNamedIDIsPreviewed(NID nid, short id, bool state);
+	inline geode::Result<> setNamedIDIsPreviewed(NID nid, short id, bool state) GEODE_EVENT_EXPORT(&setNamedIDIsPreviewed, (nid, id, state));
 	template <NID ID>
 	geode::Result<> setNamedIDIsPreviewed(short id, bool state)
 	{
 		return setNamedIDIsPreviewed(ID, id, state);
 	}
 
-	NAMED_EDITOR_GROUPS_DLL geode::Result<> setNamedIDIsPreviewed(NID nid, std::string&& name, bool state);
+	inline geode::Result<> setNamedIDIsPreviewed(NID nid, std::string_view name, bool state) GEODE_EVENT_EXPORT_ID(static_cast<geode::Result<>(*)(NID, std::string_view, bool)>(setNamedIDIsPreviewed), (nid, name, state), MY_MOD_ID "/" "setNamedIDIsPreviewed");
 	template <NID ID>
-	geode::Result<> setNamedIDIsPreviewed(std::string&& name, bool state)
+	geode::Result<> setNamedIDIsPreviewed(std::string_view name, bool state)
 	{
-		return setNamedIDIsPreviewed(ID, static_cast<std::string&&>(name), state);
+		return setNamedIDIsPreviewed(ID, name, state);
 	}
 
-	NAMED_EDITOR_GROUPS_DLL geode::Result<> setNamedIDDescription(NID nid, short id, std::string&& description);
+	inline geode::Result<> setNamedIDDescription(NID nid, short id, std::string_view description) GEODE_EVENT_EXPORT(&setNamedIDDescription, (nid, id, description));
 	template <NID ID>
-	geode::Result<> setNamedIDDescription(short id, std::string&& description)
+	geode::Result<> setNamedIDDescription(short id, std::string_view description)
 	{
-		return setNamedIDDescription(ID, id, static_cast<std::string&&>(description));
+		return setNamedIDDescription(ID, id, description);
 	}
 
-	NAMED_EDITOR_GROUPS_DLL geode::Result<> setNamedIDDescription(NID nid, std::string&& name, std::string&& description);
+	inline geode::Result<> setNamedIDDescription(NID nid, std::string_view name, std::string_view description) GEODE_EVENT_EXPORT_ID(static_cast<geode::Result<>(*)(NID, std::string_view, std::string_view)>(setNamedIDDescription), (nid, name, description), MY_MOD_ID "/" "setNamedIDDescription");
 	template <NID ID>
-	geode::Result<> setNamedIDDescription(std::string&& name, std::string&& description)
+	geode::Result<> setNamedIDDescription(std::string_view name, std::string_view description)
 	{
-		return setNamedIDDescription(ID, static_cast<std::string&&>(name), static_cast<std::string&&>(description));
+		return setNamedIDDescription(ID, name, description);
 	}
 
-	NAMED_EDITOR_GROUPS_DLL geode::Result<NamedIDExtra> getNamedIDExtras(NID nid, short id);
+	inline geode::Result<NamedIDExtra> getNamedIDExtras(NID nid, short id) GEODE_EVENT_EXPORT(&getNamedIDExtras, (nid, id));
 	template <NID ID>
 	geode::Result<NamedIDExtra> getNamedIDExtras(short id)
 	{
 		return getNamedIDExtras(ID, id);
 	}
 
-	NAMED_EDITOR_GROUPS_DLL geode::Result<NamedIDExtra> getNamedIDExtras(NID nid, const std::string& name);
+	inline geode::Result<NamedIDExtra> getNamedIDExtras(NID nid, const std::string& name) GEODE_EVENT_EXPORT_ID(static_cast<geode::Result<NamedIDExtra>(*)(NID, const std::string&)>(getNamedIDExtras), (nid, name), MY_MOD_ID "/" "getNamedIDExtras");
 	template <NID ID>
-	geode::Result<NamedIDExtra> getNamedIDExtras(std::string&& name)
+	geode::Result<NamedIDExtra> getNamedIDExtras(const std::string& name)
 	{
 		return getNamedIDExtras(ID, name);
 	}
 
-	NAMED_EDITOR_GROUPS_DLL geode::Result<> setNamedIDExtras(NID nid, short id, NamedIDExtra&& extras);
+	inline geode::Result<> setNamedIDExtras(NID nid, short id, NamedIDExtra extras) GEODE_EVENT_EXPORT(&setNamedIDExtras, (nid, id, extras));
 	template <NID ID>
-	geode::Result<> setNamedIDExtras(short id, NamedIDExtra&& extras)
+	geode::Result<> setNamedIDExtras(short id, NamedIDExtra extras)
 	{
-		return setNamedIDExtras(ID, id, static_cast<NamedIDExtra&&>(extras));
+		return setNamedIDExtras(ID, id, extras);
 	}
 
-	NAMED_EDITOR_GROUPS_DLL geode::Result<> setNamedIDExtras(NID nid, std::string&& name, NamedIDExtra&& extras);
+	inline geode::Result<> setNamedIDExtras(NID nid, std::string_view name, NamedIDExtra extras) GEODE_EVENT_EXPORT_ID(static_cast<geode::Result<>(*)(NID, std::string_view, NamedIDExtra)>(setNamedIDExtras), (nid, name, extras), MY_MOD_ID "/" "setNamedIDExtras");
 	template <NID ID>
-	geode::Result<> setNamedIDExtras(std::string&& name, NamedIDExtra&& extras)
+	geode::Result<> setNamedIDExtras(std::string_view name, NamedIDExtra extras)
 	{
-		return setNamedIDExtras(ID, static_cast<std::string&&>(name), static_cast<NamedIDExtra&&>(extras));
+		return setNamedIDExtras(ID, name, extras);
 	}
 
-	NAMED_EDITOR_GROUPS_DLL geode::Result<> removeNamedIDExtras(NID nid, short id);
+	inline geode::Result<> removeNamedIDExtras(NID nid, short id) GEODE_EVENT_EXPORT(&removeNamedIDExtras, (nid, id));
 	template <NID ID>
 	geode::Result<> removeNamedIDExtras(short id)
 	{
 		return removeNamedIDExtras(ID, id);
 	}
 
-	NAMED_EDITOR_GROUPS_DLL geode::Result<> removeNamedIDExtras(NID nid, std::string&& name);
+	inline geode::Result<> removeNamedIDExtras(NID nid, std::string_view name) GEODE_EVENT_EXPORT_ID(static_cast<geode::Result<>(*)(NID, std::string_view)>(removeNamedIDExtras), (nid, name), MY_MOD_ID "/" "removeNamedIDExtras");
 	template <NID ID>
-	geode::Result<> removeNamedIDExtras(std::string&& name)
+	geode::Result<> removeNamedIDExtras(std::string_view name)
 	{
-		return removeNamedIDExtras(ID, static_cast<std::string&&>(name));
+		return removeNamedIDExtras(ID, name);
 	}
 
-	NAMED_EDITOR_GROUPS_DLL geode::Result<NamedIDsExtras> getNIDExtras(NID nid);
+	inline geode::Result<NamedIDsExtras> getNIDExtras(NID nid) GEODE_EVENT_EXPORT(&getNIDExtras, (nid));
 	template <NID ID>
 	geode::Result<NamedIDsExtras> getNIDExtras()
 	{
@@ -158,6 +124,6 @@ namespace NIDExtrasManager
 
 	void reset();
 #endif // !SPAGHETTDEV_NAMED_EDITOR_GROUPS_EXPORTING
-
-#endif // !NAMED_EDITOR_GROUPS_USE_EVENTS_API
 }
+
+#undef MY_MOD_ID

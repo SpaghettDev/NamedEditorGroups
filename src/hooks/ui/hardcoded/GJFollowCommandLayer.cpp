@@ -128,7 +128,7 @@ struct NIDGJFollowCommandLayer : geode::Modify<NIDGJFollowCommandLayer, GJFollow
 			this,
 			NID::GROUP,
 			TARGET_GROUP_ID_PROPERTY,
-			std::move(targetGroupIDNodes),
+			std::span{ targetGroupIDNodes },
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
@@ -137,7 +137,7 @@ struct NIDGJFollowCommandLayer : geode::Modify<NIDGJFollowCommandLayer, GJFollow
 			this,
 			NID::GROUP,
 			FOLLOW_GROUP_ID_PROPERTY,
-			std::move(followGroupIDNodes),
+			std::span{ followGroupIDNodes },
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);

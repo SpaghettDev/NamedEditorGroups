@@ -3,6 +3,7 @@
 #include <NIDManager.hpp>
 
 #include "utils.hpp"
+#include "operators.hpp"
 
 using namespace geode::prelude;
 
@@ -10,7 +11,7 @@ SelectIDFilterPopup* SelectIDFilterPopup::create(NID currentNid, std::function<v
 {
 	auto ret = new SelectIDFilterPopup();
 
-	if (ret && ret->initAnchored(220.f, 130.f, currentNid, std::move(onChangedCallback)))
+	if (ret && ret->init(currentNid, std::move(onChangedCallback)))
 		ret->autorelease();
 	else
 	{
@@ -21,8 +22,11 @@ SelectIDFilterPopup* SelectIDFilterPopup::create(NID currentNid, std::function<v
 	return ret;
 }
 
-bool SelectIDFilterPopup::setup(NID currentNid, std::function<void(NID)>&& onChangedCallback)
+bool SelectIDFilterPopup::init(NID currentNid, std::function<void(NID)>&& onChangedCallback)
 {
+	if (!Popup::init(220.f, 130.f))
+		return false;
+
 	m_on_changed_callback = std::move(onChangedCallback);
 
 	this->setID("SelectIDFilterPopup");
@@ -44,7 +48,8 @@ bool SelectIDFilterPopup::setup(NID currentNid, std::function<void(NID)>&& onCha
 	m_toggles_menu->setPosition({ 110.f, 55.f });
 	this->m_buttonMenu->addChild(m_toggles_menu);
 
-	for (NID nid = NID::GROUP; nid < NID::_INTERNAL_LAST; nid = static_cast<NID>(static_cast<int>(nid) + 1))
+	// skip NID::DYNAMIC_COUNTER_TIMER
+	for (NID nid = NID::GROUP; nid < NID::_INTERNAL_LAST - 1; nid = nid + 1)
 	{
 		auto toggleMenu = CCMenu::create();
 		toggleMenu->setContentSize({ 150.f, 50.f });
@@ -72,7 +77,7 @@ bool SelectIDFilterPopup::setup(NID currentNid, std::function<void(NID)>&& onCha
 		toggleMenu->addChild(nidButton);
 
 		auto nidLabel = CCLabelBMFont::create(
-			fmt::format("{} ({})", ng::utils::getNamedIDIndentifier(nid), NIDManager::getNamedIDs(nid).size()).c_str(),
+			fmt::format("{} ({})", ng::utils::getNamedIDIndentifier(nid), NIDManager::getMutNamedIDs(nid).size()).c_str(),
 			"bigFont.fnt"
 		);
 		nidLabel->limitLabelWidth(100.f, 1.f, .1f);

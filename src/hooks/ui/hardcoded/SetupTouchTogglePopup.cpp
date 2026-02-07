@@ -52,7 +52,7 @@ struct NIDSetupTouchTogglePopup : geode::Modify<NIDSetupTouchTogglePopup, SetupT
 			this,
 			NID::GROUP,
 			GROUP_ID_PROPERTY,
-			std::move(groupIDNodes),
+			std::span{ groupIDNodes },
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);

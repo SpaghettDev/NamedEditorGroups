@@ -16,7 +16,7 @@ AddNamedIDPopup* AddNamedIDPopup::create(NID nid, std::function<void(const std::
 		ret->m_saved_callback = std::move(savedCallback);
 	}
 
-	if (ret && ret->initAnchored(240.f, 150.f, 1, nullptr, nullptr))
+	if (ret && ret->init(1, nullptr, nullptr))
 		ret->autorelease();
 	else
 	{
@@ -27,9 +27,9 @@ AddNamedIDPopup* AddNamedIDPopup::create(NID nid, std::function<void(const std::
 	return ret;
 }
 
-bool AddNamedIDPopup::setup(short, std::function<void(short)>&&, std::function<void()>&&)
+bool AddNamedIDPopup::init(short, std::function<void(short)>&&, std::function<void()>&&)
 {
-	if (!EditNamedIDPopup<NID::GROUP>::setup(1, nullptr, nullptr)) return false;
+	if (!EditNamedIDPopup<NID::GROUP>::init(1, nullptr, nullptr)) return false;
 
 	this->setID("AddNamedIDPopup");
 	this->setTitle(fmt::format("New {} Name", ng::utils::getNamedIDIndentifier(m_nid)));

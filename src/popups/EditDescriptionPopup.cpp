@@ -13,7 +13,7 @@ EditDescriptionPopup* EditDescriptionPopup::create(NID nid, short id)
 {
 	auto ret = new EditDescriptionPopup();
 
-	if (ret && ret->initAnchored(285.f, 155.f, nid, id))
+	if (ret && ret->init(nid, id))
 		ret->autorelease();
 	else
 	{
@@ -24,8 +24,11 @@ EditDescriptionPopup* EditDescriptionPopup::create(NID nid, short id)
 	return ret;
 }
 
-bool EditDescriptionPopup::setup(NID nid, short id)
+bool EditDescriptionPopup::init(NID nid, short id)
 {
+	if (!Popup::init(285.f, 155.f))
+		return false;
+
 	m_id_type = nid;
 	m_id = id;
 

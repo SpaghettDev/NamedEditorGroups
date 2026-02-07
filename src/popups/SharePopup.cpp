@@ -17,7 +17,7 @@ SharePopup* SharePopup::create(std::function<void(bool)>&& importCb, std::functi
 {
 	auto ret = new SharePopup();
 
-	if (ret && ret->initAnchored(155.f, 145.f, std::move(importCb), std::move(exportCb)))
+	if (ret && ret->init(std::move(importCb), std::move(exportCb)))
 		ret->autorelease();
 	else
 	{
@@ -28,8 +28,11 @@ SharePopup* SharePopup::create(std::function<void(bool)>&& importCb, std::functi
 	return ret;
 }
 
-bool SharePopup::setup(std::function<void(bool)>&& importCb, std::function<void(bool)>&& exportCb)
+bool SharePopup::init(std::function<void(bool)>&& importCb, std::function<void(bool)>&& exportCb)
 {
+	if (!Popup::init(155.f, 145.f))
+		return false;
+
 	m_on_imported_callback = std::move(importCb);
 	m_on_exported_callback = std::move(exportCb);
 

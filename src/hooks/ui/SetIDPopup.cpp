@@ -62,7 +62,7 @@ struct NIDSetIDPopup : geode::Modify<NIDSetIDPopup, SetIDPopup>
 				this,
 				nidForPopup(this),
 				0,
-				std::move(nodes),
+				std::span{ nodes },
 				this->m_mainLayer,
 				this->m_buttonMenu
 			);

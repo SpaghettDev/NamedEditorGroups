@@ -2,6 +2,7 @@
 
 #include <array>
 #include <unordered_map>
+#include <ranges>
 
 #include <Geode/modify/SetupTriggerPopup.hpp>
 #include <Geode/modify/SetupAreaAnimTriggerPopup.hpp>
@@ -70,7 +71,7 @@ CCArray* NIDSetupTriggerPopup::createValueControlAdvanced(
 		this,
 		ng::constants::OBJECT_ID_TO_PROPERTIES_INFO.at(m_fields->m_object_id).at(property),
 		property,
-		std::move(geode::cocos::ccArrayToVector<CCNode*>(nodes)),
+		std::span<CCNode*>{ reinterpret_cast<CCNode**>(nodes->data->arr), nodes->data->num },
 		this->m_mainLayer,
 		this->m_buttonMenu,
 		[&](std::vector<CCNode*>&& newNodes) {
@@ -193,7 +194,7 @@ void NIDSetupTriggerPopup::onEditInput(NIDSetupTriggerPopup* self, std::uint16_t
 
 NIDSetupTriggerPopup::IDInputInfo NIDSetupTriggerPopup::commonInputSetup(
 	CCLayer* self, NID nid, std::uint16_t property,
-	std::vector<CCNode*>&& nodes, CCNode* mainLayer, CCNode* buttonMenu,
+	std::span<CCNode*> nodes, CCNode* mainLayer, CCNode* buttonMenu,
 	std::function<void(std::vector<CCNode*>&&)> finishedCallback
 ) {
 	CCMenuItemSpriteExtra* editInputButton = nullptr;
@@ -357,6 +358,17 @@ void NIDSetupTriggerPopup::postHandleSpecialProperties(std::uint16_t property, C
 
 		default:
 			break;
+	}
+
+	if (typeinfo_cast<LevelOptionsLayer*>(this))
+	{
+		// InfoAlertButton is added after createValueControlAdvanced
+		Loader::get()->queueInMainThread([property, this] {
+			auto infoBtn = this->m_fields->m_id_inputs.at(property).editInputButton
+				->getParent()->getChildByType<InfoAlertButton*>(0);
+
+			infoBtn->setPositionY(infoBtn->getPositionY() + 6.f);
+		});
 	}
 }
 

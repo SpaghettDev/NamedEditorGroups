@@ -3,6 +3,7 @@
 #include <string_view>
 #include <unordered_map>
 
+#include <Geode/utils/StringMap.hpp>
 #include <Geode/Result.hpp>
 
 struct NamedID
@@ -16,10 +17,12 @@ struct NamedID
 
 struct NamedIDs
 {
-	std::unordered_map<std::string, short> namedIDs;
+	std::unordered_map<std::string, short, geode::utils::StringHash, std::equal_to<>> namedIDs;
 
-	short& operator[](const std::string& name) { return namedIDs.at(name); }
-	const short& operator[](const std::string& name) const { return namedIDs.at(name); }
+	// unsafe
+	short& operator[](const std::string_view name) { return namedIDs.find(name)->second; }
+	// unsafe
+	const short& operator[](const std::string_view name) const { return namedIDs.find(name)->second; }
 
 	std::string dump() const;
 	static geode::Result<NamedIDs> from(std::string_view);

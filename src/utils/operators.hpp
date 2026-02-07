@@ -14,3 +14,18 @@ inline bool operator<(const ChanceObject& lhs, const ChanceObject& rhs) noexcept
 	return lhs.m_unk00c < rhs.m_unk00c;
 }
 #pragma endregion ChanceObject
+
+
+#pragma region NIDEnum
+#include <NIDEnum.hpp>
+
+inline NID operator+(NID nid, int offset) noexcept
+{
+	return static_cast<NID>(static_cast<int>(nid) + offset);
+}
+
+inline NID operator-(NID nid, int offset) noexcept
+{
+	return static_cast<NID>(static_cast<int>(nid) - offset);
+}
+#pragma endregion NIDEnum

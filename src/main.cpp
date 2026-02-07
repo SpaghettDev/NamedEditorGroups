@@ -8,7 +8,7 @@ $on_mod(Loaded)
 {
 	ng::globals::g_isEditorIDAPILoaded = Loader::get()->isModLoaded("cvolton.level-id-api");
 	ng::globals::g_isBetterEditLoaded = Loader::get()->isModLoaded("hjfod.betteredit");
-	ng::globals::g_isImprovedGroupViewLoaded = Loader::get()->isModLoaded("alphalaneous.improved_group_view");
+	// ng::globals::g_isImprovedGroupViewLoaded = Loader::get()->isModLoaded("alphalaneous.improved_group_view");
 
 	ng::globals::g_buildHelperRawNameFormat = Mod::get()->getSettingValue<std::string>("auto-name-format");
 

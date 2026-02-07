@@ -110,7 +110,7 @@ struct NIDSetupRandTriggerPopup : geode::Modify<NIDSetupRandTriggerPopup, SetupR
 			this,
 			NID::GROUP,
 			TARGET_GROUP_ID_1_PROPERTY,
-			std::move(groupID1Nodes),
+			std::span{ groupID1Nodes },
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
@@ -120,7 +120,7 @@ struct NIDSetupRandTriggerPopup : geode::Modify<NIDSetupRandTriggerPopup, SetupR
 			this,
 			NID::GROUP,
 			TARGET_GROUP_ID_2_PROPERTY,
-			std::move(groupID2Nodes),
+			std::span{ groupID2Nodes },
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);

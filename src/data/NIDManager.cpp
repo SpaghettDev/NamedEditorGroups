@@ -1,3 +1,4 @@
+#define GEODE_DEFINE_EVENT_EXPORTS
 #include <NIDManager.hpp>
 
 #include "NamedIDs.hpp"
@@ -60,7 +61,7 @@ geode::Result<std::string> NIDManager::getNameForID(NID nid, short id)
 	return geode::Ok(it->first);
 }
 
-geode::Result<short> NIDManager::getIDForName(NID nid, const std::string& name)
+geode::Result<short> NIDManager::getIDForName(NID nid, std::string_view name)
 {
 	const auto& ids = GEODE_UNWRAP(containerForNID(nid));
 
@@ -70,7 +71,7 @@ geode::Result<short> NIDManager::getIDForName(NID nid, const std::string& name)
 	return geode::Ok(ids[name]);
 }
 
-geode::Result<> NIDManager::saveNamedID(NID nid, std::string&& name, short id)
+geode::Result<> NIDManager::saveNamedID(NID nid, std::string_view name, short id)
 {
 #ifndef NID_DEBUG_BUILD
 	if (id <= 0)
@@ -88,15 +89,15 @@ geode::Result<> NIDManager::saveNamedID(NID nid, std::string&& name, short id)
 	if (auto idName = getNameForID(nid, id); idName.isOk())
 		ids.namedIDs.erase(idName.unwrap());
 
-	NewNamedIDEvent(nid, name, id).post();
-	g_isDirty = true;
+	ids.namedIDs[std::string{ name }] = id;
 
-	ids.namedIDs[std::move(name)] = id;
+	g_isDirty = true;
+	NewNamedIDEvent().send(nid, name, id);
 
 	return geode::Ok();
 }
 
-geode::Result<> NIDManager::removeNamedID(NID nid, std::string&& name)
+geode::Result<> NIDManager::removeNamedID(NID nid, std::string_view name)
 {
 	auto idsRes = containerForNID(nid);
 	if (idsRes.isErr())
@@ -106,10 +107,10 @@ geode::Result<> NIDManager::removeNamedID(NID nid, std::string&& name)
 	if (!ids.namedIDs.contains(name))
 		return geode::Err("No saved Named ID {}", name);
 
-	RemovedNamedIDEvent(nid, name, ids[name]).post();
-	g_isDirty = true;
-
 	ids.namedIDs.erase(name);
+
+	g_isDirty = true;
+	RemovedNamedIDEvent().send(nid, name, ids[name]);
 
 	return geode::Ok();
 }
@@ -125,27 +126,25 @@ geode::Result<> NIDManager::removeNamedID(NID nid, short id)
 	if (name.isErr())
 		return geode::Err(name.unwrapErr());
 
-	RemovedNamedIDEvent(nid, name.unwrap(), id).post();
-	g_isDirty = true;
-
 	ids.namedIDs.erase(name.unwrap());
+
+	g_isDirty = true;
+	RemovedNamedIDEvent().send(nid, name.unwrap(), id);
 
 	return geode::Ok();
 }
 
-const std::unordered_map<std::string, short>& NIDManager::getNamedIDs(NID nid)
+geode::Result<const std::unordered_map<std::string, short, geode::utils::StringHash, std::equal_to<>>&> NIDManager::getNamedIDs(NID nid)
 {
-	// deal with it ur literally passing an invalid enum value :joy: :v:
-	// also to keep API backwards compatible
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreturn-stack-address"
 	auto idsRes = containerForNID(nid);
-	if (idsRes.isErr())
-		return {};
-#pragma clang diagnostic pop
 
-	return idsRes.unwrap().namedIDs;
+	if (idsRes.isErr())
+		return geode::Err(idsRes.unwrapErr());
+
+	return geode::Ok(idsRes.unwrap().namedIDs);
 }
+
+// internal
 
 
 bool NIDManager::isDirty() { return g_isDirty; }
@@ -240,6 +239,21 @@ geode::Result<> NIDManager::importNamedIDs(const std::string& str, bool setDirty
 	g_isDirty = g_isDirty || setDirty;
 
 	return geode::Ok();
+}
+
+std::unordered_map<std::string, short, geode::utils::StringHash, std::equal_to<>>& NIDManager::getMutNamedIDs(NID nid)
+{
+	static std::unordered_map<NID, NamedIDs&> cache{
+		{ NID::GROUP, g_namedGroups },
+		{ NID::COLLISION, g_namedCollisions },
+		{ NID::DYNAMIC_COUNTER_TIMER, g_namedCounters },
+		{ NID::COUNTER, g_namedCounters },
+		{ NID::TIMER, g_namedTimers },
+		{ NID::EFFECT, g_namedEffects },
+		{ NID::COLOR, g_namedColors },
+	};
+
+	return cache.at(nid).namedIDs;
 }
 
 void NIDManager::reset()

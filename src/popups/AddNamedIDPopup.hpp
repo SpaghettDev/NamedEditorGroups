@@ -13,7 +13,7 @@ public:
 	static AddNamedIDPopup* create(NID, std::function<void(const std::string&, short)>&&);
 
 protected:
-	bool setup(short, std::function<void(short)>&&, std::function<void()>&&) override;
+	bool init(short, std::function<void(short)>&&, std::function<void()>&&);
 
 	void onSaveButton(cocos2d::CCObject*) override;
 

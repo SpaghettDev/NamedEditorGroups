@@ -125,7 +125,7 @@ bool NamedIDCell<false>::init(
 			->setAutoScale(false)
 			->setGap(4.f)
 	);
-	m_name_menu->getLayout()->ignoreInvisibleChildren(true);
+	static_cast<RowLayout*>(m_name_menu->getLayout())->ignoreInvisibleChildren(true);
 	this->addChildAtPosition(m_name_menu, Anchor::Left, { 10.f, .0f }, { .0f, .5f });
 
 	m_button_menu = CCMenu::create();
@@ -398,7 +398,7 @@ bool NamedIDCell<true>::init(NID idType, short id, std::string&& name, float wid
 			->setAutoScale(false)
 			->setGap(4.f)
 	);
-	m_name_menu->getLayout()->ignoreInvisibleChildren(true);
+	static_cast<RowLayout*>(m_name_menu->getLayout())->ignoreInvisibleChildren(true);
 	this->addChildAtPosition(m_name_menu, Anchor::Left, { 15.f, .0f }, { .0f, .5f });
 
 	m_name_label = ButtonSprite::create(

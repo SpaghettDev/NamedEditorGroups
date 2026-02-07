@@ -135,7 +135,7 @@ struct NIDSetupSpawnPopup : geode::Modify<NIDSetupSpawnPopup, SetupSpawnPopup>
 			this,
 			NID::GROUP,
 			ORIGINAL_ID_PROPERTY,
-			std::move(originalIDNodes),
+			std::span{ originalIDNodes },
 			this->m_mainLayer,
 			this->m_buttonMenu,
 			[&](std::vector<CCNode*>&& newNodes) {
@@ -157,7 +157,7 @@ struct NIDSetupSpawnPopup : geode::Modify<NIDSetupSpawnPopup, SetupSpawnPopup>
 			this,
 			NID::GROUP,
 			NEW_ID_PROPERTY,
-			std::move(newIDNodes),
+			std::span{ newIDNodes },
 			this->m_mainLayer,
 			this->m_buttonMenu,
 			[&](std::vector<CCNode*>&& newNodes) {

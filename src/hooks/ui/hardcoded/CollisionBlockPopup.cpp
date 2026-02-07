@@ -79,7 +79,7 @@ struct NIDCollisionBlockPopup : geode::Modify<NIDCollisionBlockPopup, CollisionB
 			this,
 			NID::COLLISION,
 			BLOCK_ID_PROPERTY,
-			std::move(blockIDNodes),
+			std::span{ blockIDNodes },
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);

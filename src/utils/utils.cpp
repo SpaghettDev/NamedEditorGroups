@@ -8,7 +8,7 @@
 #include <Geode/binding/TextAlertPopup.hpp>
 #include <Geode/binding/LevelEditorLayer.hpp>
 
-#include <alphalaneous.improved_group_view/api/GroupViewUpdateEvent.hpp>
+// #include <alphalaneous.improved_group_view/api/GroupViewUpdateEvent.hpp>
 
 #include "../hooks/LevelEditorLayerData.hpp"
 
@@ -101,10 +101,10 @@ void ng::utils::editor::refreshObjectLabels()
 
 void ng::utils::editor::postIGVUpdateEvent()
 {
-	if (!ng::globals::g_isImprovedGroupViewLoaded)
+	// if (!ng::globals::g_isImprovedGroupViewLoaded)
 		return;
 
-	igv::GroupViewUpdateEvent().post();
+	// igv::GroupViewUpdateEvent().post();
 }
 
 void ng::utils::editor::save()

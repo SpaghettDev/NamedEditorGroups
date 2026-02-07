@@ -42,7 +42,7 @@ struct NIDSetupOpacityPopup : geode::Modify<NIDSetupOpacityPopup, SetupOpacityPo
 			this,
 			NID::GROUP,
 			GROUP_ID_PROPERTY,
-			std::move(nodes),
+			std::span{ nodes },
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);

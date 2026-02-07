@@ -83,7 +83,7 @@ struct NGGJPFollowCommandLayer : geode::Modify<NGGJPFollowCommandLayer, GJPFollo
 			this,
 			NID::GROUP,
 			GROUP_ID_PROPERTY,
-			std::move(targetGroupIDNodes),
+			std::span{ targetGroupIDNodes },
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);

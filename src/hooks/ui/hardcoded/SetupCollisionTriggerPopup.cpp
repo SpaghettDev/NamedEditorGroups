@@ -154,7 +154,7 @@ struct NIDSetupCollisionTriggerPopup : geode::Modify<NIDSetupCollisionTriggerPop
 			this,
 			NID::COLLISION,
 			BLOCK_A_ID_PROPERTY,
-			std::move(blockANodes),
+			std::span{ blockANodes },
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
@@ -164,7 +164,7 @@ struct NIDSetupCollisionTriggerPopup : geode::Modify<NIDSetupCollisionTriggerPop
 			this,
 			NID::COLLISION,
 			BLOCK_B_ID_PROPERTY,
-			std::move(blockBNodes),
+			std::span{ blockBNodes },
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
@@ -174,7 +174,7 @@ struct NIDSetupCollisionTriggerPopup : geode::Modify<NIDSetupCollisionTriggerPop
 			this,
 			NID::GROUP,
 			GROUP_ID_PROPERTY,
-			std::move(targetIDNodes),
+			std::span{ targetIDNodes },
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);

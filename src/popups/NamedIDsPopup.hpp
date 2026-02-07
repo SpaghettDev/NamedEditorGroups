@@ -4,13 +4,13 @@
 
 #include <NIDEnum.hpp>
 
-class NamedIDsPopup : public geode::Popup<bool>
+class NamedIDsPopup : public geode::Popup
 {
 public:
 	static NamedIDsPopup* create(bool);
 
 protected:
-	bool setup(bool) override;
+	bool init(bool);
 
 public:
 	virtual void onClose(cocos2d::CCObject*) override;

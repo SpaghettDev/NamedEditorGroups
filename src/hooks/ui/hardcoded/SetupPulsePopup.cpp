@@ -121,7 +121,7 @@ struct NIDSetupPulsePopup : geode::Modify<NIDSetupPulsePopup, SetupPulsePopup>
 			this,
 			NID::COLOR,
 			COLOR_ID_PROPERTY,
-			std::move(colorIDNodes),
+			std::span{ colorIDNodes },
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
@@ -133,7 +133,7 @@ struct NIDSetupPulsePopup : geode::Modify<NIDSetupPulsePopup, SetupPulsePopup>
 			this,
 			this->m_pulseTargetType == 1 ? NID::GROUP : NID::COLOR,
 			GROUP_OR_CHANNEL_ID_PROPERTY,
-			std::move(groupIDNodes),
+			std::span{ groupIDNodes },
 			this->m_mainLayer,
 			this->m_buttonMenu
 		);
