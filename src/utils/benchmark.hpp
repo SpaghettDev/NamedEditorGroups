@@ -267,6 +267,6 @@ namespace ng::debug
 	#define NID_PROFILER(...) _iNID_PROFILER_MACRO_MAKER_VAR(__LINE__) _iNID_PROFILER_MACRO_MAKER_ARGS(__VA_ARGS__)
 	#define NID_PROFILER_CCLOCK(clock) _iNID_PROFILER_MACRO_MAKER_LINE(clock, __LINE__) _iNID_PROFILER_MACRO_MAKER_ARGS
 #else
-	#define NID_PROFILER(name, callback) do {} while (0)
-	#define NID_PROFILER_CCLOCK(clock) do {} while (0)
+	#define NID_PROFILER(...) do {} while (0)
+	#define NID_PROFILER_CCLOCK(...) do {} while (0)
 #endif

@@ -108,7 +108,7 @@ geode::Result<> NIDManager::removeNamedID(NID nid, std::string_view name)
 		return geode::Err("No saved Named ID {}", name);
 
 	// what an outdated ass ndk does to a mf
-#ifdef GEODE_WINDOWS
+#ifdef GEODE_IS_WINDOWS
 	ids.namedIDs.erase(name);
 #else
 	ids.namedIDs.erase(ids.namedIDs.find(name));
