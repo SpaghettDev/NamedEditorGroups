@@ -1,5 +1,5 @@
 {
-	"geode": "5.0.0-alpha.1",
+	"geode": "5.0.0-alpha.2",
 	"gd": {
 		"win": "2.2081",
 		"android": "2.2081",
@@ -8,7 +8,7 @@
 	},
 	"id": "spaghettdev.named-editor-groups",
 	"name": "Named Editor Groups",
-	"version": "v2.4.0-beta",
+	"version": "v2.4.0-beta.2",
 	"developer": "SpaghettDev",
 	"description": "Abstract away IDs by giving them a name!",
 	"links": {
@@ -23,7 +23,7 @@
 		"editor", "offline", "enhancement", "utility"
 	],
 	"dependencies": {
-		"geode.node-ids": ">=1.22.0-beta.1",
+		"geode.node-ids": ">=1.22.0-beta.2",
 		"cvolton.level-id-api": {
 			"version": ">=2.0.0-beta.1",
 			"importance": "suggested"

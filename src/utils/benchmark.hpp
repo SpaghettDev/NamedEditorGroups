@@ -10,10 +10,10 @@
 #if defined(_MSC_VER)
 	#include <intrin.h>
 	#pragma intrinsic(__rdtsc)
-#elif (defined(__i386__) || defined(__x86_64__)) && !(defined(__aarch64__) || defined(__arm__))
-	#if defined(__GNUC__) || defined(__clang__)
-		#include <x86intrin.h>
-	#endif
+	#define THREAD_YIELD() _mm_pause()
+#else
+	#include <sched.h>
+	#define THREAD_YIELD() sched_yield()
 #endif
 
 
@@ -48,11 +48,11 @@ namespace ng::debug
 				return __builtin_ia32_rdtsc();
 			#elif defined(__aarch64__)
 				std::uint64_t v;
-				asm volatile("mrs %0, cntvct_el0" : "=r"(v));
+				asm volatile ("mrs %0, cntvct_el0" : "=r"(v));
 				return v;
 			#elif defined(__arm__)
-				std::uint32_t hi, lo;
-				asm volatile("mrrc p15, 1, %0, %1, c14" : "=r"(lo), "=r"(hi));
+				std::uint32_t lo, hi;
+				asm volatile ("mrrc p15, 1, %0, %1, c14" : "=r"(lo), "=r"(hi));
 				return (static_cast<std::uint64_t>(hi) << 32) | lo;
 			#else
 				std::uint32_t lo, hi;
@@ -93,10 +93,7 @@ namespace ng::debug
 			// Wait for specified duration
 			auto target = result.steady_start + duration;
 			while (std::chrono::high_resolution_clock::now() <= target)
-			{
-				// Spin-wait: portable hint/yield
-				std::this_thread::yield();
-			}
+				THREAD_YIELD();
 
 			std::uint64_t tsc_end = rdtsc();
 			auto steady_end = std::chrono::high_resolution_clock::now();
@@ -132,7 +129,7 @@ namespace ng::debug
 	static void defaultProfilerCallback(const Profiler<Clock>& profiler) noexcept;
 
 	/**
-	 * @brief RAII timer that reports elapsed nanoseconds when stopped.
+	 * @brief RAII timer that reports elapsed nanoseconds/clock cycles when stopped.
 	 */
 	template <impl::IsClock Clock>
 	class Timer
@@ -163,7 +160,8 @@ namespace ng::debug
 				const auto now = clock::now();
 
 				if constexpr (std::is_same_v<clock, proc_timestamp_clock>)
-					*m_elapsed = proc_timestamp_clock::to_nanoseconds(now - m_start).count();
+					// *m_elapsed = proc_timestamp_clock::to_nanoseconds(now - m_start).count();
+					*m_elapsed = proc_timestamp_clock::to_nanoseconds(now - m_start, 1).count();
 				else
 					*m_elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(now - m_start).count();
 
@@ -176,7 +174,7 @@ namespace ng::debug
 		void reset() noexcept
 		{
 			m_start = clock::now();
-			*m_elapsed = 0; // fix: zero the pointed value
+			*m_elapsed = 0;
 			m_stopped = false;
 		}
 
