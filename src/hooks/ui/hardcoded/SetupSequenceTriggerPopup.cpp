@@ -316,6 +316,5 @@ struct NIDSetupSequenceTriggerPopup : geode::Modify<NIDSetupSequenceTriggerPopup
 
 		ng::utils::VMTHooker<&cocos2d::CCLayer::onExit, SetupSequenceTriggerPopup>::get(self)
 			.toggleHook(NIDSetupSequenceTriggerPopup::onExitHook, false);
-			geode::Ref<CCNode>();
 	}
 };

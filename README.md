@@ -10,14 +10,15 @@ A mod that allows you to abstract away IDs by giving them names!
 
 ## API
 
-This mod exposes 2 types of APIs:
+This mod exposes its API through events:
 
-- Dynamically Linked API:
-  - You `#include <spaghettdev.named-editor-groups/api/NIDManager.hpp>` and use the methods in the NIDManager namespace
-  - You `#include <spaghettdev.named-editor-groups/api/NIDExtrasManager.hpp>` and use the methods in the NIDExtrasManager namespace (only work if cvolton.level-id-api is loaded)
-- Events API:
-  - Similar to TextureLoader's API, you can dispatch events to "spaghettdev.named-editor-groups/v2/[API-ID]" to request information
-  - You must `#define NAMED_EDITOR_GROUPS_USE_EVENTS_API` before including the api header
+- `#include <spaghettdev.named-editor-groups/api/NIDManager.hpp>` and use the methods in the NIDManager namespace
+- `#include <spaghettdev.named-editor-groups/api/NIDExtrasManager.hpp>` and use the methods in the NIDExtrasManager namespace (only work if cvolton.level-id-api is loaded)
+- Similarly, you can listen to some events fired by the mod, these are:
+  - NewNamedIDEvent
+  - NewNamedIDExtrasEvent
+  - RemovedNamedIDEvent
+  - RemovedNamedIDExtrasEvent
 
 ## How to install (from Geode)
 

@@ -1,5 +1,5 @@
 {
-	"geode": "5.0.0-alpha.2",
+	"geode": "5.0.0-beta.3",
 	"gd": {
 		"win": "2.2081",
 		"android": "2.2081",
@@ -26,7 +26,7 @@
 		"geode.node-ids": ">=1.22.0-beta.2",
 		"cvolton.level-id-api": {
 			"version": ">=2.0.0-beta.1",
-			"importance": "suggested"
+			"required": false
 		}
 	},
 	"resources": {

@@ -180,6 +180,8 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 
 			for (auto obj : CCArrayExt<GameObject*>(this->m_targetObjects))
 			{
+				log::debug("{}:", obj->m_objectID);
+				log::pushNest();
 				if (obj->m_groups)
 				{
 					for (short id : *obj->m_groups)
@@ -190,11 +192,14 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 					objIDs.insert(obj->m_groups->begin(), obj->m_groups->end());
 					// why is this game like this
 					objIDs.erase(0);
+					log::debug("IDs: {}", fmt::join(objIDs, ", "));
 					groupIDs.emplace_back(std::move(objIDs));
 				}
+				log::popNest();
 			}
 
 			commonIDs = ng::utils::multiSetIntersection(std::move(groupIDs));
+			log::debug("Common IDs: {}", fmt::join(commonIDs, ", "));
 		}
 		else if (LEL->m_parentGroupsDict && this->m_targetObject->m_groups)
 		{

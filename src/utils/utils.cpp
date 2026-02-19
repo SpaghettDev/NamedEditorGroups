@@ -12,7 +12,7 @@
 
 #include "../hooks/LevelEditorLayerData.hpp"
 
-#include "globals.hpp"
+// #include "globals.hpp"
 #include "constants.hpp"
 
 geode::Result<> ng::utils::sanitizeName(const std::string_view name)

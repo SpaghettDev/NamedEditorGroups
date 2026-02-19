@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Changed
 
-- Target Geode version (v5.0.0-alpha.2)
+- Target Geode version (v5.0.0-beta.3)
 - Optimimzed codebase
 - Events
 
