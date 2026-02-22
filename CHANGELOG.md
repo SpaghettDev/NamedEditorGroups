@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Target Geode version (v5.0.0-beta.4)
 
+## Fixed
+
+- Improper position of Z-layer shift buttons in Edit Group menu
+
 ## [2.4.0] - 2026-02-18
 
 Push changes to Index

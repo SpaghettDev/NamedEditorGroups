@@ -72,7 +72,7 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 
 
 		auto groupsListMenu = m_mainLayer->getChildByID("groups-list-menu");
-		// why the fuck is this button in groups list menu robert
+		// why the fuck are these buttons in groups list menu robert
 		{
 			auto groupOffsetBtn = groupsListMenu->getChildByID("settings-button");
 			groupOffsetBtn->removeFromParent();
@@ -84,6 +84,31 @@ struct NIDSetGroupIDLayer : geode::Modify<NIDSetGroupIDLayer, SetGroupIDLayer>
 					addGroupIDLabel->getScaledContentWidth() / 2.f + 10.f, .0f
 				}
 			);
+
+
+			if (auto zLayerMinusBtn = groupsListMenu->getChildByID("z-layer-decrement-button"))
+			{
+				auto zLayerPlusBtn = groupsListMenu->getChildByID("z-layer-increment-button");
+				zLayerMinusBtn->removeFromParent();
+				zLayerPlusBtn->removeFromParent();
+
+				auto zLayerBtnsMenu = CCMenu::create();
+				zLayerBtnsMenu->addChild(zLayerMinusBtn);
+				zLayerBtnsMenu->addChild(zLayerPlusBtn);
+				zLayerBtnsMenu->setID("z-layer-shift-buttons-menu"_spr);
+
+				auto zLayerLabel = m_mainLayer->getChildByID("z-layer-label");
+				zLayerBtnsMenu->ignoreAnchorPointForPosition(false);
+				zLayerBtnsMenu->setPosition(zLayerLabel->getPosition() + CCPoint{ .0f, -2.f });
+				zLayerBtnsMenu->setContentSize(zLayerLabel->getScaledContentSize() + CCSize{
+					zLayerMinusBtn->getScaledContentWidth() * 2.f + 7.f, .0f
+				});
+				zLayerBtnsMenu->setLayout(
+					RowLayout::create()->setAxisAlignment(AxisAlignment::Between)
+				);
+
+				m_mainLayer->addChild(zLayerBtnsMenu);
+			}
 		}
 
 		groupsListMenu->setPosition({ winSize.width / 2.f, winSize.height / 2.f - 17.f });
