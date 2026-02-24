@@ -9,11 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Changed
 
-- Target Geode version (v5.0.0-beta.4)
+- Target Geode version (v5.0.1)
 
 ## Fixed
 
-- Improper position of Z-layer shift buttons in Edit Group menu
+- Improper position of Z-layer shift buttons in Edit Group menu (#38 thanks @Fryy55)
+- Crash on Android when saving and exiting level
 
 ## [2.4.0] - 2026-02-18
 

@@ -21,14 +21,7 @@ struct NIDLevelEditorLayerData : geode::Modify<NIDLevelEditorLayerData, LevelEdi
 	void createObjectsFromSetup(gd::string&);
 
 
-#ifdef GEODE_IS_ANDROID
-	static geode::Result<void, std::pair<std::string, std::string>> parseDataString(const std::string&);
-#else
-	static geode::Result<void, std::pair<std::string, std::string>> parseDataString(const gd::string&);
-#endif
-
-	// transition
-	static void updateSaveObject(gd::string&);
+	static geode::Result<void, std::pair<std::string, std::string>> parseDataString(std::string_view);
 
 	TextGameObject* getSaveObject();
 	void createSaveObject();

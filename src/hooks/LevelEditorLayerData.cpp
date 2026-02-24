@@ -23,24 +23,15 @@ using namespace geode::prelude;
 // get the save data very early
 void NIDLevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
 {
-#ifdef GEODE_IS_ANDROID
-	auto levelStr = std::string{ levelString };
-#else
-	auto& levelStr = levelString;
-#endif
-
 	if (ng::globals::g_isEditorIDAPILoaded)
 		NIDExtrasManager::init(EditorIDs::getID(this->m_level));
 
 	NIDManager::reset();
 
-	if (std::strstr(levelStr.c_str(), ng::constants::old::SAVE_OBJECT_STRING_START) != nullptr)
-		updateSaveObject(levelString);
-
 	{
 		NID_PROFILER("Parse string");
 
-		m_fields->m_parse_result = parseDataString(levelStr);
+		m_fields->m_parse_result = parseDataString(levelString);
 	}
 
 	LevelEditorLayer::createObjectsFromSetup(levelString);
@@ -48,28 +39,18 @@ void NIDLevelEditorLayerData::createObjectsFromSetup(gd::string& levelString)
 
 
 geode::Result<void, std::pair<std::string, std::string>> NIDLevelEditorLayerData::parseDataString(
-#ifdef GEODE_IS_ANDROID
-	const std::string& str
-#else
-	const gd::string& str
-#endif
+	std::string_view lvlStr
 ) {
-	std::string_view lvlStr{ str };
-
-	// const std::size_t saveObjStrOffset = lvlStr.find(ng::constants::SAVE_OBJECT_STRING_START);
 	const auto saveObjStrOffset = std::strstr(lvlStr.data(), ng::constants::SAVE_OBJECT_STRING_START) - lvlStr.data();
 	if (saveObjStrOffset <= 0)
 		return geode::Ok();
 
-	// lvlStr.remove_prefix(saveObjStrOffset + ng::constants::SAVE_OBJECT_STRING_START.size());
 	lvlStr.remove_prefix(saveObjStrOffset + ng::constants::SAVE_OBJECT_STRING_START_VIEW.size());
 
-	// const auto separatorOffset = lvlStr.find(ng::constants::TEXT_OBJECT_STRING_SEPARATOR);
 	const auto separatorOffset = std::strstr(lvlStr.data(), ng::constants::TEXT_OBJECT_STRING_SEPARATOR) - lvlStr.data();
 	if (separatorOffset <= 0)
 		return geode::Ok();
 
-	// lvlStr.remove_prefix(separatorOffset + ng::constants::TEXT_OBJECT_STRING_SEPARATOR.size());
 	lvlStr.remove_prefix(separatorOffset + ng::constants::TEXT_OBJECT_STRING_SEPARATOR_VIEW.size());
 
 	std::string_view saveObjStr = lvlStr.substr(0, lvlStr.find(';'));
@@ -97,29 +78,6 @@ geode::Result<void, std::pair<std::string, std::string>> NIDLevelEditorLayerData
 	}
 
 	return geode::Ok();
-}
-
-void NIDLevelEditorLayerData::updateSaveObject(gd::string& levelString)
-{
-#ifdef GEODE_IS_ANDROID
-	auto lvlStr = std::string{ levelString };
-
-	lvlStr.replace(
-		lvlStr.find(ng::constants::old::SAVE_OBJECT_STRING_START_VIEW),
-		ng::constants::old::SAVE_OBJECT_STRING_START_VIEW.size(),
-		ng::constants::SAVE_OBJECT_STRING_START
-	);
-#else
-	levelString.replace(
-		levelString.find(ng::constants::old::SAVE_OBJECT_STRING_START_VIEW),
-		ng::constants::old::SAVE_OBJECT_STRING_START_VIEW.size(),
-		ng::constants::SAVE_OBJECT_STRING_START
-	);
-#endif
-
-#ifdef GEODE_IS_ANDROID
-	levelString = lvlStr;
-#endif
 }
 
 TextGameObject* NIDLevelEditorLayerData::getSaveObject()
