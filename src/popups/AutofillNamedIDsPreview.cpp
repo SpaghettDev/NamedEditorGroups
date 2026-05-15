@@ -32,6 +32,19 @@ bool AutofillNamedIDsPreview::init(NID nid, const std::string_view query)
 	this->setTouchEnabled(true);
 	this->setKeypadEnabled(true);
 
+	log::info("yeah");
+
+	this->addEventListener(
+		KeybindSettingPressedEventV3(Mod::get(), "pick-top-group"),
+		[this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+			log::info("key yeah");
+			if (!down || m_list->m_contentLayer->getChildrenCount() == 0) return;
+
+			auto topID = m_list->m_contentLayer->getChildrenExt<NamedIDCell<true>*>()[0];
+			this->selectCallback(m_ids_type, topID->getID());
+		}
+	);
+
 	m_bg_sprite = cocos2d::extension::CCScale9Sprite::create("GJ_square01.png", { .0f, .0f, 80.f, 80.f });
 	m_bg_sprite->setContentSize(PREVIEW_SIZE);
 	m_bg_sprite->setZOrder(-1);
@@ -51,6 +64,7 @@ bool AutofillNamedIDsPreview::init(NID nid, const std::string_view query)
 			->setCrossAxisOverflow(false)
 			->setAxisAlignment(AxisAlignment::End)
 			->setGap(.0f)
+			->ignoreInvisibleChildren(false)
 	);
 	m_list->m_contentLayer->setPositionY(-2.f);
 	m_list->moveToTop();
