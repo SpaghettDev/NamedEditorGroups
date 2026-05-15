@@ -51,6 +51,13 @@
 			"name": "Show Preview Button",
 			"description": "Show/hide a button to preview a read-only list of Named IDs in the level edit screen.",
 			"default": true
+		},
+		"pick-top-group":{
+			"type": "keybind",
+			"name": "Pick Top Group",
+			"default": "Enter",
+			"allow-in-text-inputs": true,
+			"description": "Picks top group when searching for a group by name"
 		}
 	}
 }
