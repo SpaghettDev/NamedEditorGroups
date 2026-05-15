@@ -51,6 +51,7 @@ bool AutofillNamedIDsPreview::init(NID nid, const std::string_view query)
 			->setCrossAxisOverflow(false)
 			->setAxisAlignment(AxisAlignment::End)
 			->setGap(.0f)
+			->ignoreInvisibleChildren(false)
 	);
 	m_list->m_contentLayer->setPositionY(-2.f);
 	m_list->moveToTop();
